@@ -1,5 +1,5 @@
 ﻿function Invoke-InfobloxQuery {
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     param(
         [parameter(Mandatory)][string] $BaseUri,
         [parameter(Mandatory)][string] $RelativeUri,
@@ -18,13 +18,15 @@
 
     $Url = Join-UriQuery @joinUriQuerySplat
 
-    Write-Verbose -Message "Invoke-InfobloxQuery - Querying $Url"
-    try {
-        Invoke-RestMethod -Uri $Url -Method $Method -Credential $Credential -ContentType 'application/json' -ErrorAction Stop
-    } catch {
-        if ($ErrorActionPreference -eq 'Stop') {
-            throw
+    if ($PSCmdlet.ShouldProcess($Url, "Invoke-InfobloxQuery - $Method")) {
+        Write-Verbose -Message "Invoke-InfobloxQuery - Querying $Url with $Method"
+        try {
+            Invoke-RestMethod -Uri $Url -Method $Method -Credential $Credential -ContentType 'application/json' -ErrorAction Stop -Verbose:$false
+        } catch {
+            if ($ErrorActionPreference -eq 'Stop') {
+                throw
+            }
+            Write-Warning -Message "Invoke-InfobloxQuery - QUerying $Url failed. Error: $($_.Exception.Message)"
         }
-        Write-Warning -Message "Invoke-InfobloxQuery - QUerying $Url failed. Error: $($_.Exception.Message)"
     }
 }
