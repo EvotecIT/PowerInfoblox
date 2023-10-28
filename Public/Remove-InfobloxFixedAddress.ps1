@@ -23,14 +23,14 @@
     }
     foreach ($Mac in $ListMacaddresses) {
         $invokeInfobloxQuerySplat = @{
-            RelativeUri = "fixedaddress/$($Mac._ref)"
+            RelativeUri = "$($Mac._ref)"
             Method      = 'DELETE'
         }
-        $Output = Invoke-InfobloxQuery @invokeInfobloxQuerySplat
+        $Output = Invoke-InfobloxQuery @invokeInfobloxQuerySplat -WarningAction SilentlyContinue -WarningVariable varWarning
         if ($Output) {
             Write-Verbose -Message "Remove-InfobloxFixedAddress - Removed $($Mac.ipv4addr) with mac address $($Mac.mac) / $Output"
         } else {
-            Write-Warning -Message "Remove-InfobloxFixedAddress - Failed to remove $($Mac.ipv4addr) with mac address $($Mac.mac) / $Output"
+            Write-Warning -Message "Remove-InfobloxFixedAddress - Failed to remove $($Mac.ipv4addr) with mac address $($Mac.mac), error: $varWarning"
         }
     }
 }
