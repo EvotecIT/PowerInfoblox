@@ -6,7 +6,7 @@
     CompatiblePSEditions = @('Desktop', 'Core')
     Copyright            = '(c) 2011 - 2023 Przemyslaw Klys @ Evotec. All rights reserved.'
     Description          = 'Helper module for Infoblox.'
-    FunctionsToExport    = @('Connect-Infoblox', 'Get-InfobloxNetwork', 'Get-InfobloxNextAvailableIP', 'Get-InfobloxSchema', 'Invoke-InfobloxQuery')
+    FunctionsToExport    = @('Add-InfobloxFixedAddress', 'Connect-Infoblox', 'Disconnect-Infoblox', 'Get-InfobloxFixedAddress', 'Get-InfobloxIPAddress', 'Get-InfobloxNetwork', 'Get-InfobloxNetworkNextAvailableIP', 'Get-InfobloxSchema', 'Invoke-InfobloxQuery', 'Remove-InfobloxFixedAddress')
     GUID                 = '9fc9fd61-7f11-4f4b-a527-084086f1905f'
     ModuleVersion        = '0.0.0'
     PowerShellVersion    = '5.1'
