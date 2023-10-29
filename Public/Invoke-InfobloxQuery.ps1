@@ -5,7 +5,7 @@
         [parameter(Mandatory)][string] $RelativeUri,
         [parameter(Mandatory)][pscredential] $Credential,
         [parameter()][System.Collections.IDictionary] $QueryParameter,
-        [parameter(Mandatory)][string] $Method
+        [parameter()][string] $Method = 'GET'
     )
 
     $joinUriQuerySplat = @{
