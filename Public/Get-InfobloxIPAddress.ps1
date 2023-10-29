@@ -1,16 +1,34 @@
 ﻿function Get-InfobloxIPAddress {
     <#
     .SYNOPSIS
-    Short description
+    Get Infoblox IP Address information for given network or IP address
 
     .DESCRIPTION
-    Long description
+    Get Infoblox IP Address information for given network or IP address
 
     .PARAMETER Network
-    Parameter description
+    Find IP address information for a specific network
+
+    .PARAMETER IPv4Address
+    Find IP address information for a specific IP address
+
+    .PARAMETER Status
+    Get IP addresses with a specific status, either Used or Unused
+
+    .PARAMETER Name
+    Get IP addresses with a specific name
+
+    .PARAMETER Count
+    Limit the number of results returned
 
     .EXAMPLE
     Get-InfobloxIPAddress -Network '10.2.2.0/24'
+
+    .EXAMPLE
+    Get-InfobloxIPAddress -Network '10.2.2.0/24' -Status Used -Verbose | Format-Table
+
+    .EXAMPLE
+    Get-InfobloxIPAddress -Network '10.2.2.0' -Verbose | Format-Table
 
     .NOTES
     General notes
@@ -26,7 +44,11 @@
 
         [parameter(ParameterSetName = 'Network')]
         [parameter(ParameterSetName = 'IPv4')]
-        [parameter()][int] $Count
+        [parameter()][string] $Name,
+
+        [parameter(ParameterSetName = 'Network')]
+        [parameter(ParameterSetName = 'IPv4')]
+        [alias('Quantity')][parameter()][int] $Count
     )
     if (-not $Script:InfobloxConfiguration) {
         Write-Warning -Message 'Get-InfobloxIPAddress - You must first connect to an Infoblox server using Connect-Infoblox'
@@ -50,7 +72,10 @@
         $invokeInfobloxQuerySplat.QueryParameter.network = $Network
     }
     if ($Status) {
-        $invokeInfobloxQuerySplat.QueryParameter.status = $Status
+        $invokeInfobloxQuerySplat.QueryParameter.status = $Status.ToUpper()
+    }
+    if ($Name) {
+        $invokeInfobloxQuerySplat.QueryParameter.names = $Name
     }
     if ($IPv4Address) {
         $invokeInfobloxQuerySplat.QueryParameter.ip_address = $IPv4Address
