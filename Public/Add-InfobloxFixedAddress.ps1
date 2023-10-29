@@ -44,8 +44,8 @@
     }
     $Output = Invoke-InfobloxQuery @invokeInfobloxQuerySplat -WarningAction SilentlyContinue -WarningVariable varWarning
     if ($Output) {
-        Write-Verbose -Message "Add-InfobloxFixedAddress - Removed $($Mac.ipv4addr) with mac address $($Mac.mac) / $Output"
+        Write-Verbose -Message "Add-InfobloxFixedAddress - Added $($Mac.ipv4addr) with mac address $($Mac.mac) / $Output"
     } else {
-        Write-Warning -Message "Add-InfobloxFixedAddress - Failed to remove $($Mac.ipv4addr) with mac address $($Mac.mac), error: $varWarning"
+        Write-Warning -Message "Add-InfobloxFixedAddress - Failed to add $($Mac.ipv4addr) with mac address $($Mac.mac), error: $varWarning"
     }
 }
