@@ -23,8 +23,8 @@
     #>
     [cmdletbinding(SupportsShouldProcess)]
     param(
-        [parameter(Mandatory)][string] $IPv4Address,
-        [parameter(Mandatory)][string] $MacAddress
+        [ValidateNotNullOrEmpty()][parameter(Mandatory)][string] $IPv4Address,
+        [ValidatePattern("([a-zA-Z0-9]{2}:){5}[a-zA-Z0-9]{2}")][parameter(Mandatory)][string] $MacAddress
     )
 
     if (-not $Script:InfobloxConfiguration) {
