@@ -4,11 +4,15 @@
         [Parameter(Mandatory)][string] $Server,
         [Parameter(Mandatory)][pscredential] $Credential,
         [Parameter()][string] $ApiVersion = '1.0',
+        [switch] $EnableTLS12,
         [switch] $AllowSelfSignedCerts
     )
 
     if ($AllowSelfSignedCerts) {
         Hide-SelfSignedCerts
+    }
+    if ($EnableTLS12) {
+        [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
     }
 
     $PSDefaultParameterValues['Invoke-InfobloxQuery:Credential'] = $Credential
