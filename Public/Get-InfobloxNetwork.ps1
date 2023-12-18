@@ -36,13 +36,8 @@ function Get-InfobloxNetwork {
 
         $FullInformation = Get-IPAddressRangeInformation -Network $FoundNetwork.network
 
-        #$Cidr = $FoundNetwork.network.split('/')[1]
         $OutputData = [ordered] @{
             Network        = $FoundNetwork.network
-            #Cidr                 = $Cidr
-            #SubnetMask           = Convert-BinaryToDecimal -binary (Convert-CidrToBinary -cidr $cidr)
-            #Gateway               = $SubQuery.extensible_attributes.Gateway
-            #Extensible_attributes = $SubQuery.extensible_attributes
             NetworkRef     = $FoundNetwork._ref
             IP             = $FullInformation.IP                   # : 10.2.10.0
             NetworkLength  = $FullInformation.NetworkLength        # : 24
