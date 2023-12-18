@@ -20,7 +20,7 @@
     RequiredModules      = @(@{
             Guid          = 'ee272aa8-baaa-4edf-9f45-b6d6f7d844fe'
             ModuleName    = 'PSSharedGoods'
-            ModuleVersion = '0.0.271'
+            ModuleVersion = '0.0.272'
         }, 'Microsoft.PowerShell.Utility', 'Microsoft.PowerShell.Security')
     RootModule           = 'PowerInfoblox.psm1'
 }
