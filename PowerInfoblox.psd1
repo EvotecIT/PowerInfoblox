@@ -8,7 +8,7 @@
     Description          = 'Helper module for Infoblox.'
     FunctionsToExport    = @('Add-InfobloxFixedAddress', 'Connect-Infoblox', 'Disconnect-Infoblox', 'Get-InfobloxDHCP', 'Get-InfobloxDHCPLeases', 'Get-InfobloxDNSAuthZones', 'Get-InfobloxDNSRecord', 'Get-InfobloxDNSView', 'Get-InfobloxFixedAddress', 'Get-InfobloxIPAddress', 'Get-InfobloxMember', 'Get-InfobloxNetwork', 'Get-InfobloxNetworkNextAvailableIP', 'Get-InfobloxNetworkView', 'Get-InfobloxSchema', 'Get-InfoBloxSearch', 'Invoke-InfobloxQuery', 'Remove-InfobloxFixedAddress', 'Remove-InfobloxIPAddress', 'Remove-InfobloxObject')
     GUID                 = '9fc9fd61-7f11-4f4b-a527-084086f1905f'
-    ModuleVersion        = '1.0.0'
+    ModuleVersion        = '1.0.1'
     PowerShellVersion    = '5.1'
     PrivateData          = @{
         PSData = @{
