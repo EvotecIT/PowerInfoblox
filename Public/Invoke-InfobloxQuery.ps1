@@ -17,10 +17,27 @@
         $joinUriQuerySplat['QueryParameter'] = $QueryParameter
     }
 
+    # if ($Method -eq 'GET') {
+    #     if (-not $QueryParameter) {
+    #         $joinUriQuerySplat['QueryParameter'] = [ordered] @{}
+    #     }
+    #     #_paging           = 1
+    #     #_return_as_object = 1
+    #     #_max_results      = 100000
+    #     $joinUriQuerySplat['QueryParameter']._max_results = 1000000
+    # }
+
     $Url = Join-UriQuery @joinUriQuerySplat
 
     if ($PSCmdlet.ShouldProcess($Url, "Invoke-InfobloxQuery - $Method")) {
         Write-Verbose -Message "Invoke-InfobloxQuery - Querying $Url with $Method"
+
+
+        # $WebSession = New-WebSession -Cookies @{
+        #     timeout = 600
+        #     mtime   = 144631868
+        #     client  = 'API'
+        # } -For $BaseUri
 
         try {
             $invokeRestMethodSplat = @{
@@ -30,6 +47,8 @@
                 ContentType = 'application/json'
                 ErrorAction = 'Stop'
                 Verbose     = $false
+                #WebSession  = $WebSession
+                TimeoutSec  = 600
             }
             if ($Body) {
                 $invokeRestMethodSplat.Body = $Body | ConvertTo-Json -Depth 10
@@ -39,7 +58,7 @@
             if ($ErrorActionPreference -eq 'Stop') {
                 throw
             }
-            Write-Warning -Message "Invoke-InfobloxQuery - QUerying $Url failed. Error: $($_.Exception.Message)"
+            Write-Warning -Message "Invoke-InfobloxQuery - Querying $Url failed. Error: $($_.Exception.Message)"
         }
     }
 }
