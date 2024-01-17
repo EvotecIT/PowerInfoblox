@@ -14,6 +14,7 @@
         RelativeUri    = 'zone_auth'
         Method         = 'GET'
         QueryParameter = @{
+            _max_results = 1000000
             _return_fields = @(
                 'address'
                 'allow_active_dir'
