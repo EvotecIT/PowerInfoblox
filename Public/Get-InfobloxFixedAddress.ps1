@@ -16,6 +16,7 @@
         RelativeUri    = 'fixedaddress'
         Method         = 'GET'
         QueryParameter = @{
+            _max_results   = 1000000
             _return_fields = 'mac,ipv4addr,network_view'
         }
     }
