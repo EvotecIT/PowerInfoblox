@@ -14,7 +14,7 @@
         RelativeUri    = 'search'
         Method         = 'GET'
         QueryParameter = [ordered]@{
-
+            _max_results = 1000000
         }
     }
     if ($IPv4Address) {
