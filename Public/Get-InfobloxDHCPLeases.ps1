@@ -18,6 +18,7 @@
         Method         = 'GET'
         QueryParameter = @{
             _return_fields = 'binding_state,hardware,client_hostname,fingerprint,address,network_view'
+            _max_results = 1000000
         }
     }
     if ($Network) {
