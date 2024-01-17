@@ -13,6 +13,7 @@
         RelativeUri    = 'member'
         Method         = 'GET'
         QueryParameter = @{
+            _max_results = 1000000
             _return_fields = 'config_addr_type,host_name,platform,service_type_configuration,vip_setting,node_info,service_status'
         }
     }
