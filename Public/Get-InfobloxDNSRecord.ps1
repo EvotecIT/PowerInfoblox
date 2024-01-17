@@ -25,7 +25,7 @@
         RelativeUri    = "record:$($Type.ToLower())"
         Method         = 'GET'
         QueryParameter = @{
-
+            _max_results = 1000000
         }
     }
     if ($Type -eq 'Host') {
@@ -74,8 +74,8 @@
         }
     }
     $Output = Invoke-InfobloxQuery @invokeInfobloxQuerySplat
-    foreach ($Record in $Output) {
-        if ($Type -eq 'Host') {
+    if ($Type -eq 'Host') {
+        foreach ($Record in $Output) {
             [pscustomobject]@{
                 name               = $Record.name
                 dns_name           = $Record.dns_name
@@ -89,15 +89,8 @@
                 ipv4addr_ref       = $Record.ipv4addrs._ref
                 _ref               = $Record._ref
             }
-        } else {
-            $ReturnObject = [ordered] @{}
-            foreach ($Property in $Record.PSObject.Properties.Name) {
-                if ($Property -ne '_ref') {
-                    $ReturnObject[$Property] = $Record.$Property
-                }
-            }
-            $ReturnObject['_ref'] = $Record._ref
-            [pscustomobject]$ReturnObject
         }
+    } else {
+        $Output | Select-ObjectByProperty -LastProperty '_ref'
     }
 }
