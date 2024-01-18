@@ -1,7 +1,7 @@
 ﻿function Select-ObjectByProperty {
     [CmdletBinding()]
     param(
-        [Parameter(Mandatory, Position = 0, ValueFromPipeline)][Array] $Object,
+        [Parameter(Position = 0, ValueFromPipeline)][Array] $Object,
         [alias('FirstProperty')][Parameter()][string[]] $FirstProperties,
         [alias('LastProperty')][Parameter()][string[]] $LastProperties
     )
