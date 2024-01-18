@@ -1,14 +1,14 @@
 ﻿@{
-    AliasesToExport      = @('Get-InfobloxDNSRecords', 'Get-InfobloxDNSRecordsAll')
+    AliasesToExport      = @('Get-InfobloxDNSAuthZones', 'Get-InfobloxDNSRecords', 'Get-InfobloxDNSRecordsAll')
     Author               = 'Przemyslaw Klys'
     CmdletsToExport      = @()
     CompanyName          = 'Evotec'
     CompatiblePSEditions = @('Desktop', 'Core')
     Copyright            = '(c) 2011 - 2024 Przemyslaw Klys @ Evotec. All rights reserved.'
     Description          = 'Helper module for Infoblox.'
-    FunctionsToExport    = @('Add-InfobloxFixedAddress', 'Connect-Infoblox', 'Disconnect-Infoblox', 'Get-InfobloxDHCP', 'Get-InfobloxDHCPLeases', 'Get-InfobloxDNSAuthZones', 'Get-InfobloxDNSRecord', 'Get-InfobloxDNSRecordAll', 'Get-InfobloxDNSView', 'Get-InfobloxFixedAddress', 'Get-InfobloxIPAddress', 'Get-InfobloxMember', 'Get-InfobloxNetwork', 'Get-InfobloxNetworkNextAvailableIP', 'Get-InfobloxNetworkView', 'Get-InfobloxSchema', 'Get-InfoBloxSearch', 'Invoke-InfobloxQuery', 'Remove-InfobloxFixedAddress', 'Remove-InfobloxIPAddress', 'Remove-InfobloxObject')
+    FunctionsToExport    = @('Add-InfoBloxDNSRecord', 'Add-InfobloxFixedAddress', 'Connect-Infoblox', 'Disconnect-Infoblox', 'Get-InfobloxDHCP', 'Get-InfobloxDHCPLeases', 'Get-InfobloxDNSAuthZone', 'Get-InfobloxDNSDelegatedZone', 'Get-InfobloxDNSForwardZone', 'Get-InfobloxDNSRecord', 'Get-InfobloxDNSRecordAll', 'Get-InfobloxDNSView', 'Get-InfobloxFixedAddress', 'Get-InfobloxIPAddress', 'Get-InfobloxMember', 'Get-InfobloxNetwork', 'Get-InfobloxNetworkNextAvailableIP', 'Get-InfobloxNetworkView', 'Get-InfobloxSchema', 'Get-InfoBloxSearch', 'Invoke-InfobloxQuery', 'Remove-InfobloxFixedAddress', 'Remove-InfobloxIPAddress', 'Remove-InfobloxObject')
     GUID                 = '9fc9fd61-7f11-4f4b-a527-084086f1905f'
-    ModuleVersion        = '1.0.1'
+    ModuleVersion        = '1.0.2'
     PowerShellVersion    = '5.1'
     PrivateData          = @{
         PSData = @{
