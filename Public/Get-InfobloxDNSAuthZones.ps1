@@ -1,4 +1,5 @@
-﻿function Get-InfobloxDNSAuthZones {
+﻿function Get-InfobloxDNSAuthZone {
+    [alias('Get-InfobloxDNSAuthZones')]
     [cmdletbinding()]
     param(
         [string] $FQDN,
@@ -14,7 +15,7 @@
         RelativeUri    = 'zone_auth'
         Method         = 'GET'
         QueryParameter = @{
-            _max_results = 1000000
+            _max_results   = 1000000
             _return_fields = @(
                 'address'
                 'allow_active_dir'
