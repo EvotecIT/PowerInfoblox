@@ -53,6 +53,7 @@
             if ($Body) {
                 $invokeRestMethodSplat.Body = $Body | ConvertTo-Json -Depth 10
             }
+            Remove-EmptyValue -Hashtable $invokeRestMethodSplat -Recursive -Rerun 2
             Invoke-RestMethod @invokeRestMethodSplat
         } catch {
             if ($ErrorActionPreference -eq 'Stop') {
