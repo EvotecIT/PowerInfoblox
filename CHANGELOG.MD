@@ -1,4 +1,17 @@
-﻿### 1.0.2 - 2024.01.18
+﻿### 1.0.3 - 2024.02.14
+- Added `Get-InfobloxDHCPLease`
+- Added `Get-InfobloxDHCPRange`
+- Added `Get-InfobloxDiscoveryTask`
+- Added `Get-InfobloxVDiscoveryTask`
+- Added `Get-InfobloxObjects`
+- Added `Get-infobloxPermission`
+- Added `Get-InfobloxResponsePolicyZones`
+- Improve `Invoke-InfobloxQUery`
+- Improve `Get-InfobloxNetwork`
+- Improve `Get-InfobloxNetworkView`
+- Improve `Get-InfobloxShema`
+
+### 1.0.2 - 2024.01.18
 - Added `Add-InfobloxDNSRecord`
 - Added `Get-infobloxDNSDelegatedZone`
 - Added `Get-InfobloxDNSForwardZone`
