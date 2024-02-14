@@ -20,7 +20,8 @@
     #>
     [CmdletBinding()]
     param(
-        [string] $Object
+        [string] $Object,
+        [switch] $ReturnReadOnlyFields
     )
     if (-not $Script:InfobloxConfiguration) {
         Write-Warning -Message 'Get-InfobloxSchema - You must first connect to an Infoblox server using Connect-Infoblox'
@@ -42,7 +43,11 @@
     }
     $Query = Invoke-InfobloxQuery @invokeInfobloxQuerySplat
     if ($Query) {
-        $Query
+        if ($ReturnReadOnlyFields) {
+            Get-FieldsFromSchema -Schema $Query -SchemaObject $Object
+        } else {
+            $Query
+        }
     } else {
         Write-Warning -Message 'Get-InfobloxSchema - No schema returned'
     }
