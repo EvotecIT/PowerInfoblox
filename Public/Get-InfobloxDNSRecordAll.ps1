@@ -25,6 +25,7 @@
     $invokeInfobloxQuerySplat.QueryParameter._return_fields = 'address,comment,creator,ddns_principal,ddns_protected,disable,dtc_obscured,name,reclaimable,record,ttl,type,view,zone'
 
     if ($FetchFromSchema) {
+        <#
         if (-not $Script:InfobloxSchemaFields) {
             $Script:InfobloxSchemaFields = [ordered] @{}
         }
@@ -39,6 +40,8 @@
                 Write-Warning -Message "Get-InfobloxDNSRecordAll - Failed to fetch schema for record type 'allrecords'. Using defaults"
             }
         }
+        #>
+        $invokeInfobloxQuerySplat.QueryParameter._return_fields = Get-FieldsFromSchema -SchemaObject "allrecords"
     }
     if ($Zone) {
         if ($PartialMatch) {
