@@ -2,7 +2,7 @@ function Get-InfobloxNetwork {
     [OutputType([system.object[]])]
     [cmdletbinding()]
     param(
-        [string] $Network = '*',
+        [string] $Network,
         [string[]]$Properties,
         [switch] $Partial,
         [switch] $All
@@ -163,40 +163,11 @@ function Get-InfobloxNetwork {
             utilization_update                   = $FoundNetwork.utilization_update                   #: 1707318915
             vlans                                = $FoundNetwork.vlans                                #: {}
             zone_associations                    = $FoundNetwork.zone_associations                    #: {}
-            _ref                                 = $FoundNetwork._ref                                 #: network/ZG5zLm5ldHdvcmskMTcyLjIzLjAuMC8yNy8w:172.23.0.0/27/default
+            _ref                                 = $FoundNetwork._ref                                 #: network/ZG
         }
-
-        # $OutputData = [ordered] @{
-        #     Network        = $FoundNetwork.network
-        #     NetworkRef     = $FoundNetwork._ref
-        #     IP             = $FullInformation.IP                   # : 10.2.10.0
-        #     NetworkLength  = $FullInformation.NetworkLength        # : 24
-        #     SubnetMask     = $FullInformation.SubnetMask           # : 255.255.255.0
-        #     NetworkAddress = $FullInformation.NetworkAddress       # : 10.2.10.0
-        #     HostMin        = $FullInformation.HostMin              # : 10.2.10.1
-        #     HostMax        = $FullInformation.HostMax              # : 10.2.10.254
-        #     TotalHosts     = $FullInformation.TotalHosts           # : 256
-        #     UsableHosts    = $FullInformation.UsableHosts          # : 254
-        #     Broadcast      = $FullInformation.Broadcast            # : 10.2.10.255
-        #     #BinaryIP             = $FullInformation.BinaryIP             # : 00001010000000100000101000000000
-        #     #BinarySubnetMask     = $FullInformation.BinarySubnetMask     # : 11111111111111111111111100000000
-        #     #BinaryNetworkAddress = $FullInformation.BinaryNetworkAddress # : 00001010000000100000101000000000
-        #     #BinaryBroadcast      = $FullInformation.BinaryBroadcast      # : 00001010000000100000101011111111
-        # }
         foreach ($Extra in $FoundNetwork.extattrs.psobject.properties) {
             $OutputData[$Extra.Name] = $Extra.Value.value
         }
         [PSCustomObject]$OutputData
-
-
-        #$FoundNetwork | Select-ObjectByProperty -LastProperty '_ref' -AddObject $OutputData -FirstProperties @('Network')
     }
-    <#
-    if ($ExtraProperties) {
-        $Properties = Select-Properties -Objects $AllNetworks -AllProperties
-        $AllNetworks | Select-Object -Property $Properties
-    } else {
-        $AllNetworks
-    }
-    #>
 }
