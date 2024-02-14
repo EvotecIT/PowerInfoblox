@@ -1,7 +1,7 @@
 ﻿function Get-InfobloxNetworkView {
     [cmdletbinding()]
     param(
-
+        [switch] $FetchFromSchema
     )
 
     if (-not $Script:InfobloxConfiguration) {
@@ -11,13 +11,18 @@
 
     Write-Verbose -Message "Get-InfobloxNetworkView - Requesting Network View"
 
+    if ($FetchFromSchema) {
+        $ReturnFields = Get-FieldsFromSchema -SchemaObject "networkview"
+    }
+
     $invokeInfobloxQuerySplat = @{
         RelativeUri    = 'networkview'
         Method         = 'GET'
         QueryParameter = @{
             _max_results = 1000000
-            # _return_fields = 'mac,ipv4addr,network_view'
+            _return_fields = $ReturnFields
         }
     }
-    Invoke-InfobloxQuery @invokeInfobloxQuerySplat
+    $Output = Invoke-InfobloxQuery @invokeInfobloxQuerySplat
+    $Output | Select-ObjectByProperty -LastProperty '_ref'
 }
