@@ -7,7 +7,8 @@
         [parameter(Mandatory)][ValidateSet(
             'A',
             #'AAAA',
-            'CNAME'
+            'CNAME',
+            'HOST'
             #'DName',
             #'DNSKEY', 'DS', 'Host', 'host_ipv4addr', 'host_ipv6addr',
             #'LBDN', 'MX', 'NAPTR', 'NS', 'NSEC',
@@ -42,6 +43,21 @@
             }
         } else {
             Write-Warning -Message "Add-InfoBloxDNSRecord - Name and CanonicalName are required for $Type record"
+            return
+        }
+    } elseif ($Type -eq 'HOST') {
+        Write-Verbose -Message "Add-InfoBloxDNSRecord - Adding $Type record $Name with IPv4Address: '$IPv4Address'"
+        if ($Name -and $IPv4Address) {
+            $Body = [ordered] @{
+                name      = $Name.ToLower()
+                ipv4addrs = @(
+                    @{
+                        ipv4addr = $IPv4Address
+                    }
+                )
+            }
+        } else {
+            Write-Warning -Message "Add-InfoBloxDNSRecord - Name and IPv4Address are required for $Type record"
             return
         }
     } else {
