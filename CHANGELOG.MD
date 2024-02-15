@@ -1,4 +1,9 @@
-﻿### 1.0.3 - 2024.02.14
+﻿### 1.0.4
+- Improved `Get-InfobloxDNSRecord`- changes output slightly
+- Improved `Get-InfobloxDNSRecordAll` - changes output slightly to make sure all records contain the same fields
+- Improved `Add-InfobloxDNSRecord` adding ability to add HOST record
+
+### 1.0.3 - 2024.02.14
 - Added `Get-InfobloxDHCPLease`
 - Added `Get-InfobloxDHCPRange`
 - Added `Get-InfobloxDiscoveryTask`
