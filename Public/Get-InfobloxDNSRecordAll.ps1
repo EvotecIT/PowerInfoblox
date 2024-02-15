@@ -65,5 +65,6 @@
         }
     }
     $Output = Invoke-InfobloxQuery @invokeInfobloxQuerySplat
-    $Output | Select-ObjectByProperty -LastProperty '_ref' -FirstProperty 'zone', 'type', 'name'
+    $AllProperties = Select-Properties -AllProperties -Object $Output
+    $Output | Select-ObjectByProperty -LastProperty '_ref' -FirstProperty 'zone', 'type', 'name', 'address', 'disable', 'creator' -AllProperties $AllProperties
 }
