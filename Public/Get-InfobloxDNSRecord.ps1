@@ -32,25 +32,11 @@
         $invokeInfobloxQuerySplat.QueryParameter._return_fields = 'name,dns_name,aliases,dns_aliases,ipv4addrs,configure_for_dns,view'
     } elseif ($Type -eq 'PTR') {
         $invokeInfobloxQuerySplat.QueryParameter._return_fields = 'aws_rte53_record_info,cloud_info,comment,creation_time,creator,ddns_principal,ddns_protected,disable,discovered_data,dns_name,dns_ptrdname,extattrs,forbid_reclamation,ipv4addr,ipv6addr,last_queried,ms_ad_user_data,name,ptrdname,reclaimable,shared_record_group,ttl,use_ttl,view,zone'
-    } else {
-        if ($FetchFromSchema) {
-            if (-not $Script:InfobloxSchemaFields) {
-                $Script:InfobloxSchemaFields = [ordered] @{}
-            }
-            if ($Script:InfobloxSchemaFields["record:$Type"]) {
-                $invokeInfobloxQuerySplat.QueryParameter._return_fields = ($Script:InfobloxSchemaFields["record:$Type"])
-            } else {
-                $Schema = Get-InfobloxSchema -Object "record:$Type"
-                if ($Schema -and $Schema.fields.name) {
-                    $invokeInfobloxQuerySplat.QueryParameter._return_fields = ($Schema.fields.Name -join ',')
-                    $Script:InfobloxSchemaFields["record:$Type"] = ($Schema.fields.Name -join ',')
-                } else {
-                    Write-Warning -Message "Get-InfobloxDNSRecord - Failed to fetch schema for record type $($Type). Using defaults"
-                }
-            }
-        } else {
-            # will fetch defaults
-        }
+    } elseif ($Type -eq 'A') {
+        $invokeInfobloxQuerySplat.QueryParameter._return_fields = 'ipv4addr,name,view,zone,cloud_info,comment,creation_time,creator,ddns_principal,ddns_protected,disable,discovered_data,dns_name,last_queried,ms_ad_user_data,reclaimable,shared_record_group,ttl,use_ttl'
+    }
+    if ($FetchFromSchema) {
+        $invokeInfobloxQuerySplat.QueryParameter._return_fields = Get-FieldsFromSchema -SchemaObject "record:$Type"
     }
     if ($Zone) {
         if ($PartialMatch) {
@@ -74,22 +60,10 @@
         }
     }
     $Output = Invoke-InfobloxQuery @invokeInfobloxQuerySplat
-    if ($Type -eq 'Host') {
-        foreach ($Record in $Output) {
-            [pscustomobject]@{
-                name               = $Record.name
-                dns_name           = $Record.dns_name
-                aliases            = $Record.aliases
-                dns_aliases        = $Record.dns_aliases
-                view               = $Record.view
-                configure_for_dns  = $Record.configure_for_dns
-                configure_for_dhcp = $Record.ipv4addrs.configure_for_dhcp
-                host               = $Record.ipv4addrs.host
-                ipv4addr           = $Record.ipv4addrs.ipv4addr
-                ipv4addr_ref       = $Record.ipv4addrs._ref
-                _ref               = $Record._ref
-            }
-        }
+    if ($Type -eq 'A') {
+        $Output | Select-ObjectByProperty -LastProperty '_ref' -FirstProperty 'name', 'ipv4addr', 'view', 'zone', 'cloud_info', 'comment', 'creation_time', 'creator', 'ddns_principal', 'ddns_protected', 'disable', 'discovered_data', 'dns_name', 'last_queried', 'ms_ad_user_data', 'reclaimable', 'shared_record_group', 'ttl', 'use_ttl'
+    } elseif ($Type -eq 'HOST') {
+        $Output | Select-ObjectByProperty -LastProperty '_ref' -FirstProperty 'name', 'dns_name', 'aliases', 'dns_aliases', 'view', 'configure_for_dns', 'configure_for_dhcp', 'host', 'ipv4addr', 'ipv4addr_ref'
     } else {
         $Output | Select-ObjectByProperty -LastProperty '_ref'
     }
