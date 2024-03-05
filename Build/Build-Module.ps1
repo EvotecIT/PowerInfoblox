@@ -1,4 +1,6 @@
-﻿Build-Module -ModuleName 'PowerInfoblox' {
+﻿Import-Module C:\Support\GitHub\PSPublishModule\PSPublishModule.psd1 -Force
+
+Build-Module -ModuleName 'PowerInfoblox' {
     # Usual defaults as per standard module
     $Manifest = [ordered] @{
         ModuleVersion        = '1.0.X'
@@ -84,7 +86,17 @@
 
     New-ConfigurationImportModule -ImportSelf -ImportRequiredModules
 
-    New-ConfigurationBuild -Enable:$true -SignModule:$false -DeleteTargetModuleBeforeBuild -MergeModuleOnBuild -MergeFunctionsFromApprovedModules -DoNotAttemptToFixRelativePaths
+    $newConfigurationBuildSplat = @{
+        Enable                            = $true
+        SignModule                        = $true
+        CertificateThumbprint             = '483292C9E317AA13B07BB7A96AE9D1A5ED9E7703'
+        DeleteTargetModuleBeforeBuild     = $true
+        MergeModuleOnBuild                = $true
+        MergeFunctionsFromApprovedModules = $true
+        DoNotAttemptToFixRelativePaths    = $true
+    }
+
+    New-ConfigurationBuild @newConfigurationBuildSplat
 
     New-ConfigurationArtefact -Type Unpacked -Enable -Path "$PSScriptRoot\..\Artefacts\Unpacked" -AddRequiredModules -RequiredModulesPath "$PSScriptRoot\..\Artefacts\Unpacked\Modules" -CopyFiles @{
 
