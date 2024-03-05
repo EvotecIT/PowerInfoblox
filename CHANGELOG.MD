@@ -1,4 +1,7 @@
-﻿### 1.0.4
+﻿### 1.0.5
+- Add `ErrorAction Stop` improvements to all functions to make sure that errors are handled properly if required
+
+### 1.0.4 - 2024.03.05
 - Improved `Get-InfobloxDNSRecord`- changes output slightly
 - Improved `Get-InfobloxDNSRecordAll` - changes output slightly to make sure all records contain the same fields
 - Improved `Add-InfobloxDNSRecord` adding ability to add HOST record
