@@ -33,6 +33,9 @@
             $Password = $SecurePassword | ConvertTo-SecureString -ErrorAction Stop
             $Credential = [pscredential]::new($Username, $Password)
         } catch {
+            if ($ErrorActionPreference -eq 'Stop') {
+                throw
+            }
             Write-Warning -Message "Connect-Infoblox - Unable to convert password to secure string. Error: $($_.Exception.Message)"
             $Script:InfobloxConfiguration = $null
             return
