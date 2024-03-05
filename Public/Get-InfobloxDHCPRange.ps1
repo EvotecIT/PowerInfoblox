@@ -6,6 +6,9 @@
         [switch] $FetchFromSchema
     )
     if (-not $Script:InfobloxConfiguration) {
+        if ($ErrorActionPreference -eq 'Stop') {
+            throw 'You must first connect to an Infoblox server using Connect-Infoblox'
+        }
         Write-Warning -Message 'Get-InfobloxDHCPRange - You must first connect to an Infoblox server using Connect-Infoblox'
         return
     }

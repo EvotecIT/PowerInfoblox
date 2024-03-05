@@ -274,6 +274,9 @@
     )
 
     if (-not $Script:InfobloxConfiguration) {
+        if ($ErrorActionPreference -eq 'Stop') {
+            throw 'You must first connect to an Infoblox server using Connect-Infoblox'
+        }
         Write-Warning -Message 'Get-InfobloxObjects - You must first connect to an Infoblox server using Connect-Infoblox'
         return
     }

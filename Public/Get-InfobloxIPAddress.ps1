@@ -51,6 +51,9 @@
         [alias('Quantity')][parameter()][int] $Count
     )
     if (-not $Script:InfobloxConfiguration) {
+        if ($ErrorActionPreference -eq 'Stop') {
+            throw 'You must first connect to an Infoblox server using Connect-Infoblox'
+        }
         Write-Warning -Message 'Get-InfobloxIPAddress - You must first connect to an Infoblox server using Connect-Infoblox'
         return
     }
