@@ -24,7 +24,9 @@
         if ($Output) {
             Write-Verbose -Message "Remove-InfobloxIPAddress - Removed $($IP.ip_address) from network $($IP.network) / $Output"
         } else {
-            Write-Warning -Message "Remove-InfobloxIPAddress - Failed to remove $($IP.ip_address) with mac address $($IP.network), error: $varWarning"
+            if (-not $WhatIfPreference) {
+                Write-Warning -Message "Remove-InfobloxIPAddress - Failed to remove $($IP.ip_address) with mac address $($IP.network), error: $varWarning"
+            }
         }
     }
 }
