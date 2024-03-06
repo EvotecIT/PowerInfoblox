@@ -49,6 +49,8 @@
     if ($Output) {
         Write-Verbose -Message "Add-InfobloxFixedAddress - Added $($Mac.ipv4addr) with mac address $($Mac.mac) / $Output"
     } else {
-        Write-Warning -Message "Add-InfobloxFixedAddress - Failed to add $($Mac.ipv4addr) with mac address $($Mac.mac), error: $varWarning"
+        if (-not $WhatIfPreference) {
+            Write-Warning -Message "Add-InfobloxFixedAddress - Failed to add $($Mac.ipv4addr) with mac address $($Mac.mac), error: $varWarning"
+        }
     }
 }

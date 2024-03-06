@@ -50,7 +50,9 @@
         if ($Output) {
             Write-Verbose -Message "Remove-InfobloxObject - Removed $($ReferenceID) / $Output"
         } else {
-            Write-Warning -Message "Remove-InfobloxObject - Failed to remove $ReferenceID, error: $varWarning"
+            if (-not $WhatIfPreference) {
+                Write-Warning -Message "Remove-InfobloxObject - Failed to remove $ReferenceID, error: $varWarning"
+            }
         }
     }
 }
