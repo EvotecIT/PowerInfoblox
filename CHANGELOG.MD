@@ -1,5 +1,8 @@
-﻿### 1.0.5
+﻿### 1.0.5 - 2024.03.06
 - Add `ErrorAction Stop` improvements to all functions to make sure that errors are handled properly if required
+- Improve adding DNS records with `Add-InfobloxDNSRecord` - now it is possible to add `CNAME` and `PTR` records
+- Improve handling of WhatIf which would show adding of record failed when using WhatIf
+- Add `Set-InfobloxDNSRecord` to update DNS records
 
 ### 1.0.4 - 2024.03.05
 - Improved `Get-InfobloxDNSRecord`- changes output slightly
