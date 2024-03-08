@@ -1,4 +1,7 @@
-﻿### 1.0.5 - 2024.03.06
+﻿### 1.0.6 - 2024.03.08
+- Improve `Add-InfobloxFixedAddress` by adding Comment, Name fields
+
+### 1.0.5 - 2024.03.06
 - Add `ErrorAction Stop` improvements to all functions to make sure that errors are handled properly if required
 - Improve adding DNS records with `Add-InfobloxDNSRecord` - now it is possible to add `CNAME` and `PTR` records
 - Improve handling of WhatIf which would show adding of record failed when using WhatIf
