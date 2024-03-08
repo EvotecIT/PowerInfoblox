@@ -15,6 +15,12 @@
     .PARAMETER MacAddress
     Mac address to add to the IPv4 address
 
+    .PARAMETER Name
+    Name of the fixed address
+
+    .PARAMETER Comment
+    Comment for the fixed address
+
     .EXAMPLE
     Add-InfobloxFixedAddress -IPv4Address '10.2.2.18' -MacAddress '00:50:56:9A:00:01'
 
@@ -24,7 +30,9 @@
     [cmdletbinding(SupportsShouldProcess)]
     param(
         [ValidateNotNullOrEmpty()][parameter(Mandatory)][string] $IPv4Address,
-        [ValidatePattern("([a-zA-Z0-9]{2}:){5}[a-zA-Z0-9]{2}")][parameter(Mandatory)][string] $MacAddress
+        [ValidatePattern("([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$")][parameter(Mandatory)][string] $MacAddress,
+        [string] $Name,
+        [string] $Comment
     )
 
     if (-not $Script:InfobloxConfiguration) {
@@ -44,6 +52,12 @@
             ipv4addr = $IPv4Address
             mac      = $MacAddress.ToLower()
         }
+    }
+    if ($Name) {
+        $invokeInfobloxQuerySplat.QueryParameter.name = $Name
+    }
+    if ($Comment) {
+        $invokeInfobloxQuerySplat.QueryParameter.comment = $Comment
     }
     $Output = Invoke-InfobloxQuery @invokeInfobloxQuerySplat -WarningAction SilentlyContinue -WarningVariable varWarning
     if ($Output) {
