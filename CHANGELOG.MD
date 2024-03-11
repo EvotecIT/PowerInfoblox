@@ -1,4 +1,7 @@
-﻿### 1.0.6 - 2024.03.08
+﻿### 1.0.7 - 2024.03.11
+- Bettr handling `Connect-Infoblox` and `Disconnect-Infoblox` preferring WebSession (Cookies) over Login/Password
+
+### 1.0.6 - 2024.03.08
 - Improve `Add-InfobloxFixedAddress` by adding Comment, Name fields
 
 ### 1.0.5 - 2024.03.06
