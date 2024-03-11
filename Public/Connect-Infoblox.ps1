@@ -18,7 +18,11 @@
         [switch] $EnableTLS12,
         [Parameter(ParameterSetName = 'UserName')]
         [Parameter(ParameterSetName = 'Credential')]
-        [switch] $AllowSelfSignedCerts
+        [switch] $AllowSelfSignedCerts,
+        [Parameter(ParameterSetName = 'UserName')]
+        [Parameter(ParameterSetName = 'Credential')]
+        [switch] $SkipInitialConnection,
+        [switch] $ReturnObject
     )
 
     if ($AllowSelfSignedCerts) {
@@ -27,6 +31,9 @@
     if ($EnableTLS12) {
         [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
     }
+
+    # lets clear sessions if any exists
+    Disconnect-Infoblox
 
     if ($Username -and $EncryptedPassword) {
         try {
@@ -37,20 +44,42 @@
                 throw
             }
             Write-Warning -Message "Connect-Infoblox - Unable to convert password to secure string. Error: $($_.Exception.Message)"
-            $Script:InfobloxConfiguration = $null
             return
         }
     }
 
     $PSDefaultParameterValues['Invoke-InfobloxQuery:Credential'] = $Credential
     $PSDefaultParameterValues['Invoke-InfobloxQuery:Server'] = $Server
-    #$PSDefaultParameterValues['Invoke-InfobloxQuery:ApiVersion'] = $ApiVersion
     $PSDefaultParameterValues['Invoke-InfobloxQuery:BaseUri'] = "https://$Server/wapi/v$apiVersion"
+    $PSDefaultParameterValues['Invoke-InfobloxQuery:WebSession'] = [Microsoft.PowerShell.Commands.WebRequestSession]::new()
 
+    # $WebSession = New-WebSession -Cookies @{
+    #     security_setting = @{
+    #         session_timeout = 60000
+    #     }
+    # } -For $BaseUri
+
+    # The infoblox configuration is not really used anywhere. It's just a placeholder
     $Script:InfobloxConfiguration = [ordered] @{
         ApiVersion = $ApiVersion
-        Credential = $Credential
+        #Credential = $Credential
         Server     = $Server
         BaseUri    = "https://$Server/wapi/v$apiVersion"
+        # Create a WebSession object to store cookies
+        # Session    = New-Object Microsoft.PowerShell.Commands.WebRequestSession
+        #WebSession = $WebSession
+    }
+
+    # we do inital query to make sure we're connected
+    if (-not $SkipInitialConnection) {
+        $Schema = Get-InfobloxSchema -WarningAction SilentlyContinue
+        if (-not $Schema) {
+            Disconnect-Infoblox
+            return
+        }
+    }
+
+    if ($ReturnObject) {
+        $Script:InfobloxConfiguration
     }
 }

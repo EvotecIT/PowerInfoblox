@@ -3,7 +3,8 @@
     param(
         [parameter(Mandatory)][string] $BaseUri,
         [parameter(Mandatory)][string] $RelativeUri,
-        [parameter(Mandatory)][pscredential] $Credential,
+        [parameter()][pscredential] $Credential,
+        [Parameter()][Microsoft.PowerShell.Commands.WebRequestSession] $WebSession,
         [parameter()][System.Collections.IDictionary] $QueryParameter,
         [parameter()][string] $Method = 'GET',
         [parameter()][System.Collections.IDictionary] $Body
@@ -14,6 +15,13 @@
             throw 'You must first connect to an Infoblox server using Connect-Infoblox'
         }
         Write-Warning -Message 'Invoke-InfobloxQuery - You must first connect to an Infoblox server using Connect-Infoblox'
+        return
+    }
+    if (-not $Credential -and -not $WebSession) {
+        if ($ErrorActionPreference -eq 'Stop') {
+            throw 'Invoke-InfobloxQuery - You must provide either a Credential or a WebSession with a cookie from Connect-Infoblox'
+        }
+        Write-Warning -Message 'Invoke-InfobloxQuery - You must provide either a Credential or a WebSession with a cookie from Connect-Infoblox'
         return
     }
 
@@ -55,7 +63,7 @@
                 ContentType = 'application/json'
                 ErrorAction = 'Stop'
                 Verbose     = $false
-                #WebSession  = $WebSession
+                WebSession  = $WebSession #$PSDefaultParameterValues['Invoke-InfobloxQuery:WebSession']
                 TimeoutSec  = 600
             }
             if ($Body) {
@@ -63,6 +71,8 @@
             }
             Remove-EmptyValue -Hashtable $invokeRestMethodSplat -Recursive -Rerun 2
             Invoke-RestMethod @invokeRestMethodSplat
+            # we connected to the server, so we can reset the default Credentials value
+            $PSDefaultParameterValues['Invoke-InfobloxQuery:Credential'] = $null
         } catch {
             if ($ErrorActionPreference -eq 'Stop') {
                 throw
