@@ -13,7 +13,22 @@
     .NOTES
     General notes
     #>
-    [cmdletbinding()]
-    param()
+    [cmdletbinding(SupportsShouldProcess)]
+    param(
+        [switch] $ForceLogOut
+    )
+
+    if ($ForceLogOut) {
+        $invokeInfobloxQuerySplat = @{
+            RelativeUri = "logout"
+            Method      = 'POST'
+        }
+        Invoke-InfobloxQuery @invokeInfobloxQuerySplat
+    }
+    # lets remove the default parameters so that user has to connect again
     $Script:InfobloxConfiguration = $null
+    $PSDefaultParameterValues.Remove('Invoke-InfobloxQuery:Credential')
+    $PSDefaultParameterValues.Remove('Invoke-InfobloxQuery:Server')
+    $PSDefaultParameterValues.Remove('Invoke-InfobloxQuery:BaseUri')
+    $PSDefaultParameterValues.Remove('Invoke-InfobloxQuery:WebSession')
 }
