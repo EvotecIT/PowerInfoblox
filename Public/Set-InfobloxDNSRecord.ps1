@@ -82,12 +82,13 @@
         Body        = $Body
     }
 
-    $Output = Invoke-InfobloxQuery @invokeInfobloxQuerySplat -WarningAction SilentlyContinue -WarningVariable varWarning
+    $Output = Invoke-InfobloxQuery @invokeInfobloxQuerySplat #-WarningAction SilentlyContinue -WarningVariable varWarning
     if ($Output) {
         Write-Verbose -Message "Set-InfobloxDNSRecord - Modified $Type / $Output"
-    } else {
-        if (-not $WhatIfPreference) {
-            Write-Warning -Message "Set-InfobloxDNSRecord - Failed to modify $Type, error: $varWarning"
-        }
     }
+    #else {
+    #if (-not $WhatIfPreference) {
+    #    Write-Warning -Message "Set-InfobloxDNSRecord - Failed to modify $Type, error: $varWarning"
+    #}
+    #}
 }

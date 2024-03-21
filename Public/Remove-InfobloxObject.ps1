@@ -46,13 +46,14 @@
             RelativeUri = $ReferenceID
             Method      = 'DELETE'
         }
-        $Output = Invoke-InfobloxQuery @invokeInfobloxQuerySplat -WarningAction SilentlyContinue -WarningVariable varWarning
+        $Output = Invoke-InfobloxQuery @invokeInfobloxQuerySplat #-WarningAction SilentlyContinue -WarningVariable varWarning
         if ($Output) {
             Write-Verbose -Message "Remove-InfobloxObject - Removed $($ReferenceID) / $Output"
-        } else {
-            if (-not $WhatIfPreference) {
-                Write-Warning -Message "Remove-InfobloxObject - Failed to remove $ReferenceID, error: $varWarning"
-            }
         }
+        #else {
+        #if (-not $WhatIfPreference) {
+        #    Write-Warning -Message "Remove-InfobloxObject - Failed to remove $ReferenceID, error: $varWarning"
+        #}
+        #}
     }
 }

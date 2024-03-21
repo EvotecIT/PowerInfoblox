@@ -36,7 +36,7 @@
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [string] $Name,
-        [Alias('IPv4Address','IPv6Address')][string] $IPAddress,
+        [Alias('IPv4Address', 'IPv6Address')][string] $IPAddress,
         [string] $CanonicalName,
         [string] $PtrName,
         [string] $Text,
@@ -166,12 +166,13 @@
         Body        = $Body
     }
 
-    $Output = Invoke-InfobloxQuery @invokeInfobloxQuerySplat -WarningAction SilentlyContinue -WarningVariable varWarning
+    $Output = Invoke-InfobloxQuery @invokeInfobloxQuerySplat #-WarningAction SilentlyContinue -WarningVariable varWarning
     if ($Output) {
         Write-Verbose -Message "Add-InfoBloxDNSRecord - Added $Type / $Output"
-    } else {
-        if (-not $WhatIfPreference) {
-            Write-Warning -Message "Add-InfoBloxDNSRecord - Failed to add $Type, error: $varWarning"
-        }
     }
+    #else {
+    #    if (-not $WhatIfPreference) {
+    #Write-Warning -Message "Add-InfoBloxDNSRecord - Failed to add $Type, error: $varWarning"
+    #    }
+    #}
 }

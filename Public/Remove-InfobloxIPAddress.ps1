@@ -20,13 +20,14 @@
             RelativeUri = "$($IP._ref)"
             Method      = 'DELETE'
         }
-        $Output = Invoke-InfobloxQuery @invokeInfobloxQuerySplat -WarningAction SilentlyContinue -WarningVariable varWarning
+        $Output = Invoke-InfobloxQuery @invokeInfobloxQuerySplat #-WarningAction SilentlyContinue -WarningVariable varWarning
         if ($Output) {
             Write-Verbose -Message "Remove-InfobloxIPAddress - Removed $($IP.ip_address) from network $($IP.network) / $Output"
-        } else {
-            if (-not $WhatIfPreference) {
-                Write-Warning -Message "Remove-InfobloxIPAddress - Failed to remove $($IP.ip_address) with mac address $($IP.network), error: $varWarning"
-            }
         }
+        #else {
+        # if (-not $WhatIfPreference) {
+        #      Write-Warning -Message "Remove-InfobloxIPAddress - Failed to remove $($IP.ip_address) with mac address $($IP.network), error: $varWarning"
+        # }
+        #}
     }
 }
