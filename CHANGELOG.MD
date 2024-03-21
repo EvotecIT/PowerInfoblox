@@ -1,4 +1,7 @@
-﻿### 1.0.7 - 2024.03.11
+﻿### 1.0.8 - 2024.03.21
+- Skip certificate validation when connecting to Infoblox wasn't working on PowerShell 7.
+
+### 1.0.7 - 2024.03.11
 - Bettr handling `Connect-Infoblox` and `Disconnect-Infoblox` preferring WebSession (Cookies) over Login/Password
 
 ### 1.0.6 - 2024.03.08
