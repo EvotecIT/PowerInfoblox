@@ -1,4 +1,7 @@
-﻿### 1.0.8 - 2024.03.21
+﻿### 1.0.9 - 2024.03.21
+- Add error handling in PS 7 for better error messages
+
+### 1.0.8 - 2024.03.21
 - Skip certificate validation when connecting to Infoblox wasn't working on PowerShell 7.
 
 ### 1.0.7 - 2024.03.11
