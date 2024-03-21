@@ -70,17 +70,49 @@
                 $invokeRestMethodSplat.Body = $Body | ConvertTo-Json -Depth 10
             }
             if ($Script:InfobloxConfiguration['SkipCertificateValidation'] -eq $true) {
-                $invokeRestMethodSplat.SkipCertificateCheck  = $true
+                $invokeRestMethodSplat.SkipCertificateCheck = $true
             }
             Remove-EmptyValue -Hashtable $invokeRestMethodSplat -Recursive -Rerun 2
             Invoke-RestMethod @invokeRestMethodSplat
             # we connected to the server, so we can reset the default Credentials value
             $PSDefaultParameterValues['Invoke-InfobloxQuery:Credential'] = $null
         } catch {
-            if ($ErrorActionPreference -eq 'Stop') {
-                throw
+            if ($PSVersionTable.PSVersion.Major -gt 5) {
+                $OriginalError = $_.Exception.Message
+                if ($_.ErrorDetails.Message) {
+                    try {
+                        $JSONError = ConvertFrom-Json -InputObject $_.ErrorDetails.Message -ErrorAction Stop
+                    } catch {
+                        if ($ErrorActionPreference -eq 'Stop') {
+                            throw $OriginalError
+                        }
+                        Write-Warning -Message "Invoke-InfobloxQuery - Querying $Url failed. Error: $OriginalError"
+                        return
+                    }
+                    if ($JSONError -and $JSONError.text) {
+                        if ($ErrorActionPreference -eq 'Stop') {
+                            throw $JSONError.text
+                        }
+                        Write-Warning -Message "Invoke-InfobloxQuery - Querying $Url failed. $($JSONError.text)"
+                        return
+                    } else {
+                        if ($ErrorActionPreference -eq 'Stop') {
+                            throw $OriginalError
+                        }
+                        Write-Warning -Message "Invoke-InfobloxQuery - Querying $Url failed. Error: $OriginalError"
+                    }
+                } else {
+                    if ($ErrorActionPreference -eq 'Stop') {
+                        throw
+                    }
+                    Write-Warning -Message "Invoke-InfobloxQuery - Querying $Url failed. Error: $OriginalError"
+                }
+            } else {
+                if ($ErrorActionPreference -eq 'Stop') {
+                    throw
+                }
+                Write-Warning -Message "Invoke-InfobloxQuery - Querying $Url failed. Error: $($_.Exception.Message)"
             }
-            Write-Warning -Message "Invoke-InfobloxQuery - Querying $Url failed. Error: $($_.Exception.Message)"
         }
     }
 }
