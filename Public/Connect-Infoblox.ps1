@@ -25,9 +25,6 @@
         [switch] $ReturnObject
     )
 
-    if ($AllowSelfSignedCerts) {
-        Hide-SelfSignedCerts
-    }
     if ($EnableTLS12) {
         [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
     }
@@ -68,6 +65,11 @@
         # Create a WebSession object to store cookies
         # Session    = New-Object Microsoft.PowerShell.Commands.WebRequestSession
         #WebSession = $WebSession
+
+    }
+
+    if ($AllowSelfSignedCerts) {
+        Hide-SelfSignedCerts
     }
 
     # we do inital query to make sure we're connected

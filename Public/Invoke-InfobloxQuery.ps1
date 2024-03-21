@@ -69,6 +69,9 @@
             if ($Body) {
                 $invokeRestMethodSplat.Body = $Body | ConvertTo-Json -Depth 10
             }
+            if ($Script:InfobloxConfiguration['SkipCertificateValidation'] -eq $true) {
+                $invokeRestMethodSplat.SkipCertificateCheck  = $true
+            }
             Remove-EmptyValue -Hashtable $invokeRestMethodSplat -Recursive -Rerun 2
             Invoke-RestMethod @invokeRestMethodSplat
             # we connected to the server, so we can reset the default Credentials value
