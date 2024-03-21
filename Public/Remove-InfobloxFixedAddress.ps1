@@ -29,13 +29,14 @@
             RelativeUri = "$($Mac._ref)"
             Method      = 'DELETE'
         }
-        $Output = Invoke-InfobloxQuery @invokeInfobloxQuerySplat -WarningAction SilentlyContinue -WarningVariable varWarning
+        $Output = Invoke-InfobloxQuery @invokeInfobloxQuerySplat #-WarningAction SilentlyContinue -WarningVariable varWarning
         if ($Output) {
             Write-Verbose -Message "Remove-InfobloxFixedAddress - Removed $($Mac.ipv4addr) with mac address $($Mac.mac) / $Output"
-        } else {
-            if (-not $WhatIfPreference) {
-                Write-Warning -Message "Remove-InfobloxFixedAddress - Failed to remove $($Mac.ipv4addr) with mac address $($Mac.mac), error: $varWarning"
-            }
         }
+        #else {
+        #if (-not $WhatIfPreference) {
+        # Write-Warning -Message "Remove-InfobloxFixedAddress - Failed to remove $($Mac.ipv4addr) with mac address $($Mac.mac), error: $varWarning"
+        #}
+        #}
     }
 }
