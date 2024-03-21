@@ -3,7 +3,11 @@
     param(
 
     )
-    
+    if ($PSVersionTable.PSVersion.Major -gt 5) {
+        #Write-Warning -Message "Hide-SelfSignedCerts - This function is only supported in PowerShell 6 and later"
+        $Script:InfobloxConfiguration['SkipCertificateValidation'] = $true
+        return
+    }
     try {
         Add-Type -TypeDefinition @"
         using System.Net;
