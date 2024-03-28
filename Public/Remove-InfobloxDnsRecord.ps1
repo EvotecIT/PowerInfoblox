@@ -1,12 +1,37 @@
 ﻿function Remove-InfobloxDnsRecord {
+    <#
+    .SYNOPSIS
+    Remove Infoblox DNS records
+
+    .DESCRIPTION
+    Remove Infoblox DNS records
+
+    .PARAMETER Name
+    Name of the record to remove
+
+    .PARAMETER Type
+    Type of the record to remove
+
+    .PARAMETER SkipPTR
+    Skip PTR record removal, when removing A record
+
+    .PARAMETER LogPath
+    Path to log file. Changes are logged to this file
+
+    .EXAMPLE
+    Remove-InfobloxDnsRecord -Name 'test.example.com' -Type 'A' -WhatIf
+
+    .EXAMPLE
+    Remove-InfobloxDnsRecord -Name 'test.example.com' -Type 'A' -SkipPTR -WhatIf
+
+    .NOTES
+    General notes
+    #>
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory)][string[]] $Name,
         [ValidateSet(
-            'A', 'CNAME' #, 'AAAA', 'CName', 'DName',
-            #'DNSKEY', 'DS', 'Host', 'host_ipv4addr', 'host_ipv6addr',
-            #'LBDN', 'MX', 'NAPTR', 'NS', 'NSEC',
-            #'NSEC3', 'NSEC3PARAM', 'PTR', 'RRSIG', 'SRV', 'TXT'
+            'A', 'CNAME', 'AAAA', 'PTR'
         )]
         [Parameter(Mandatory)][string] $Type,
         [switch] $SkipPTR,
