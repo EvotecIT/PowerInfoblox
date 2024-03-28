@@ -22,7 +22,8 @@
     [CmdletBinding(SupportsShouldProcess, DefaultParameterSetName = 'ReferenceID')]
     param(
         [Parameter(Mandatory, ParameterSetName = 'Array')][Array] $Objects,
-        [parameter(Mandatory, ParameterSetName = 'ReferenceID')][string] $ReferenceID
+        [parameter(Mandatory, ParameterSetName = 'ReferenceID')][string] $ReferenceID,
+        [switch] $ReturnSuccess
     )
     if (-not $Script:InfobloxConfiguration) {
         if ($ErrorActionPreference -eq 'Stop') {
@@ -49,11 +50,13 @@
         $Output = Invoke-InfobloxQuery @invokeInfobloxQuerySplat #-WarningAction SilentlyContinue -WarningVariable varWarning
         if ($Output) {
             Write-Verbose -Message "Remove-InfobloxObject - Removed $($ReferenceID) / $Output"
+            if ($ReturnSuccess) {
+                $true
+            }
+        } else {
+            if ($ReturnSuccess) {
+                $false
+            }
         }
-        #else {
-        #if (-not $WhatIfPreference) {
-        #    Write-Warning -Message "Remove-InfobloxObject - Failed to remove $ReferenceID, error: $varWarning"
-        #}
-        #}
     }
 }
