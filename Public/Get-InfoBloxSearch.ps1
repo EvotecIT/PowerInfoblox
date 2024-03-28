@@ -24,5 +24,5 @@
         $invokeInfobloxQuerySplat.QueryParameter.address = $IPv4Address
     }
 
-    Invoke-InfobloxQuery @invokeInfobloxQuerySplat
+    Invoke-InfobloxQuery @invokeInfobloxQuerySplat -WhatIf:$false
 }

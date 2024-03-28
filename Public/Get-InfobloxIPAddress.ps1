@@ -84,8 +84,8 @@
         $invokeInfobloxQuerySplat.QueryParameter.ip_address = $IPv4Address
     }
     if ($Count) {
-        Invoke-InfobloxQuery @invokeInfobloxQuerySplat | Select-Object -First $Count | Select-ObjectByProperty -LastProperty '_ref'
+        Invoke-InfobloxQuery @invokeInfobloxQuerySplat -WhatIf:$false | Select-Object -First $Count | Select-ObjectByProperty -LastProperty '_ref'
     } else {
-        Invoke-InfobloxQuery @invokeInfobloxQuerySplat | Select-ObjectByProperty -LastProperty '_ref'
+        Invoke-InfobloxQuery @invokeInfobloxQuerySplat -WhatIf:$false | Select-ObjectByProperty -LastProperty '_ref'
     }
 }

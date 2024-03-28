@@ -23,7 +23,7 @@ function Get-InfobloxNetwork {
         ) -join ','
     }
     if ($All) {
-        $ListNetworks = Invoke-InfobloxQuery -RelativeUri "network" -Method Get -QueryParameter $QueryParameter
+        $ListNetworks = Invoke-InfobloxQuery -RelativeUri "network" -Method Get -QueryParameter $QueryParameter -WhatIf:$false
     } elseif ($Network -and $Partial.IsPresent) {
         $QueryParameter."network~" = $Network
     } elseif ($Network) {
@@ -31,7 +31,7 @@ function Get-InfobloxNetwork {
     } else {
         return
     }
-    $ListNetworks = Invoke-InfobloxQuery -RelativeUri "network" -Method Get -QueryParameter $QueryParameter
+    $ListNetworks = Invoke-InfobloxQuery -RelativeUri "network" -Method Get -QueryParameter $QueryParameter -WhatIf:$false
 
     #$ExtraProperties = $false
     foreach ($FoundNetwork in $ListNetworks) {

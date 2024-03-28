@@ -26,6 +26,6 @@
             _return_fields = $ReturnFields
         }
     }
-    $Output = Invoke-InfobloxQuery @invokeInfobloxQuerySplat
+    $Output = Invoke-InfobloxQuery @invokeInfobloxQuerySplat -WhatIf:$false
     $Output | Select-ObjectByProperty -LastProperty '_ref'
 }

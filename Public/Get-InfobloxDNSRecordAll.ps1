@@ -67,7 +67,7 @@
             $invokeInfobloxQuerySplat.QueryParameter.name = $Name.ToLower()
         }
     }
-    $Output = Invoke-InfobloxQuery @invokeInfobloxQuerySplat
+    $Output = Invoke-InfobloxQuery @invokeInfobloxQuerySplat -WhatIf:$false
     $AllProperties = Select-Properties -AllProperties -Object $Output
     $Output | Select-ObjectByProperty -LastProperty '_ref' -FirstProperty 'zone', 'type', 'name', 'address', 'disable', 'creator' -AllProperties $AllProperties
 }

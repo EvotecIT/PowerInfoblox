@@ -46,5 +46,5 @@
             $invokeInfobloxQuerySplat.QueryParameter.name = $Hostname.ToLower()
         }
     }
-    Invoke-InfobloxQuery @invokeInfobloxQuerySplat
+    Invoke-InfobloxQuery @invokeInfobloxQuerySplat -WhatIf:$false
 }
