@@ -28,5 +28,5 @@
     } else {
         $invokeInfobloxQuerySplat.QueryParameter.mac = $MacAddress.ToLower()
     }
-    Invoke-InfobloxQuery @invokeInfobloxQuerySplat
+    Invoke-InfobloxQuery @invokeInfobloxQuerySplat -WhatIf:$false
 }

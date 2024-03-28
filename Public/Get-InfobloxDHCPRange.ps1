@@ -38,5 +38,5 @@
             $invokeInfobloxQuerySplat.QueryParameter.network = $Network.ToLower()
         }
     }
-    Invoke-InfobloxQuery @invokeInfobloxQuerySplat
+    Invoke-InfobloxQuery @invokeInfobloxQuerySplat -WhatIf:$false
 }

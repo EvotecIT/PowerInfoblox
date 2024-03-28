@@ -44,7 +44,7 @@
             Method      = 'Get'
         }
     }
-    $Query = Invoke-InfobloxQuery @invokeInfobloxQuerySplat
+    $Query = Invoke-InfobloxQuery @invokeInfobloxQuerySplat -WhatIf:$false
     if ($Query) {
         if ($ReturnReadOnlyFields) {
             Get-FieldsFromSchema -Schema $Query -SchemaObject $Object

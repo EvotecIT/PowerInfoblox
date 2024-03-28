@@ -137,5 +137,5 @@
     if ($FQDN) {
         $invokeInfobloxQuerySplat.QueryParameter.fqdn = $FQDN.ToLower()
     }
-    Invoke-InfobloxQuery @invokeInfobloxQuerySplat | Select-ObjectByProperty -LastProperty '_ref'
+    Invoke-InfobloxQuery @invokeInfobloxQuerySplat -WhatIf:$false | Select-ObjectByProperty -LastProperty '_ref'
 }

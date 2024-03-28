@@ -62,7 +62,7 @@
             $invokeInfobloxQuerySplat.QueryParameter.name = $Name.ToLower()
         }
     }
-    $Output = Invoke-InfobloxQuery @invokeInfobloxQuerySplat
+    $Output = Invoke-InfobloxQuery @invokeInfobloxQuerySplat -WhatIf:$false
     if ($Type -eq 'A') {
         $Output | Select-ObjectByProperty -LastProperty '_ref' -FirstProperty 'name', 'ipv4addr', 'view', 'zone', 'cloud_info', 'comment', 'creation_time', 'creator', 'ddns_principal', 'ddns_protected', 'disable', 'discovered_data', 'dns_name', 'last_queried', 'ms_ad_user_data', 'reclaimable', 'shared_record_group', 'ttl', 'use_ttl'
     } elseif ($Type -eq 'HOST') {

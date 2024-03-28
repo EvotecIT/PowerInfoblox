@@ -299,7 +299,7 @@
         if ($MaxResults) {
             $invokeInfobloxQuerySplat.QueryParameter._max_results = $MaxResults
         }
-        $Output = Invoke-InfobloxQuery @invokeInfobloxQuerySplat
+        $Output = Invoke-InfobloxQuery @invokeInfobloxQuerySplat -WhatIf:$false
         $Output | Select-ObjectByProperty -LastProperty '_ref'
     } else {
         foreach ($Ref in $ReferenceID) {
@@ -325,7 +325,7 @@
                 $invokeInfobloxQuerySplat.QueryParameter._max_results = $MaxResults
             }
 
-            $Output = Invoke-InfobloxQuery @invokeInfobloxQuerySplat
+            $Output = Invoke-InfobloxQuery @invokeInfobloxQuerySplat -WhatIf:$false
             $Output | Select-ObjectByProperty -LastProperty '_ref'
         }
     }

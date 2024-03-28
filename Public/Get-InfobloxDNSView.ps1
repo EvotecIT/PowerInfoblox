@@ -22,5 +22,5 @@
             # _return_fields = 'mac,ipv4addr,network_view'
         }
     }
-    Invoke-InfobloxQuery @invokeInfobloxQuerySplat
+    Invoke-InfobloxQuery @invokeInfobloxQuerySplat -WhatIf:$false
 }

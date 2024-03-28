@@ -32,7 +32,7 @@ function Get-InfobloxNetworkNextAvailableIP {
         Method         = 'POST'
     }
 
-    $Query = Invoke-InfobloxQuery @invokeInfobloxQuerySplat -WarningAction SilentlyContinue -WarningVariable varWarning
+    $Query = Invoke-InfobloxQuery @invokeInfobloxQuerySplat -WarningAction SilentlyContinue -WarningVariable varWarning -WhatIf:$false
     if ($Query) {
         $Query.ips
     } else {
