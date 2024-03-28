@@ -13,11 +13,16 @@
         [string] $LogPath
     )
     [Array] $ToBeDeleted = foreach ($Record in $Name) {
-        $FoundRecord = Get-InfobloxDNSRecord -Name $Record -Type $Type
+        $FoundRecord = Get-InfobloxDNSRecord -Name $Record -Type $Type -Verbose:$false
         if ($FoundRecord) {
             $FoundRecord
             if ($LogPath) {
-                Write-Color -Text "Found $($FoundRecord.name) with type $Type to be removed" -NoConsoleOutput -LogFile $LogPath
+                Write-Color -Text "Found $($FoundRecord.name) with type $Type to be removed" -LogFile $LogPath -Color Green
+            }
+        } else {
+            Write-Verbose -Message "Remove-InfobloxDnsRecord - No record for $Record were found. Skipping"
+            if ($LogPath) {
+                Write-Color -Text "No record for $Record were found. Skipping" -LogFile $LogPath
             }
         }
     }
@@ -38,14 +43,14 @@
                 }
             }
             if ($PTRAddress) {
-                $PTRRecord = Get-InfobloxDNSRecord -Type PTR -Name $PTRAddress
+                $PTRRecord = Get-InfobloxDNSRecord -Type PTR -Name $PTRAddress -Verbose:$false
                 if ($PTRRecord) {
                     $PTRRecord
                     if ($LogPath) {
                         Write-Color -Text "Found $($PTRRecord.name) with type PTR to be removed" -NoConsoleOutput -LogFile $LogPath
                     }
                 } else {
-                    Write-Warning -Message "Remove-InfobloxDnsRecord - No PTR record for $($Record.name) were found. Skipping"
+                    Write-Verbose -Message "Remove-InfobloxDnsRecord - No PTR record for $($Record.name) were found. Skipping"
                     if ($LogPath) {
                         Write-Color -Text "No PTR record for $($Record.name) were found. Skipping" -NoConsoleOutput -LogFile $LogPath
                     }
@@ -71,7 +76,7 @@
             Write-Color -Text "Removing $($Record.name) with type $Type" -NoConsoleOutput -LogFile $LogPath
         }
         try {
-            $Success = Remove-InfobloxObject -ReferenceID $Record._ref -WhatIf:$WhatIfPreference -ErrorAction Stop -ReturnSuccess
+            $Success = Remove-InfobloxObject -ReferenceID $Record._ref -WhatIf:$WhatIfPreference -ErrorAction Stop -ReturnSuccess -Verbose:$false
             if ($Success -eq $true -or $WhatIfPreference) {
                 Write-Verbose -Message "Remove-InfobloxDnsRecord - Removed $($Record.name) with type $Type / WhatIf: $WhatIfPreference"
                 if ($LogPath) {
@@ -104,7 +109,7 @@
             Write-Color -Text "Removing $($Record.name) with type PTR" -NoConsoleOutput -LogFile $LogPath
         }
         try {
-            $Success = Remove-InfobloxObject -ReferenceID $Record._ref -WhatIf:$WhatIfPreference -ErrorAction Stop -ReturnSuccess
+            $Success = Remove-InfobloxObject -ReferenceID $Record._ref -WhatIf:$WhatIfPreference -ErrorAction Stop -ReturnSuccess -Verbose:$false
             if ($Success -eq $true -or $WhatIfPreference) {
                 Write-Verbose -Message "Remove-InfobloxDnsRecord - Removed $($Record.name) with type PTR / WhatIf: $WhatIfPreference"
                 if ($LogPath) {
