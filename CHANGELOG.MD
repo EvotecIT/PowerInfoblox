@@ -1,4 +1,9 @@
-﻿### 1.0.9 - 2024.03.21
+﻿### 1.0.10 - 2024.03.28
+- Added `Remove-InfobloxDNSRecord` to remove multiple records including PTR
+- Improved `Remove-InfobloxObject` with ReturnSuccess parameter
+- Improved `Get-InfobloxObject` with additional parameters
+
+### 1.0.9 - 2024.03.21
 - Add error handling in PS 7 for better error messages
 
 ### 1.0.8 - 2024.03.21
