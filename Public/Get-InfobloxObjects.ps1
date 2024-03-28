@@ -1,7 +1,9 @@
 ﻿function Get-InfobloxObjects {
     [CmdletBinding()]
     param(
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory, ParameterSetName = 'ReferenceID')]
+        [string[]] $ReferenceID,
+        [Parameter(Mandatory, ParameterSetName = 'Objects')]
         [ValidateSet(
             "ad_auth_service",
             "admingroup",
@@ -280,23 +282,51 @@
         Write-Warning -Message 'Get-InfobloxObjects - You must first connect to an Infoblox server using Connect-Infoblox'
         return
     }
+    if ($Objects) {
+        Write-Verbose -Message "Get-InfobloxObjects - Requesting $Object"
 
-    Write-Verbose -Message "Get-InfobloxObjects - Requesting $Object"
+        if ($FetchFromSchema) {
+            $ReturnFields = Get-FieldsFromSchema -SchemaObject "$Object"
+        }
 
-    if ($FetchFromSchema) {
-        $ReturnFields = Get-FieldsFromSchema -SchemaObject "$Object"
-    }
+        $invokeInfobloxQuerySplat = @{
+            RelativeUri    = $Object.ToLower()
+            Method         = 'GET'
+            QueryParameter = @{
+                _return_fields = $ReturnFields
+            }
+        }
+        if ($MaxResults) {
+            $invokeInfobloxQuerySplat.QueryParameter._max_results = $MaxResults
+        }
+        $Output = Invoke-InfobloxQuery @invokeInfobloxQuerySplat
+        $Output | Select-ObjectByProperty -LastProperty '_ref'
+    } else {
+        foreach ($Ref in $ReferenceID) {
+            Write-Verbose -Message "Get-InfobloxObjects - Requesting $Ref"
+            if ($FetchFromSchema) {
+                $ObjectType = $Ref.Split('/')[0]
+                $ReturnFields = Get-FieldsFromSchema -SchemaObject "$ObjectType"
+                if ($ReturnFields) {
+                    Write-Verbose -Message "Get-InfobloxObjects - Requesting $ObjectType with fields $ReturnFields"
+                } else {
+                    Write-Warning -Message "Get-InfobloxObjects - Failed to get fields for $ObjectType"
+                }
+            }
 
-    $invokeInfobloxQuerySplat = @{
-        RelativeUri    = $Object.ToLower()
-        Method         = 'GET'
-        QueryParameter = @{
-            _return_fields = $ReturnFields
+            $invokeInfobloxQuerySplat = @{
+                RelativeUri    = $Ref
+                Method         = 'GET'
+                QueryParameter = @{
+                    _return_fields = $ReturnFields
+                }
+            }
+            if ($MaxResults) {
+                $invokeInfobloxQuerySplat.QueryParameter._max_results = $MaxResults
+            }
+
+            $Output = Invoke-InfobloxQuery @invokeInfobloxQuerySplat
+            $Output | Select-ObjectByProperty -LastProperty '_ref'
         }
     }
-    if ($MaxResults) {
-        $invokeInfobloxQuerySplat.QueryParameter._max_results = $MaxResults
-    }
-    $Output = Invoke-InfobloxQuery @invokeInfobloxQuerySplat
-    $Output | Select-ObjectByProperty -LastProperty '_ref'
 }
