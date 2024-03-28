@@ -1,4 +1,7 @@
-﻿### 1.0.11 - 2024.03.28
+﻿### 1.0.12 - 2024.03.28
+- Improved `Remove-InfobloxDNSRecord` to hide some irrelevant verbose messages
+
+### 1.0.11 - 2024.03.28
 - Make sure `WhatIf` is disabled for all `Get` functions
 
 ### 1.0.10 - 2024.03.28
