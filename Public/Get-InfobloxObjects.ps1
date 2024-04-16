@@ -282,7 +282,7 @@
         Write-Warning -Message 'Get-InfobloxObjects - You must first connect to an Infoblox server using Connect-Infoblox'
         return
     }
-    if ($Objects) {
+    if ($Object) {
         Write-Verbose -Message "Get-InfobloxObjects - Requesting $Object"
 
         if ($FetchFromSchema) {
