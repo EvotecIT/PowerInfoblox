@@ -32,6 +32,11 @@ which means the errors provided are less generic and more specific.
 Install-Module -Name PowerInfoblox -Force -Verbose
 ```
 
+### ToDo List
+
+- [ ] Zone association on a network (list / add)
+- [ ] Add network, add network with PTR, add network with DHCP
+
 ### Available commands
 
 This module provides several commands to interact with Infoblox service.

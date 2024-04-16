@@ -1,4 +1,7 @@
-﻿### 1.0.13 - 2024.03.28
+﻿### 1.0.14 - 2024.04.16
+- Fixes `Get-InfobloxObjects`
+
+### 1.0.13 - 2024.03.28
 - Fixes `Remove-InfobloxDNSRecord` when it comes to PTR records
 
 ### 1.0.12 - 2024.03.28
