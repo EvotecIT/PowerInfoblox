@@ -1,4 +1,7 @@
-﻿### 1.0.14 - 2024.04.16
+﻿### 1.0.15 - 2024.05.08
+- Add `AddInfobloxSubnet` to add a subnet
+
+### 1.0.14 - 2024.04.16
 - Fixes `Get-InfobloxObjects`
 
 ### 1.0.13 - 2024.03.28
