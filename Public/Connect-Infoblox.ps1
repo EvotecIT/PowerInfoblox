@@ -34,7 +34,7 @@
 
     if ($Username -and $EncryptedPassword) {
         try {
-            $Password = $SecurePassword | ConvertTo-SecureString -ErrorAction Stop
+            $Password = $EncryptedPassword | ConvertTo-SecureString -ErrorAction Stop
             $Credential = [pscredential]::new($Username, $Password)
         } catch {
             if ($ErrorActionPreference -eq 'Stop') {
