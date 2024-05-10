@@ -1,14 +1,14 @@
 ﻿@{
-    AliasesToExport      = @('Get-InfobloxDHCPLeases', 'Get-InfobloxDNSAuthZones', 'Get-InfobloxDNSRecords', 'Get-InfobloxDNSRecordsAll')
+    AliasesToExport      = @('Add-InfobloxSubnet', 'Get-InfobloxDHCPLeases', 'Get-InfobloxDNSAuthZones', 'Get-InfobloxDNSRecords', 'Get-InfobloxDNSRecordsAll')
     Author               = 'Przemyslaw Klys'
     CmdletsToExport      = @()
     CompanyName          = 'Evotec'
     CompatiblePSEditions = @('Desktop', 'Core')
     Copyright            = '(c) 2011 - 2024 Przemyslaw Klys @ Evotec. All rights reserved.'
     Description          = 'Helper module for Infoblox.'
-    FunctionsToExport    = @('Add-InfoBloxDNSRecord', 'Add-InfobloxFixedAddress', 'Add-InfobloxSubnet', 'Connect-Infoblox', 'Disconnect-Infoblox', 'Get-InfobloxDHCPLease', 'Get-InfobloxDHCPRange', 'Get-InfobloxDiscoveryTask', 'Get-InfobloxDNSAuthZone', 'Get-InfobloxDNSDelegatedZone', 'Get-InfobloxDNSForwardZone', 'Get-InfobloxDNSRecord', 'Get-InfobloxDNSRecordAll', 'Get-InfobloxDNSView', 'Get-InfobloxFixedAddress', 'Get-InfobloxGrid', 'Get-InfobloxIPAddress', 'Get-InfobloxMember', 'Get-InfobloxNetwork', 'Get-InfobloxNetworkNextAvailableIP', 'Get-InfobloxNetworkView', 'Get-InfobloxObjects', 'Get-InfobloxPermission', 'Get-InfobloxResponsePolicyZones', 'Get-InfobloxSchema', 'Get-InfoBloxSearch', 'Get-InfobloxVDiscoveryTask', 'Invoke-InfobloxQuery', 'Remove-InfobloxDnsRecord', 'Remove-InfobloxFixedAddress', 'Remove-InfobloxIPAddress', 'Remove-InfobloxObject', 'Set-InfobloxDNSRecord')
+    FunctionsToExport    = @('Add-InfoBloxDNSRecord', 'Add-InfobloxFixedAddress', 'Add-InfobloxNetwork', 'Add-InfobloxNetworkExtensibleAttribute', 'Connect-Infoblox', 'Disconnect-Infoblox', 'Get-InfobloxDHCPLease', 'Get-InfobloxDHCPRange', 'Get-InfobloxDiscoveryTask', 'Get-InfobloxDNSAuthZone', 'Get-InfobloxDNSDelegatedZone', 'Get-InfobloxDNSForwardZone', 'Get-InfobloxDNSRecord', 'Get-InfobloxDNSRecordAll', 'Get-InfobloxDNSView', 'Get-InfobloxFixedAddress', 'Get-InfobloxGrid', 'Get-InfobloxIPAddress', 'Get-InfobloxMember', 'Get-InfobloxNetwork', 'Get-InfobloxNetworkNextAvailableIP', 'Get-InfobloxNetworkView', 'Get-InfobloxObjects', 'Get-InfobloxPermission', 'Get-InfobloxResponsePolicyZones', 'Get-InfobloxSchema', 'Get-InfoBloxSearch', 'Get-InfobloxVDiscoveryTask', 'Invoke-InfobloxQuery', 'Remove-InfobloxDnsRecord', 'Remove-InfobloxFixedAddress', 'Remove-InfobloxIPAddress', 'Remove-InfobloxNetworkExtensibleAttribute', 'Remove-InfobloxObject', 'Set-InfobloxDNSRecord')
     GUID                 = '9fc9fd61-7f11-4f4b-a527-084086f1905f'
-    ModuleVersion        = '1.0.15'
+    ModuleVersion        = '1.0.16'
     PowerShellVersion    = '5.1'
     PrivateData          = @{
         PSData = @{

@@ -1,5 +1,11 @@
-﻿### 1.0.15 - 2024.05.08
-- Add `AddInfobloxSubnet` to add a subnet
+﻿### 1.0.16 - 2024.05.10
+- Rename `Add-InfobloxSubnet` to `Add-InfobloxNetwork` to be consistent with other functions
+- Improve `Add-InfobloxNetwork` to add more parameters around extension attributes
+- Add `Remove-InfobloxNetworkExtensibleAttribute` to remove extensible attributes from a network
+- Add `Add-InfobloxNetworkExtensibleAttribute` to add extensible attributes to a network
+
+### 1.0.15 - 2024.05.08
+- Add `Add-InfobloxSubnet` to add a subnet
 
 ### 1.0.14 - 2024.04.16
 - Fixes `Get-InfobloxObjects`
