@@ -17,14 +17,14 @@ function Get-InfobloxNetwork {
     }
 
     $QueryParameter = [ordered]@{
-        _max_results   = 1000000
         _return_fields = @(
             "authority", "bootfile", "bootserver", "cloud_info", "comment", "conflict_count", "ddns_domainname", "ddns_generate_hostname", "ddns_server_always_updates", "ddns_ttl", "ddns_update_fixed_addresses", "ddns_use_option81", "deny_bootp", "dhcp_utilization", "dhcp_utilization_status", "disable", "discover_now_status", "discovered_bgp_as", "discovered_bridge_domain", "discovered_tenant", "discovered_vlan_id", "discovered_vlan_name", "discovered_vrf_description", "discovered_vrf_name", "discovered_vrf_rd", "discovery_basic_poll_settings", "discovery_blackout_setting", "discovery_engine_type", "discovery_member", "dynamic_hosts", "email_list", "enable_ddns", "enable_dhcp_thresholds", "enable_discovery", "enable_email_warnings", "enable_ifmap_publishing", "enable_pxe_lease_time", "enable_snmp_warnings", "endpoint_sources", "extattrs", "high_water_mark", "high_water_mark_reset", "ignore_dhcp_option_list_request", "ignore_id", "ignore_mac_addresses", "ipam_email_addresses", "ipam_threshold_settings", "ipam_trap_settings", "ipv4addr", "last_rir_registration_update_sent", "last_rir_registration_update_status", "lease_scavenge_time", "logic_filter_rules", "low_water_mark", "low_water_mark_reset", "members", "mgm_private", "mgm_private_overridable", "ms_ad_user_data", "netmask", "network", "network_container", "network_view", "nextserver", "options", "port_control_blackout_setting", "pxe_lease_time", "recycle_leases", "rir", "rir_organization", "rir_registration_status", "same_port_control_discovery_blackout", "static_hosts", "subscribe_settings", "total_hosts", "unmanaged", "unmanaged_count", "update_dns_on_lease_renewal", "use_authority", "use_blackout_setting", "use_bootfile", "use_bootserver", "use_ddns_domainname", "use_ddns_generate_hostname", "use_ddns_ttl", "use_ddns_update_fixed_addresses", "use_ddns_use_option81", "use_deny_bootp", "use_discovery_basic_polling_settings", "use_email_list", "use_enable_ddns", "use_enable_dhcp_thresholds", "use_enable_discovery", "use_enable_ifmap_publishing", "use_ignore_dhcp_option_list_request", "use_ignore_id", "use_ipam_email_addresses", "use_ipam_threshold_settings", "use_ipam_trap_settings", "use_lease_scavenge_time", "use_logic_filter_rules", "use_mgm_private", "use_nextserver", "use_options", "use_pxe_lease_time", "use_recycle_leases", "use_subscribe_settings", "use_update_dns_on_lease_renewal", "use_zone_associations", "utilization", "utilization_update", "vlans", "zone_associations"
         ) -join ','
     }
     if ($All) {
-        $ListNetworks = Invoke-InfobloxQuery -RelativeUri "network" -Method Get -QueryParameter $QueryParameter -WhatIf:$false
+        $QueryParameter["_max_results"] = 1000000
     } elseif ($Network -and $Partial.IsPresent) {
+        $QueryParameter["_max_results"] = 1000000
         $QueryParameter."network~" = $Network
     } elseif ($Network) {
         $QueryParameter.network = $Network
@@ -32,23 +32,8 @@ function Get-InfobloxNetwork {
         return
     }
     $ListNetworks = Invoke-InfobloxQuery -RelativeUri "network" -Method Get -QueryParameter $QueryParameter -WhatIf:$false
-
-    #$ExtraProperties = $false
     foreach ($FoundNetwork in $ListNetworks) {
-
         $FullInformation = Get-IPAddressRangeInformation -Network $FoundNetwork.network
-
-        <#
-        $FoundNetwork.options
-
-
-        name         : dhcp-lease-time
-        num          : 51
-        use_option   : False
-        value        : 43200
-        vendor_class : DHCP
-        #>
-
         $OutputData = [ordered] @{
             Network                              = $FoundNetwork.network
             NetworkRef                           = $FoundNetwork._ref
