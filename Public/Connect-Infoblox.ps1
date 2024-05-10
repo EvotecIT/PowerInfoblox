@@ -12,7 +12,7 @@
 
         [Parameter(ParameterSetName = 'UserName')]
         [Parameter(ParameterSetName = 'Credential')]
-        [string] $ApiVersion = '1.0',
+        [string] $ApiVersion = '2.11',
         [Parameter(ParameterSetName = 'UserName')]
         [Parameter(ParameterSetName = 'Credential')]
         [switch] $EnableTLS12,
