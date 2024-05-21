@@ -1,4 +1,12 @@
-﻿### 1.0.17 - 2024.05.10
+﻿### 1.0.18 - 2024.05.21
+- Improve `Get-InfobloxNetwork` with `Native` parameter which allows to get native Infoblox objects without translation
+- Improve `Get-InfobloxNetwork` with `MaxResults` parameter which allows to limit amount of results (default is 1000000)
+- Improve `Get-InfobloxNetwork` with additional warning if no parameters given
+- Improve `Get-InfobloxSchema` by adding `ReturnWriteFields`, `ReturnFields`
+- Improve `Get-InfobloxDHCPRange` with `MaxResults` parameter which allows to limit amount of results (default is 1000000)
+- Added `Add-InfobloxDHCPRange` to add a DHCP range
+
+### 1.0.17 - 2024.05.10
 - Fix `Connect-Infoblox` to make sure it is working with EncryptedPassword
 
 ### 1.0.16 - 2024.05.10
