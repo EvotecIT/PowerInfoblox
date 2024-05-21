@@ -3,7 +3,8 @@
     param(
         [string] $Network,
         [switch] $PartialMatch,
-        [switch] $FetchFromSchema
+        [switch] $FetchFromSchema,
+        [int] $MaxResults = 1000000
     )
     if (-not $Script:InfobloxConfiguration) {
         if ($ErrorActionPreference -eq 'Stop') {
@@ -27,7 +28,7 @@
         RelativeUri    = 'range'
         Method         = 'GET'
         QueryParameter = @{
-            _max_results   = 1000000
+            _max_results   = $MaxResults
             _return_fields = $ReturnFields
         }
     }
