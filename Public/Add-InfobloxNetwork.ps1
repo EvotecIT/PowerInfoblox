@@ -104,6 +104,7 @@
         [string] $DHCPGateway,
         [string] $DHCPLeaseTime,
         [string] $DHCPDomainNameServers,
+        [string[]] $Members,
         [string] $ExtensinbleAttributeName,
         [string] $ExtensinbleAttributeSite,
         [string] $ExtensinbleAttributeState,
@@ -136,6 +137,19 @@
     }
 
     Remove-EmptyValue -Hashtable $Body
+
+    if ($Members) {
+        $Body["members"] = @(
+            foreach ($DHCPMember in $Members) {
+                [ordered] @{
+                    "_struct"  = "msdhcpserver"
+                    "ipv4addr" = $DHCPMember
+                }
+            }
+        )
+        #"_struct": "dhcpmember",
+        #"name": "ddi.example.com"
+    }
 
     $DHCPOptions = @(
         if ($DHCPLeaseTime) {
