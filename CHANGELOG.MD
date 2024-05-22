@@ -1,4 +1,8 @@
-﻿### 1.0.19 - 2024.05.22
+﻿### 1.0.20 - 2024.05.22
+- Improve `Get-InfobloxNetwork` by adding `Members` to be able to set DHCP range properly
+- Improve `Get-InfobloxDHCPRange` with docs, examples and fixes
+
+### 1.0.19 - 2024.05.22
 - Fixes typo in `Add-InfobloxDHCPRange` function
 
 ### 1.0.18 - 2024.05.21
