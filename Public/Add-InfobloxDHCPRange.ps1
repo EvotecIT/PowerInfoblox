@@ -1,4 +1,87 @@
 ﻿function Add-InfobloxDHCPRange {
+    <#
+    .SYNOPSIS
+    Adds a DHCP range to Infoblox.
+
+    .DESCRIPTION
+    This function adds a DHCP range to Infoblox. It requires an established connection to an Infoblox server, which can be done using the Connect-Infoblox function.
+
+    .PARAMETER StartAddress
+    The starting IP address of the DHCP range. This parameter is mandatory.
+
+    .PARAMETER EndAddress
+    The ending IP address of the DHCP range. This parameter is mandatory.
+
+    .PARAMETER Name
+    The name of the DHCP range.
+
+    .PARAMETER Comment
+    A comment for the DHCP range.
+
+    .PARAMETER NetworkView
+    The network view in which the DHCP range will be added. The default is 'default'.
+
+    .PARAMETER MSServer
+    The Microsoft server to which the DHCP range will be added.
+
+    .PARAMETER ReturnOutput
+    If this switch is present, the function will return the output of the operation.
+
+    .PARAMETER ExtensibleAttribute
+    An extensible attribute to be added to the DHCP range.
+
+    .PARAMETER FailoverAssociation
+    The failover association for the DHCP range.
+
+    .PARAMETER ServerAssociationType
+    The server association type for the DHCP range. The possible values are 'MEMBER', 'MS_FAILOVER', 'NONE', 'MS_SERVER', 'FAILOVER'.
+
+    .PARAMETER Exclude
+    An array of IP addresses or IP address ranges to be excluded from the DHCP range.
+
+    .PARAMETER AlwaysUpdateDns
+    If this switch is present, DNS will always be updated for the DHCP range.
+
+    .PARAMETER Disable
+    If this switch is present, the DHCP range will be disabled.
+
+    .EXAMPLE
+    Add-InfobloxDHCPRange -StartAddress '192.168.1.100' -EndAddress '192.168.1.200' -Name 'DHCP Range 1' -Comment 'This is a DHCP range.'
+    Adds a DHCP range from 192.168.1.100 to 192.168.1.200 with the name 'DHCP Range 1' and a comment 'This is a DHCP range.'.
+
+    .EXAMPLE
+    Add-InfobloxDHCPRange -StartAddress '10.22.41.15' -EndAddress '10.22.41.30'
+    Adds a reserved range from 10.22.41.15 to 10.22.41.30
+
+    .EXAMPLE
+    $addInfobloxDHCPRangeSplat = @{
+        StartAddress = '10.22.41.51'
+        EndAddress = '10.22.41.60'
+        Verbose = $true
+        MSServer = 'dhcp2016.evotec.pl'
+        Name = 'DHCP Range Me?'
+        ServerAssociationType = 'MS_SERVER'
+    }
+
+    Add-InfobloxDHCPRange @addInfobloxDHCPRangeSplat
+
+    .EXAMPLE
+    $addInfobloxDHCPRangeSplat = @{
+        StartAddress          = '10.22.41.70'
+        EndAddress            = '10.22.41.90'
+        Verbose               = $true
+        MSServer              = 'dhcp2019.evotec.pl'
+        Name                  = 'DHCP Range Me2?'
+        ServerAssociationType = 'MS_SERVER'
+        Exclude               = '10.22.41.75-10.22.41.79'
+    }
+
+    Add-InfobloxDHCPRange @addInfobloxDHCPRangeSplat
+
+    .NOTES
+    You must first connect to an Infoblox server using Connect-Infoblox before running this function.
+    Please note that when using MSServer parameter you need to provide a valid server name that is already added to Infoblox, and it also needs to be part of Members in Add-InfobloxNetwork.
+    #>
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)][string] $StartAddress,
