@@ -49,7 +49,7 @@
         #"name": "ddi.example.com"
     }
     if ($MSServers) {
-        $Body["ms_servers"] = @(
+        $Body["ms_server"] = @(
             foreach ($DHCPMember in $MSServers) {
                 [ordered] @{
                     "_struct"  = "msdhcpserver"
