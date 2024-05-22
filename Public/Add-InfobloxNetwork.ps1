@@ -48,6 +48,9 @@
     .PARAMETER ExtensibleAttribute
     A hashtable of additional extensible attributes to associate with the network.
 
+    .PARAMETER Members
+    An array of DHCP members to associate with the network.
+
     .PARAMETER ReturnOutput
     A switch that, when present, indicates that the output of the command should be returned.
 
