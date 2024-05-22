@@ -6,12 +6,11 @@
         [string] $Name,
         [string] $Comment,
         [string] $NetworkView = 'default',
-        [string[]] $Members,
-        [string[]] $MSServers,
+        [string] $MSServer,
         [switch] $ReturnOutput,
         [System.Collections.IDictionary] $ExtensinbleAttribute,
         [string] $FailoverAssociation,
-        [ValidateSet('MEMBER', 'MS_FAILOVER','NONE','MS_SERVER','FAILOVER')] [string] $ServerAssociationType,
+        [ValidateSet('MEMBER', 'MS_FAILOVER', 'NONE', 'MS_SERVER', 'FAILOVER')] [string] $ServerAssociationType,
         [Array] $Exclude,
         [switch] $AlwaysUpdateDns,
         [switch] $Disable
@@ -36,27 +35,11 @@
     if ($ServerAssociationType) {
         $Body["server_association_type"] = $ServerAssociationType
     }
-    if ($Members) {
-        $Body["members"] = @(
-            foreach ($DHCPMember in $Members) {
-                [ordered] @{
-                    "_struct"  = "msdhcpserver"
-                    "ipv4addr" = $DHCPMember
-                }
-            }
-        )
-        #"_struct": "dhcpmember",
-        #"name": "ddi.example.com"
-    }
-    if ($MSServers) {
-        $Body["ms_server"] = @(
-            foreach ($DHCPMember in $MSServers) {
-                [ordered] @{
-                    "_struct"  = "msdhcpserver"
-                    "ipv4addr" = $DHCPMember
-                }
-            }
-        )
+    if ($MSServer) {
+        $Body["ms_server"] = [PSCustomObject] @{
+            "_struct"  = "msdhcpserver"
+            "ipv4addr" = $MSServer
+        }
     }
     if ($ExtensinbleAttribute) {
         $Body["extattrs"] = [ordered] @{}
