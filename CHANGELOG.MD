@@ -1,4 +1,7 @@
-﻿### 1.0.18 - 2024.05.21
+﻿### 1.0.19 - 2024.05.22
+- Fixes typo in `Add-InfobloxDHCPRange` function
+
+### 1.0.18 - 2024.05.21
 - Improve `Get-InfobloxNetwork` with `Native` parameter which allows to get native Infoblox objects without translation
 - Improve `Get-InfobloxNetwork` with `MaxResults` parameter which allows to limit amount of results (default is 1000000)
 - Improve `Get-InfobloxNetwork` with additional warning if no parameters given

@@ -8,7 +8,7 @@
     Description          = 'Helper module for Infoblox.'
     FunctionsToExport    = @('Add-InfobloxDHCPRange', 'Add-InfoBloxDNSRecord', 'Add-InfobloxFixedAddress', 'Add-InfobloxNetwork', 'Add-InfobloxNetworkExtensibleAttribute', 'Connect-Infoblox', 'Disconnect-Infoblox', 'Get-InfobloxDHCPLease', 'Get-InfobloxDHCPRange', 'Get-InfobloxDiscoveryTask', 'Get-InfobloxDNSAuthZone', 'Get-InfobloxDNSDelegatedZone', 'Get-InfobloxDNSForwardZone', 'Get-InfobloxDNSRecord', 'Get-InfobloxDNSRecordAll', 'Get-InfobloxDNSView', 'Get-InfobloxFixedAddress', 'Get-InfobloxGrid', 'Get-InfobloxIPAddress', 'Get-InfobloxMember', 'Get-InfobloxNetwork', 'Get-InfobloxNetworkNextAvailableIP', 'Get-InfobloxNetworkView', 'Get-InfobloxObjects', 'Get-InfobloxPermission', 'Get-InfobloxResponsePolicyZones', 'Get-InfobloxSchema', 'Get-InfoBloxSearch', 'Get-InfobloxVDiscoveryTask', 'Invoke-InfobloxQuery', 'Remove-InfobloxDnsRecord', 'Remove-InfobloxFixedAddress', 'Remove-InfobloxIPAddress', 'Remove-InfobloxNetworkExtensibleAttribute', 'Remove-InfobloxObject', 'Set-InfobloxDNSRecord')
     GUID                 = '9fc9fd61-7f11-4f4b-a527-084086f1905f'
-    ModuleVersion        = '1.0.18'
+    ModuleVersion        = '1.0.19'
     PowerShellVersion    = '5.1'
     PrivateData          = @{
         PSData = @{
