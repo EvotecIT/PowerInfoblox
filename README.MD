@@ -41,44 +41,51 @@ Install-Module -Name PowerInfoblox -Force -Verbose
 
 This module provides several commands to interact with Infoblox service.
 
-| CommandType | Name                               | Version | Source        |
-| ----------- | ---------------------------------- | ------- | ------------- |
-| Alias       | Get-InfobloxDHCPLeases             | 1.0.9   | PowerInfoblox |
-| Alias       | Get-InfobloxDNSAuthZones           | 1.0.9   | PowerInfoblox |
-| Alias       | Get-InfobloxDNSRecords             | 1.0.9   | PowerInfoblox |
-| Alias       | Get-InfobloxDNSRecordsAll          | 1.0.9   | PowerInfoblox |
-| Function    | Add-InfoBloxDNSRecord              | 1.0.9   | PowerInfoblox |
-| Function    | Add-InfobloxFixedAddress           | 1.0.9   | PowerInfoblox |
-| Function    | Connect-Infoblox                   | 1.0.9   | PowerInfoblox |
-| Function    | Disconnect-Infoblox                | 1.0.9   | PowerInfoblox |
-| Function    | Get-InfobloxDHCPLease              | 1.0.9   | PowerInfoblox |
-| Function    | Get-InfobloxDHCPRange              | 1.0.9   | PowerInfoblox |
-| Function    | Get-InfobloxDiscoveryTask          | 1.0.9   | PowerInfoblox |
-| Function    | Get-InfobloxDNSAuthZone            | 1.0.9   | PowerInfoblox |
-| Function    | Get-InfobloxDNSDelegatedZone       | 1.0.9   | PowerInfoblox |
-| Function    | Get-InfobloxDNSForwardZone         | 1.0.9   | PowerInfoblox |
-| Function    | Get-InfobloxDNSRecord              | 1.0.9   | PowerInfoblox |
-| Function    | Get-InfobloxDNSRecordAll           | 1.0.9   | PowerInfoblox |
-| Function    | Get-InfobloxDNSView                | 1.0.9   | PowerInfoblox |
-| Function    | Get-InfobloxFixedAddress           | 1.0.9   | PowerInfoblox |
-| Function    | Get-InfobloxGrid                   | 1.0.9   | PowerInfoblox |
-| Function    | Get-InfobloxIPAddress              | 1.0.9   | PowerInfoblox |
-| Function    | Get-InfobloxMember                 | 1.0.9   | PowerInfoblox |
-| Function    | Get-InfobloxNetwork                | 1.0.9   | PowerInfoblox |
-| Function    | Get-InfobloxNetworkNextAvailableIP | 1.0.9   | PowerInfoblox |
-| Function    | Get-InfobloxNetworkView            | 1.0.9   | PowerInfoblox |
-| Function    | Get-InfobloxObjects                | 1.0.9   | PowerInfoblox |
-| Function    | Get-InfobloxPermission             | 1.0.9   | PowerInfoblox |
-| Function    | Get-InfobloxResponsePolicyZones    | 1.0.9   | PowerInfoblox |
-| Function    | Get-InfobloxSchema                 | 1.0.9   | PowerInfoblox |
-| Function    | Get-InfoBloxSearch                 | 1.0.9   | PowerInfoblox |
-| Function    | Get-InfobloxVDiscoveryTask         | 1.0.9   | PowerInfoblox |
-| Function    | Invoke-InfobloxQuery               | 1.0.9   | PowerInfoblox |
-| Function    | Remove-InfobloxFixedAddress        | 1.0.9   | PowerInfoblox |
-| Function    | Remove-InfobloxIPAddress           | 1.0.9   | PowerInfoblox |
-| Function    | Remove-InfobloxObject              | 1.0.9   | PowerInfoblox |
-| Function    | Set-InfobloxDNSRecord              | 1.0.9   | PowerInfoblox |
+# PowerShell Commands
 
+| CommandType | Name                                      | Version | Source        |
+| ----------- | ----------------------------------------- | ------- | ------------- |
+| Alias       | Add-InfobloxSubnet                        | 1.0.20  | PowerInfoblox |
+| Alias       | Get-InfobloxDHCPLeases                    | 1.0.20  | PowerInfoblox |
+| Alias       | Get-InfobloxDNSAuthZones                  | 1.0.20  | PowerInfoblox |
+| Alias       | Get-InfobloxDNSRecords                    | 1.0.20  | PowerInfoblox |
+| Alias       | Get-InfobloxDNSRecordsAll                 | 1.0.20  | PowerInfoblox |
+| Function    | Add-InfobloxDHCPRange                     | 1.0.20  | PowerInfoblox |
+| Function    | Add-InfoBloxDNSRecord                     | 1.0.20  | PowerInfoblox |
+| Function    | Add-InfobloxFixedAddress                  | 1.0.20  | PowerInfoblox |
+| Function    | Add-InfobloxNetwork                       | 1.0.20  | PowerInfoblox |
+| Function    | Add-InfobloxNetworkExtensibleAttribute    | 1.0.20  | PowerInfoblox |
+| Function    | Connect-Infoblox                          | 1.0.20  | PowerInfoblox |
+| Function    | Disconnect-Infoblox                       | 1.0.20  | PowerInfoblox |
+| Function    | Get-InfobloxDHCPLease                     | 1.0.20  | PowerInfoblox |
+| Function    | Get-InfobloxDHCPRange                     | 1.0.20  | PowerInfoblox |
+| Function    | Get-InfobloxDiscoveryTask                 | 1.0.20  | PowerInfoblox |
+| Function    | Get-InfobloxDNSAuthZone                   | 1.0.20  | PowerInfoblox |
+| Function    | Get-InfobloxDNSDelegatedZone              | 1.0.20  | PowerInfoblox |
+| Function    | Get-InfobloxDNSForwardZone                | 1.0.20  | PowerInfoblox |
+| Function    | Get-InfobloxDNSRecord                     | 1.0.20  | PowerInfoblox |
+| Function    | Get-InfobloxDNSRecordAll                  | 1.0.20  | PowerInfoblox |
+| Function    | Get-InfobloxDNSView                       | 1.0.20  | PowerInfoblox |
+| Function    | Get-InfobloxFixedAddress                  | 1.0.20  | PowerInfoblox |
+| Function    | Get-InfobloxGrid                          | 1.0.20  | PowerInfoblox |
+| Function    | Get-InfobloxIPAddress                     | 1.0.20  | PowerInfoblox |
+| Function    | Get-InfobloxMember                        | 1.0.20  | PowerInfoblox |
+| Function    | Get-InfobloxNetwork                       | 1.0.20  | PowerInfoblox |
+| Function    | Get-InfobloxNetworkNextAvailableIP        | 1.0.20  | PowerInfoblox |
+| Function    | Get-InfobloxNetworkView                   | 1.0.20  | PowerInfoblox |
+| Function    | Get-InfobloxObjects                       | 1.0.20  | PowerInfoblox |
+| Function    | Get-InfobloxPermission                    | 1.0.20  | PowerInfoblox |
+| Function    | Get-InfobloxResponsePolicyZones           | 1.0.20  | PowerInfoblox |
+| Function    | Get-InfobloxSchema                        | 1.0.20  | PowerInfoblox |
+| Function    | Get-InfoBloxSearch                        | 1.0.20  | PowerInfoblox |
+| Function    | Get-InfobloxVDiscoveryTask                | 1.0.20  | PowerInfoblox |
+| Function    | Invoke-InfobloxQuery                      | 1.0.20  | PowerInfoblox |
+| Function    | Remove-InfobloxDnsRecord                  | 1.0.20  | PowerInfoblox |
+| Function    | Remove-InfobloxFixedAddress               | 1.0.20  | PowerInfoblox |
+| Function    | Remove-InfobloxIPAddress                  | 1.0.20  | PowerInfoblox |
+| Function    | Remove-InfobloxNetworkExtensibleAttribute | 1.0.20  | PowerInfoblox |
+| Function    | Remove-InfobloxObject                     | 1.0.20  | PowerInfoblox |
+| Function    | Set-InfobloxDNSRecord                     | 1.0.20  | PowerInfoblox |
 
 ### Examples
 
@@ -179,3 +186,86 @@ Get-InfobloxDNSDelegatedZone | Format-Table
 Get-InfobloxIPAddress -Network '10.2.33.0/24' -Status Unused | Format-Table
 Add-InfoBloxDNSRecord -Type A -Name 'test132.example.lab' -IPv4Address 10.2.33.240 -Verbose
 Add-InfoBloxDNSRecord -Type CNAME -Name 'test123.example.lab' -CanonicalName 'mcdonalds.pl'
+```
+
+#### Example of adding Network
+
+```powershell
+$addInfobloxSubnetSplat = @{
+    Subnet                      = '10.22.35.0/24'
+    Comment                     = "Oki dokii"
+    AutoCreateReverseZone       = $true
+    DHCPGateway                 = "10.22.35.1"
+    DHCPLeaseTime               = 5000
+    DHCPDomainNameServers       = "192.168.4.56,192.168.4.57"
+    ExtensinbleAttributeCountry = "Poland"
+    #ExtensinbleAttributeName    = "Test"
+    ExtensinbleAttributeRegion  = "Europe"
+    ExtensinbleAttributeSite    = "Site1"
+    ExtensinbleAttributeState   = "Mazowieckie"
+    ExtensinbleAttributeVLAN    = "810"
+}
+
+Add-InfobloxNetwork @addInfobloxSubnetSplat
+
+
+$addInfobloxSubnetSplat = @{
+    Subnet                = '10.22.36.0/24'
+    Comment               = "Oki dokii"
+    AutoCreateReverseZone = $true
+    DHCPGateway           = "10.22.36.1"
+    DHCPLeaseTime         = 5000
+    DHCPDomainNameServers = "192.168.4.56,192.168.4.57"
+    ExtensinbleAttribute  = [ordered] @{
+        #Name    = 'Test'
+        VLAN    = '810'
+        Country = 'Poland'
+        Region  = 'Europe'
+        Site    = 'Site1'
+    }
+}
+
+Add-InfobloxNetwork @addInfobloxSubnetSplat
+
+Remove-InfobloxNetworkExtensibleAttribute -Network '10.22.36.0/24' -Attribute 'VLAN'
+Add-InfobloxNetworkExtensibleAttribute -Network '10.22.36.0/24' -Attribute 'VLAN' -Value '811'
+```
+
+#### Example of adding DHCP Range
+
+```powershell
+$addInfobloxSubnetSplat = @{
+    Subnet                = '10.22.41.0/24'
+    Comment               = "Oki dokii"
+    AutoCreateReverseZone = $true
+    DHCPGateway           = "10.22.41.1"
+    DHCPLeaseTime         = 5000
+    DHCPDomainNameServers = "192.168.4.56,192.168.4.57"
+    ExtensinbleAttribute  = [ordered] @{
+        #Name    = 'Test'
+        VLAN    = '810'
+        Country = 'Poland'
+        Region  = 'Europe'
+        Site    = 'Site1'
+    }
+    Members               = @(
+        'dhcp2016.evotec.pl'
+    )
+}
+
+Add-InfobloxNetwork @addInfobloxSubnetSplat
+
+Add-InfobloxDHCPRange -StartAddress '10.22.41.15' -EndAddress '10.22.41.30'
+
+$addInfobloxDHCPRangeSplat = @{
+    StartAddress          = '10.22.41.70'
+    EndAddress            = '10.22.41.90'
+    Verbose               = $true
+    MSServer              = 'dhcp2016.evotec.pl'
+    Name                  = 'DHCP Range Me2?'
+    ServerAssociationType = 'MS_SERVER'
+    Exclude               = '10.22.41.75-10.22.41.79'
+}
+
+Add-InfobloxDHCPRange @addInfobloxDHCPRangeSplat
+```
