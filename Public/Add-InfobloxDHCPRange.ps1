@@ -81,9 +81,25 @@
 
     Add-InfobloxDHCPRange @addInfobloxDHCPRangeSplat
 
+    .EXAMPLE
+    $addInfobloxDHCPRangeSplat = @{
+        StartAddress = '10.10.12.5'
+        EndAddress   = '10.10.12.10'
+        Options      = @(
+            New-InfobloxOption -Name "dhcp-lease-time" -Number 51 -UseOption -Value '86400' -VendorClass 'DHCP'
+            New-InfobloxOption -Name "domain-name-servers" -Number 6 -UseOption -Value '192.168.0.15' -VendorClass 'DHCP'
+            New-InfobloxOption -Name 'routers' -Number 3 -UseOption -Value '192.168.11.12' -VendorClass 'DHCP'
+            New-InfobloxOption -Name 'time-servers' -Number 4 -UseOption -Value '11' -VendorClass 'DHCP'
+        )
+        Verbose      = $true
+    }
+
+    Add-InfobloxDHCPRange @addInfobloxDHCPRangeSplat
+
     .NOTES
     You must first connect to an Infoblox server using Connect-Infoblox before running this function.
-    Please note that when using MSServer parameter you need to provide a valid server name that is already added to Infoblox, and it also needs to be part of Members in Add-InfobloxNetwork.
+    Please note that when using MSServer parameter you need to provide a valid server name that is already added to Infoblox,
+    and it also needs to be part of Members in Add-InfobloxNetwork.
     #>
     [CmdletBinding()]
     param(
