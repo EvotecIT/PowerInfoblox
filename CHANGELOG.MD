@@ -1,4 +1,26 @@
-﻿### 1.0.20 - 2024.05.22
+﻿### 1.0.21 - 2024.05.29
+- Add `Options` to `Add-InfobloxDHCPRange` to be able to set DHCP options
+- Add `Options` to `Add-InfobloxNetwork` to be able to set DHCP options
+- Add `New-InfoBloxOption` to prepare options to be used in `Add-InfobloxDHCPRange` and `Add-InfobloxNetwork`
+
+```powershell
+$addInfobloxDHCPRangeSplat = @{
+    StartAddress = '10.10.12.5'
+    EndAddress   = '10.10.12.10'
+    Options      = @(
+        New-InfobloxOption -Name "dhcp-lease-time" -Number 51 -UseOption -Value '86400' -VendorClass 'DHCP'
+        New-InfobloxOption -Name "domain-name-servers" -Number 6 -UseOption -Value '192.168.0.15' -VendorClass 'DHCP'
+        New-InfobloxOption -Name 'routers' -Number 3 -UseOption -Value '192.168.11.12' -VendorClass 'DHCP'
+        New-InfobloxOption -Name 'time-servers' -Number 4 -UseOption -Value '11' -VendorClass 'DHCP'
+    )
+    Verbose      = $true
+}
+
+Add-InfobloxDHCPRange @addInfobloxDHCPRangeSplat
+```
+
+
+### 1.0.20 - 2024.05.22
 - Improve `Get-InfobloxNetwork` by adding `Members` to be able to set DHCP range properly
 - Improve `Get-InfobloxDHCPRange` with docs, examples and fixes
 
