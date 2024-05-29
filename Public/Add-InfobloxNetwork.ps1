@@ -27,6 +27,9 @@
     .PARAMETER DHCPDomainNameServers
     The DHCP domain name servers for the network.
 
+    .PARAMETER Options
+    An array of options to be added to the DHCP range.
+
     .PARAMETER ExtensibleAttributeName
     The name of an extensible attribute for the network.
 
@@ -107,6 +110,7 @@
         [string] $DHCPGateway,
         [string] $DHCPLeaseTime,
         [string] $DHCPDomainNameServers,
+        [Array] $Options,
         [string[]] $Members,
         [string] $ExtensinbleAttributeName,
         [string] $ExtensinbleAttributeSite,
@@ -155,6 +159,11 @@
     }
 
     $DHCPOptions = @(
+        if ($Options) {
+            foreach ($Option in $Options) {
+                $Option
+            }
+        }
         if ($DHCPLeaseTime) {
             [ordered] @{
                 "name"         = "dhcp-lease-time"
