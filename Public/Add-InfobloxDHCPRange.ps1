@@ -33,6 +33,9 @@
     .PARAMETER FailoverAssociation
     The failover association for the DHCP range.
 
+    .PARAMETER Options
+    An array of options to be added to the DHCP range.
+
     .PARAMETER ServerAssociationType
     The server association type for the DHCP range. The possible values are 'MEMBER', 'MS_FAILOVER', 'NONE', 'MS_SERVER', 'FAILOVER'.
 
@@ -92,7 +95,8 @@
         [string] $MSServer,
         [switch] $ReturnOutput,
         [System.Collections.IDictionary] $ExtensinbleAttribute,
-        [string] $FailoverAssociation,
+        [Array] $Options,
+        [alias('failover_association')][string] $FailoverAssociation,
         [ValidateSet('MEMBER', 'MS_FAILOVER', 'NONE', 'MS_SERVER', 'FAILOVER')] [string] $ServerAssociationType,
         [Array] $Exclude,
         [switch] $AlwaysUpdateDns,
@@ -135,6 +139,13 @@
                 }
             }
         }
+    }
+    if ($Options) {
+        $Body["options"] = @(
+            foreach ($Option in $Options) {
+                $Option
+            }
+        )
     }
     if ($FailoverAssociation) {
         $Body["failover_association"] = $FailoverAssociation
