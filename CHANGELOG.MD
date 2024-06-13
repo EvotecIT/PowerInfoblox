@@ -1,4 +1,8 @@
-﻿### 1.0.21 - 2024.05.29
+﻿### 1.0.22 - 2024.06.13
+- Improve `Get-InfobloxFixedAddress` by adding `FetchFromSchema`
+- Improve `Add-InfobloxFixedAddress` by adding `MicrosoftServer` ()`ms_server`) property
+
+### 1.0.21 - 2024.05.29
 - Add `Options` to `Add-InfobloxDHCPRange` to be able to set DHCP options
 - Add `Options` to `Add-InfobloxNetwork` to be able to set DHCP options
 - Add `New-InfoBloxOption` to prepare options to be used in `Add-InfobloxDHCPRange` and `Add-InfobloxNetwork`

@@ -2,7 +2,9 @@
     [cmdletbinding()]
     param(
         [parameter(Mandatory)][string] $MacAddress,
-        [switch] $PartialMatch
+        [switch] $PartialMatch,
+        [switch] $FetchFromSchema,
+        [string[]] $Properties
     )
 
     if (-not $Script:InfobloxConfiguration) {
@@ -22,6 +24,11 @@
             _max_results   = 1000000
             _return_fields = 'mac,ipv4addr,network_view'
         }
+    }
+    if ($FetchFromSchema) {
+        $invokeInfobloxQuerySplat.QueryParameter._return_fields = Get-FieldsFromSchema -SchemaObject "fixedaddress"
+    } elseif ($Properties) {
+        $invokeInfobloxQuerySplat.QueryParameter._return_fields = $Properties -join ','
     }
     if ($PartialMatch) {
         $invokeInfobloxQuerySplat.QueryParameter."mac~" = $MacAddress.ToLower()
