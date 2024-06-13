@@ -32,7 +32,8 @@
         [ValidateNotNullOrEmpty()][parameter(Mandatory)][string] $IPv4Address,
         [ValidatePattern("([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$")][parameter(Mandatory)][string] $MacAddress,
         [string] $Name,
-        [string] $Comment
+        [string] $Comment,
+        [alias('ms_server')][string] $MicrosoftServer
     )
 
     if (-not $Script:InfobloxConfiguration) {
@@ -59,13 +60,11 @@
     if ($Comment) {
         $invokeInfobloxQuerySplat.QueryParameter.comment = $Comment
     }
+    if ($MicrosoftServer) {
+        $invokeInfobloxQuerySplat.QueryParameter.ms_server = $MicrosoftServer
+    }
     $Output = Invoke-InfobloxQuery @invokeInfobloxQuerySplat #-WarningAction SilentlyContinue -WarningVariable varWarning
     if ($Output) {
         Write-Verbose -Message "Add-InfobloxFixedAddress - Added $($Mac.ipv4addr) with mac address $($Mac.mac) / $Output"
     }
-    #else {
-    #    if (-not $WhatIfPreference) {
-    #        Write-Warning -Message "Add-InfobloxFixedAddress - Failed to add $($Mac.ipv4addr) with mac address $($Mac.mac), error: $varWarning"
-    #   }
-    #}
 }
