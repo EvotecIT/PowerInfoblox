@@ -30,6 +30,9 @@
     .PARAMETER Options
     An array of options to be added to the DHCP range.
 
+    .PARAMETER MSOptions
+    An array of Microsoft options to be added to the DHCP range.
+
     .PARAMETER ExtensibleAttributeName
     The name of an extensible attribute for the network.
 
@@ -111,6 +114,7 @@
         [string] $DHCPLeaseTime,
         [string] $DHCPDomainNameServers,
         [Array] $Options,
+        [Alias('ms_options')][Array] $MSOptions,
         [string[]] $Members,
         [string] $ExtensinbleAttributeName,
         [string] $ExtensinbleAttributeSite,
@@ -156,6 +160,14 @@
         )
         #"_struct": "dhcpmember",
         #"name": "ddi.example.com"
+    }
+
+    if ($MSOptions) {
+        $Body["ms_options"] = @(
+            foreach ($MSOption in $MSOptions) {
+                $MSOption
+            }
+        )
     }
 
     $DHCPOptions = @(
