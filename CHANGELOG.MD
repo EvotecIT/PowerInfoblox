@@ -1,4 +1,8 @@
-﻿### 1.0.22 - 2024.06.13
+﻿### 1.0.23 - 2024.06.19
+- Add MSOptions to Add-InfobloxDHCPrange and `Add-InfobloxNetwork` to be able to set Microsoft DHCP options
+- Expanded `New-InfobloxOption` with Type and UserClass parameters
+
+### 1.0.22 - 2024.06.13
 - Improve `Get-InfobloxFixedAddress` by adding `FetchFromSchema`
 - Improve `Add-InfobloxFixedAddress` by adding `MicrosoftServer` ()`ms_server`) property
 
