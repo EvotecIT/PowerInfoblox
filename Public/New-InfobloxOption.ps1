@@ -43,16 +43,22 @@
     param(
         [Parameter(Mandatory)][string] $Name,
         [Parameter(Mandatory)][alias('Num')][int] $Number,
-        [Parameter(Mandatory)][switch] $UseOption,
+        [string] $Type,
+        [string] $UserClass,
+        [Parameter()][switch] $UseOption,
         [Parameter(Mandatory)][string] $Value,
         [Parameter(Mandatory)][string] $VendorClass
     )
 
-    [ordered] @{
+    $Object = [ordered] @{
         "name"         = $Name
         "num"          = $Number
-        "use_option"   = $UseOption.IsPresent
+        "type"         = $Type
+        "user_class"   = $UserClass
+        "use_option"   = if ($PSBoundParameters.ContainsKey('UseOption')) { $UseOption.IsPresent } else { $null }
         "value"        = $Value
         "vendor_class" = $VendorClass
     }
+    Remove-EmptyValue -Hashtable $Object
+    $Object
 }
