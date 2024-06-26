@@ -31,6 +31,12 @@
             New-InfobloxOption -Name 'routers' -Number 3 -UseOption -Value '192.168.11.12' -VendorClass 'DHCP'
             New-InfobloxOption -Name 'time-servers' -Number 4 -UseOption -Value '11' -VendorClass 'DHCP'
         )
+        MsOptions      = @(
+            New-InfobloxOption -Name "dhcp-lease-time" -Number 51 -UseOption -Value '86400' -VendorClass 'DHCP'
+            New-InfobloxOption -Name "domain-name-servers" -Number 6 -UseOption -Value '192.168.0.15' -VendorClass 'DHCP'
+            New-InfobloxOption -Name 'routers' -Number 3 -UseOption -Value '192.168.11.12' -VendorClass 'DHCP'
+            New-InfobloxOption -Name 'time-servers' -Number 4 -UseOption -Value '11' -VendorClass 'DHCP'
+        )
         Verbose      = $true
     }
 
@@ -43,8 +49,6 @@
     param(
         [Parameter(Mandatory)][string] $Name,
         [Parameter(Mandatory)][alias('Num')][int] $Number,
-        [string] $Type,
-        [string] $UserClass,
         [Parameter()][switch] $UseOption,
         [Parameter(Mandatory)][string] $Value,
         [Parameter(Mandatory)][string] $VendorClass
@@ -53,8 +57,6 @@
     $Object = [ordered] @{
         "name"         = $Name
         "num"          = $Number
-        "type"         = $Type
-        "user_class"   = $UserClass
         "use_option"   = if ($PSBoundParameters.ContainsKey('UseOption')) { $UseOption.IsPresent } else { $null }
         "value"        = $Value
         "vendor_class" = $VendorClass
