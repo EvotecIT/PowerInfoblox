@@ -104,7 +104,7 @@
     Please note that when using MSServer parameter you need to provide a valid server name that is already added to Infoblox,
     and it also needs to be part of Members in Add-InfobloxNetwork.
     #>
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory)][string] $StartAddress,
         [Parameter(Mandatory)][string] $EndAddress,
