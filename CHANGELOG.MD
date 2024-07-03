@@ -1,4 +1,8 @@
-﻿### 1.0.23 - 2024.06.19
+﻿### 1.0.24 - 2024.07.03
+- Added `Debug` option to show JSON body
+- Added `WhatIf` to `Add-InfobloxDHCPRange`
+
+### 1.0.23 - 2024.06.19
 - Add MSOptions to Add-InfobloxDHCPrange and `Add-InfobloxNetwork` to be able to set Microsoft DHCP options
 - Expanded `New-InfobloxOption` with Type and UserClass parameters
 
