@@ -1,4 +1,8 @@
-﻿### 1.0.24 - 2024.07.03
+﻿### 1.0.25 - 2024.08.01
+- Added `Add-InfobloxDHCPReservation` to add a DHCP reservation
+- Improved `Add-InfobloxFixedAddress` documentation
+
+### 1.0.24 - 2024.07.03
 - Added `Debug` option to show JSON body
 - Added `WhatIf` to `Add-InfobloxDHCPRange`
 
