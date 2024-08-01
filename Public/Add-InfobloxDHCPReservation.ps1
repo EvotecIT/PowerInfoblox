@@ -30,7 +30,7 @@
     .NOTES
     General notes
     #>
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     param(
         [ValidateNotNullOrEmpty()][parameter(Mandatory)][string] $IPv4Address,
         [ValidatePattern("([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$")][parameter(Mandatory)][string] $MacAddress,
