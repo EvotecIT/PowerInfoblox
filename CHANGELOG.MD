@@ -1,4 +1,7 @@
-﻿### 1.0.25 - 2024.08.01
+﻿### 1.0.26 - 2024.08.01
+- Improved `Add-InfobloxDHCPReservation` with WhatIf
+
+### 1.0.25 - 2024.08.01
 - Added `Add-InfobloxDHCPReservation` to add a DHCP reservation
 - Improved `Add-InfobloxFixedAddress` documentation
 
