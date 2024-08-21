@@ -50,22 +50,13 @@
     $PSDefaultParameterValues['Invoke-InfobloxQuery:BaseUri'] = "https://$Server/wapi/v$apiVersion"
     $PSDefaultParameterValues['Invoke-InfobloxQuery:WebSession'] = [Microsoft.PowerShell.Commands.WebRequestSession]::new()
 
-    # $WebSession = New-WebSession -Cookies @{
-    #     security_setting = @{
-    #         session_timeout = 60000
-    #     }
-    # } -For $BaseUri
-
     # The infoblox configuration is not really used anywhere. It's just a placeholder
+    # It's basecause we use $PSDefaultParameterValues to pass the parameters to Invoke-InfobloxQuery
+    # But this placeholder is used to check if we're connected or not in other functions
     $Script:InfobloxConfiguration = [ordered] @{
         ApiVersion = $ApiVersion
-        #Credential = $Credential
         Server     = $Server
         BaseUri    = "https://$Server/wapi/v$apiVersion"
-        # Create a WebSession object to store cookies
-        # Session    = New-Object Microsoft.PowerShell.Commands.WebRequestSession
-        #WebSession = $WebSession
-
     }
 
     if ($AllowSelfSignedCerts) {
@@ -74,8 +65,17 @@
 
     # we do inital query to make sure we're connected
     if (-not $SkipInitialConnection) {
-        $Schema = Get-InfobloxSchema -WarningAction SilentlyContinue
+        $Schema = Get-InfobloxSchema -WarningAction SilentlyContinue -WarningVariable SchemaWarning
         if (-not $Schema) {
+            if ($SchemaWarning) {
+                if ($ErrorActionPreference -eq 'Stop') {
+                    throw $SchemaWarning
+                } else {
+                    Write-Warning -Message "Connect-Infoblox - Unable to retrieve schema. Connection failed. Error: $($SchemaWarning)"
+                }
+            } else {
+                Write-Warning -Message "Connect-Infoblox - Unable to retrieve schema. Connection failed."
+            }
             Disconnect-Infoblox
             return
         }
