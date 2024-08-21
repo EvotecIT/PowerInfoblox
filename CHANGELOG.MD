@@ -1,4 +1,7 @@
-﻿### 1.0.26 - 2024.08.01
+﻿### 1.0.27 - 2024.08.21
+- Provide error when failed to connect to Infoblox
+
+### 1.0.26 - 2024.08.01
 - Improved `Add-InfobloxDHCPReservation` with WhatIf
 
 ### 1.0.25 - 2024.08.01
