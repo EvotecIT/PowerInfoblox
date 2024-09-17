@@ -1,4 +1,8 @@
-﻿### 1.0.27 - 2024.08.21
+﻿### 1.0.28 - 2024.09.17
+- Added `Get-InfobloxNetworkContainer` to get network containers
+- Added `Get-InfobloxNetworkNextAvailableNetwork` to search for the next available network within a network container
+
+### 1.0.27 - 2024.08.21
 - Provide error when failed to connect to Infoblox
 
 ### 1.0.26 - 2024.08.01
