@@ -32,11 +32,6 @@ which means the errors provided are less generic and more specific.
 Install-Module -Name PowerInfoblox -Force -Verbose
 ```
 
-### ToDo List
-
-- [ ] Zone association on a network (list / add)
-- [ ] Add network, add network with PTR, add network with DHCP
-
 ### Available commands
 
 This module provides several commands to interact with Infoblox service.
@@ -45,47 +40,51 @@ This module provides several commands to interact with Infoblox service.
 
 | CommandType | Name                                      | Version | Source        |
 | ----------- | ----------------------------------------- | ------- | ------------- |
-| Alias       | Add-InfobloxSubnet                        | 1.0.20  | PowerInfoblox |
-| Alias       | Get-InfobloxDHCPLeases                    | 1.0.20  | PowerInfoblox |
-| Alias       | Get-InfobloxDNSAuthZones                  | 1.0.20  | PowerInfoblox |
-| Alias       | Get-InfobloxDNSRecords                    | 1.0.20  | PowerInfoblox |
-| Alias       | Get-InfobloxDNSRecordsAll                 | 1.0.20  | PowerInfoblox |
-| Function    | Add-InfobloxDHCPRange                     | 1.0.20  | PowerInfoblox |
-| Function    | Add-InfoBloxDNSRecord                     | 1.0.20  | PowerInfoblox |
-| Function    | Add-InfobloxFixedAddress                  | 1.0.20  | PowerInfoblox |
-| Function    | Add-InfobloxNetwork                       | 1.0.20  | PowerInfoblox |
-| Function    | Add-InfobloxNetworkExtensibleAttribute    | 1.0.20  | PowerInfoblox |
-| Function    | Connect-Infoblox                          | 1.0.20  | PowerInfoblox |
-| Function    | Disconnect-Infoblox                       | 1.0.20  | PowerInfoblox |
-| Function    | Get-InfobloxDHCPLease                     | 1.0.20  | PowerInfoblox |
-| Function    | Get-InfobloxDHCPRange                     | 1.0.20  | PowerInfoblox |
-| Function    | Get-InfobloxDiscoveryTask                 | 1.0.20  | PowerInfoblox |
-| Function    | Get-InfobloxDNSAuthZone                   | 1.0.20  | PowerInfoblox |
-| Function    | Get-InfobloxDNSDelegatedZone              | 1.0.20  | PowerInfoblox |
-| Function    | Get-InfobloxDNSForwardZone                | 1.0.20  | PowerInfoblox |
-| Function    | Get-InfobloxDNSRecord                     | 1.0.20  | PowerInfoblox |
-| Function    | Get-InfobloxDNSRecordAll                  | 1.0.20  | PowerInfoblox |
-| Function    | Get-InfobloxDNSView                       | 1.0.20  | PowerInfoblox |
-| Function    | Get-InfobloxFixedAddress                  | 1.0.20  | PowerInfoblox |
-| Function    | Get-InfobloxGrid                          | 1.0.20  | PowerInfoblox |
-| Function    | Get-InfobloxIPAddress                     | 1.0.20  | PowerInfoblox |
-| Function    | Get-InfobloxMember                        | 1.0.20  | PowerInfoblox |
-| Function    | Get-InfobloxNetwork                       | 1.0.20  | PowerInfoblox |
-| Function    | Get-InfobloxNetworkNextAvailableIP        | 1.0.20  | PowerInfoblox |
-| Function    | Get-InfobloxNetworkView                   | 1.0.20  | PowerInfoblox |
-| Function    | Get-InfobloxObjects                       | 1.0.20  | PowerInfoblox |
-| Function    | Get-InfobloxPermission                    | 1.0.20  | PowerInfoblox |
-| Function    | Get-InfobloxResponsePolicyZones           | 1.0.20  | PowerInfoblox |
-| Function    | Get-InfobloxSchema                        | 1.0.20  | PowerInfoblox |
-| Function    | Get-InfoBloxSearch                        | 1.0.20  | PowerInfoblox |
-| Function    | Get-InfobloxVDiscoveryTask                | 1.0.20  | PowerInfoblox |
-| Function    | Invoke-InfobloxQuery                      | 1.0.20  | PowerInfoblox |
-| Function    | Remove-InfobloxDnsRecord                  | 1.0.20  | PowerInfoblox |
-| Function    | Remove-InfobloxFixedAddress               | 1.0.20  | PowerInfoblox |
-| Function    | Remove-InfobloxIPAddress                  | 1.0.20  | PowerInfoblox |
-| Function    | Remove-InfobloxNetworkExtensibleAttribute | 1.0.20  | PowerInfoblox |
-| Function    | Remove-InfobloxObject                     | 1.0.20  | PowerInfoblox |
-| Function    | Set-InfobloxDNSRecord                     | 1.0.20  | PowerInfoblox |
+| Alias       | Add-InfobloxSubnet                        | 1.0.28  | PowerInfoblox |
+| Alias       | Get-InfobloxDHCPLeases                    | 1.0.28  | PowerInfoblox |
+| Alias       | Get-InfobloxDNSAuthZones                  | 1.0.28  | PowerInfoblox |
+| Alias       | Get-InfobloxDNSRecords                    | 1.0.28  | PowerInfoblox |
+| Alias       | Get-InfobloxDNSRecordsAll                 | 1.0.28  | PowerInfoblox |
+| Function    | Add-InfobloxDHCPRange                     | 1.0.28  | PowerInfoblox |
+| Function    | Add-InfobloxDHCPReservation               | 1.0.28  | PowerInfoblox |
+| Function    | Add-InfoBloxDNSRecord                     | 1.0.28  | PowerInfoblox |
+| Function    | Add-InfobloxFixedAddress                  | 1.0.28  | PowerInfoblox |
+| Function    | Add-InfobloxNetwork                       | 1.0.28  | PowerInfoblox |
+| Function    | Add-InfobloxNetworkExtensibleAttribute    | 1.0.28  | PowerInfoblox |
+| Function    | Connect-Infoblox                          | 1.0.28  | PowerInfoblox |
+| Function    | Disconnect-Infoblox                       | 1.0.28  | PowerInfoblox |
+| Function    | Get-InfobloxDHCPLease                     | 1.0.28  | PowerInfoblox |
+| Function    | Get-InfobloxDHCPRange                     | 1.0.28  | PowerInfoblox |
+| Function    | Get-InfobloxDiscoveryTask                 | 1.0.28  | PowerInfoblox |
+| Function    | Get-InfobloxDNSAuthZone                   | 1.0.28  | PowerInfoblox |
+| Function    | Get-InfobloxDNSDelegatedZone              | 1.0.28  | PowerInfoblox |
+| Function    | Get-InfobloxDNSForwardZone                | 1.0.28  | PowerInfoblox |
+| Function    | Get-InfobloxDNSRecord                     | 1.0.28  | PowerInfoblox |
+| Function    | Get-InfobloxDNSRecordAll                  | 1.0.28  | PowerInfoblox |
+| Function    | Get-InfobloxDNSView                       | 1.0.28  | PowerInfoblox |
+| Function    | Get-InfobloxFixedAddress                  | 1.0.28  | PowerInfoblox |
+| Function    | Get-InfobloxGrid                          | 1.0.28  | PowerInfoblox |
+| Function    | Get-InfobloxIPAddress                     | 1.0.28  | PowerInfoblox |
+| Function    | Get-InfobloxMember                        | 1.0.28  | PowerInfoblox |
+| Function    | Get-InfobloxNetwork                       | 1.0.28  | PowerInfoblox |
+| Function    | Get-InfobloxNetworkContainer              | 1.0.28  | PowerInfoblox |
+| Function    | Get-InfobloxNetworkNextAvailableIP        | 1.0.28  | PowerInfoblox |
+| Function    | Get-InfobloxNetworkNextAvailableNetwork   | 1.0.28  | PowerInfoblox |
+| Function    | Get-InfobloxNetworkView                   | 1.0.28  | PowerInfoblox |
+| Function    | Get-InfobloxObjects                       | 1.0.28  | PowerInfoblox |
+| Function    | Get-InfobloxPermission                    | 1.0.28  | PowerInfoblox |
+| Function    | Get-InfobloxResponsePolicyZones           | 1.0.28  | PowerInfoblox |
+| Function    | Get-InfobloxSchema                        | 1.0.28  | PowerInfoblox |
+| Function    | Get-InfoBloxSearch                        | 1.0.28  | PowerInfoblox |
+| Function    | Get-InfobloxVDiscoveryTask                | 1.0.28  | PowerInfoblox |
+| Function    | Invoke-InfobloxQuery                      | 1.0.28  | PowerInfoblox |
+| Function    | New-InfobloxOption                        | 1.0.28  | PowerInfoblox |
+| Function    | Remove-InfobloxDnsRecord                  | 1.0.28  | PowerInfoblox |
+| Function    | Remove-InfobloxFixedAddress               | 1.0.28  | PowerInfoblox |
+| Function    | Remove-InfobloxIPAddress                  | 1.0.28  | PowerInfoblox |
+| Function    | Remove-InfobloxNetworkExtensibleAttribute | 1.0.28  | PowerInfoblox |
+| Function    | Remove-InfobloxObject                     | 1.0.28  | PowerInfoblox |
+| Function    | Set-InfobloxDNSRecord                     | 1.0.28  | PowerInfoblox |
 
 ### Examples
 
