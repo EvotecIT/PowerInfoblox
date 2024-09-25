@@ -1,4 +1,9 @@
-﻿### 1.0.28 - 2024.09.17
+﻿### 1.0.29 - 2024.09.25
+- Improve `Get-InfobloxDHCPLease`
+- Improve `Get-InfobloxDHCPRange`
+- Improve `Get-InfobloxNetwork`
+
+### 1.0.28 - 2024.09.17
 - Added `Get-InfobloxNetworkContainer` to get network containers
 - Added `Get-InfobloxNetworkNextAvailableNetwork` to search for the next available network within a network container
 
