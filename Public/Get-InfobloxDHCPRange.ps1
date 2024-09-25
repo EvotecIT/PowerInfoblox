@@ -4,6 +4,7 @@
         [string] $Network,
         [switch] $PartialMatch,
         [switch] $FetchFromSchema,
+        [string[]] $ReturnFields,
         [int] $MaxResults = 1000000
     )
     if (-not $Script:InfobloxConfiguration) {
@@ -21,6 +22,8 @@
 
     if ($FetchFromSchema) {
         $ReturnFields = Get-FieldsFromSchema -SchemaObject "range"
+    } elseif ($ReturnFields) {
+        $ReturnFields = ($ReturnFields | Sort-Object -Unique) -join ','
     } else {
         $ReturnFields = $Null
     }

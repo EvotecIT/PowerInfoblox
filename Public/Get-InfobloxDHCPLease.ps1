@@ -5,7 +5,9 @@
         [string] $Network,
         [string] $IPv4Address,
         [string] $Hostname,
-        [switch] $PartialMatch
+        [switch] $PartialMatch,
+        [switch] $FetchFromSchema,
+        [int] $MaxResults = 1000000
     )
     if (-not $Script:InfobloxConfiguration) {
         if ($ErrorActionPreference -eq 'Stop') {
@@ -17,12 +19,20 @@
 
     Write-Verbose -Message "Get-InfobloxDHCPLease - Requesting DHCP leases for Network [$Network] / IPv4Address [$IPv4Address] / Hostname [$Hostname] / PartialMatch [$($PartialMatch.IsPresent)]"
 
+    if ($FetchFromSchema) {
+        $ReturnFields = Get-FieldsFromSchema -SchemaObject "lease"
+    } elseif ($ReturnFields) {
+        $ReturnFields = ($ReturnFields | Sort-Object -Unique) -join ','
+    } else {
+        $ReturnFields = 'binding_state,hardware,client_hostname,fingerprint,address,network_view'
+    }
+
     $invokeInfobloxQuerySplat = @{
         RelativeUri    = 'lease'
         Method         = 'GET'
         QueryParameter = @{
-            _return_fields = 'binding_state,hardware,client_hostname,fingerprint,address,network_view'
-            _max_results = 1000000
+            _return_fields = $ReturnFields
+            _max_results   = $MaxResults
         }
     }
     if ($Network) {
