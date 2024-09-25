@@ -36,8 +36,6 @@ Install-Module -Name PowerInfoblox -Force -Verbose
 
 This module provides several commands to interact with Infoblox service.
 
-# PowerShell Commands
-
 | CommandType | Name                                      | Version | Source        |
 | ----------- | ----------------------------------------- | ------- | ------------- |
 | Alias       | Add-InfobloxSubnet                        | 1.0.28  | PowerInfoblox |
@@ -87,7 +85,6 @@ This module provides several commands to interact with Infoblox service.
 | Function    | Set-InfobloxDNSRecord                     | 1.0.28  | PowerInfoblox |
 
 ### Examples
-
 
 #### Connecting to Infoblox
 
