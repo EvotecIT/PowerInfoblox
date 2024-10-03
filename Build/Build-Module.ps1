@@ -111,7 +111,7 @@ Build-Module -ModuleName 'PowerInfoblox' {
         Enable              = $true
         Path                = "$PSScriptRoot\..\Artefacts\Script"
         ScriptName          = 'InfoBloxTest.ps1'
-        PostScriptMergePath = "$PSScriptRoot\..\Examples\Package\ExampleToPackageContainer.ps1"
+        PostScriptMergePath = "$PSScriptRoot\..\Examples\Package\ExampleProd.ps1"
     }
     New-ConfigurationArtefact @newConfigurationArtefactSplat
 
