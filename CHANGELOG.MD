@@ -1,4 +1,13 @@
-﻿### 1.0.29 - 2024.09.25
+﻿### 1.0.30
+- Small modification to processing in `Add-InfobloxDHCPRange`
+- Added `Set-InfobloxDHCPRange` to update DHCP range
+- Added `Add-InfobloxDHCPRangeOptions`
+- Added `Set-InfobloxDHCPRangeOptions`
+- Added `Remove-InfobloxDHCPRangeOptions`
+- Improved docs for `Get-InfobloxDHCPRange`
+- Removed dead code `Set-InfobloxDNSRecord`
+
+### 1.0.29 - 2024.09.25
 - Improve `Get-InfobloxDHCPLease`
 - Improve `Get-InfobloxDHCPRange`
 - Improve `Get-InfobloxNetwork`
