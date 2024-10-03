@@ -133,11 +133,13 @@
     $Body = [ordered] @{
         "start_addr"   = $StartAddress
         "end_addr"     = $EndAddress
-        "comment"      = $Comment
         "network_view" = $NetworkView
     }
     if ($Name) {
         $Body["name"] = $Name
+    }
+    if ($Comment) {
+        $Body["comment"] = $Comment
     }
     if ($ServerAssociationType) {
         $Body["server_association_type"] = $ServerAssociationType
