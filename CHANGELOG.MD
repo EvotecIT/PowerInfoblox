@@ -1,4 +1,4 @@
-﻿### 1.0.30
+﻿### 1.0.30 - 2024.10.30
 - Small modification to processing in `Add-InfobloxDHCPRange`
 - Added `Set-InfobloxDHCPRange` to update DHCP range
 - Added `Add-InfobloxDHCPRangeOptions`
