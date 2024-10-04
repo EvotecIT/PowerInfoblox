@@ -104,14 +104,14 @@
     if ($Options) {
         $Body["options"] = @(
             foreach ($Option in $Options) {
-                $Option
+                $Option | Select-Object -Property name, num, use_option, value, vendor_class
             }
         )
     }
     if ($MSOptions) {
         $Body["ms_options"] = @(
             foreach ($MSOption in $MSOptions) {
-                $MSOption
+                $MSOption | Select-Object -Property name, num, value, vendor_class
             }
         )
     }
