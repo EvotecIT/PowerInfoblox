@@ -113,7 +113,7 @@
         [string] $NetworkView = 'default',
         [string] $MSServer,
         [switch] $ReturnOutput,
-        [System.Collections.IDictionary] $ExtensinbleAttribute,
+        [Alias('ExtensibleAttribute')][System.Collections.IDictionary] $ExtensinbleAttribute,
         [Array] $Options,
         [Alias('ms_options')][Array] $MSOptions,
         [alias('failover_association')][string] $FailoverAssociation,

@@ -27,8 +27,8 @@
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory)][alias('Subnet')][string] $Network,
-        [Parameter(Mandatory)][alias('ExtensinbleAttribute')][string] $Attribute,
-        [Parameter(Mandatory)][alias('ExtensinbleAttributeValue')][string] $Value
+        [Parameter(Mandatory)][alias('ExtensinbleAttribute', 'ExtensibleAttribute')][string] $Attribute,
+        [Parameter(Mandatory)][alias('ExtensinbleAttributeValue', 'ExtensibleAttributeValue')][string] $Value
     )
     if (-not $Script:InfobloxConfiguration) {
         if ($ErrorActionPreference -eq 'Stop') {
