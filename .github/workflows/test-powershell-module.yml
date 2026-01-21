@@ -57,8 +57,8 @@ jobs:
         shell: powershell
         run: |
           Write-Host "PowerShell Version: $($PSVersionTable.PSVersion)"
-          Install-Module -Name Pester -Repository PSGallery -RequiredVersion 5.7.1 -Force -SkipPublisherCheck -AllowClobber
-          Install-Module -Name PSWriteColor -Repository PSGallery -RequiredVersion 1.0.4 -Force -SkipPublisherCheck -AllowClobber
+          Install-Module -Name Pester -Repository PSGallery -Force -SkipPublisherCheck -AllowClobber
+          Install-Module -Name PSWriteColor -Repository PSGallery -Force -SkipPublisherCheck -AllowClobber
 
       - name: Run PowerShell tests
         shell: powershell
