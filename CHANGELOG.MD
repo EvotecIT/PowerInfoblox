@@ -1,4 +1,11 @@
-﻿### 1.0.31 - 2024.10.09
+### 1.0.32 - 2026.01.21
+- Auto-resolve list/enum Extensible Attribute display values to internal IDs (single and multi-value)
+- Shared EA conversion helper for consistent behavior across network and DHCP cmdlets
+- Added ExtensibleAttribute* parameter aliases alongside existing misspellings
+- Added Pester tests + CI workflow for PowerShell 5.1 / 7
+- PS5-safe test discovery and pinned test dependencies
+
+### 1.0.31 - 2024.10.09
 - Force proper options/ms_options in `Set-InfobloxDHCPRange`
 
 ### 1.0.30 - 2024.10.03
