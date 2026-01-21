@@ -1,5 +1,10 @@
 $ModuleName = (Get-ChildItem $PSScriptRoot\*.psd1).BaseName
-$PrimaryModule = Get-ChildItem -Path $PSScriptRoot -Filter '*.psd1' -Recurse -ErrorAction SilentlyContinue -Depth 1
+$PrimaryModule = Get-ChildItem -Path $PSScriptRoot -Filter '*.psd1' -File -ErrorAction SilentlyContinue
+if (-not $PrimaryModule) {
+    $PrimaryModule = Get-ChildItem -Path $PSScriptRoot -Directory -ErrorAction SilentlyContinue | ForEach-Object {
+        Get-ChildItem -Path $_.FullName -Filter '*.psd1' -File -ErrorAction SilentlyContinue
+    }
+}
 if (-not $PrimaryModule) {
     throw "Path $PSScriptRoot doesn't contain PSD1 files. Failing tests."
 }

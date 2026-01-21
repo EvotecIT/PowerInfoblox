@@ -116,13 +116,13 @@
         [Array] $Options,
         [Alias('ms_options')][Array] $MSOptions,
         [string[]] $Members,
-        [string] $ExtensinbleAttributeName,
-        [string] $ExtensinbleAttributeSite,
-        [string] $ExtensinbleAttributeState,
-        [string] $ExtensinbleAttributeCountry,
-        [string] $ExtensinbleAttributeRegion,
-        [string] $ExtensinbleAttributeVLAN,
-        [System.Collections.IDictionary] $ExtensinbleAttribute,
+        [Alias('ExtensibleAttributeName')][string] $ExtensinbleAttributeName,
+        [Alias('ExtensibleAttributeSite')][string] $ExtensinbleAttributeSite,
+        [Alias('ExtensibleAttributeState')][string] $ExtensinbleAttributeState,
+        [Alias('ExtensibleAttributeCountry')][string] $ExtensinbleAttributeCountry,
+        [Alias('ExtensibleAttributeRegion')][string] $ExtensinbleAttributeRegion,
+        [Alias('ExtensibleAttributeVLAN')][string] $ExtensinbleAttributeVLAN,
+        [Alias('ExtensibleAttribute')][System.Collections.IDictionary] $ExtensinbleAttribute,
         [switch] $ReturnOutput
     )
 

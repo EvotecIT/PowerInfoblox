@@ -58,7 +58,7 @@
         [parameter(ParameterSetName = 'ReferenceID', Mandatory)][string] $ReferenceID,
         [string] $Comment,
         [string] $MSServer,
-        [System.Collections.IDictionary] $ExtensinbleAttribute,
+        [Alias('ExtensibleAttribute')][System.Collections.IDictionary] $ExtensinbleAttribute,
         [Array] $Options,
         [Alias('ms_options')][Array] $MSOptions,
         [alias('failover_association')][string] $FailoverAssociation,
