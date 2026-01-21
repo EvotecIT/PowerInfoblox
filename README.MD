@@ -227,6 +227,17 @@ $addInfobloxSubnetSplat = @{
 
 Add-InfobloxNetwork @addInfobloxSubnetSplat
 
+$addInfobloxSubnetSplat = @{
+    Subnet               = '10.22.37.0/24'
+    Comment              = 'List EA example'
+    ExtensinbleAttribute = [ordered] @{
+        NetworkType     = 'on-prem SDC'
+        'Support group' = @('Tier1', 'Tier2')
+    }
+}
+
+Add-InfobloxNetwork @addInfobloxSubnetSplat
+
 Remove-InfobloxNetworkExtensibleAttribute -Network '10.22.36.0/24' -Attribute 'VLAN'
 Add-InfobloxNetworkExtensibleAttribute -Network '10.22.36.0/24' -Attribute 'VLAN' -Value '811'
 ```
