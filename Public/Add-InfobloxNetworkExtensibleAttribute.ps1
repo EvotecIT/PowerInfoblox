@@ -44,12 +44,12 @@
         return
     }
 
+    $ResolvedExtattrs = ConvertTo-InfobloxExtattrs -Attributes @{
+        $Attribute = $Value
+    }
+
     $Body = [ordered] @{
-        "extattrs+" = @{
-            $Attribute = @{
-                "value" = $Value
-            }
-        }
+        "extattrs+" = $ResolvedExtattrs
     }
 
     Remove-EmptyValue -Hashtable $Body
