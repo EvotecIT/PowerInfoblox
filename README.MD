@@ -190,6 +190,9 @@ Add-InfoBloxDNSRecord -Type CNAME -Name 'test123.example.lab' -CanonicalName 'mc
 
 #### Example of adding Network
 
+List/enum extensible attributes can now be provided using the display value shown in the UI.
+The module resolves the display value to the internal ID automatically (single and multi-value).
+
 ```powershell
 $addInfobloxSubnetSplat = @{
     Subnet                      = '10.22.35.0/24'
