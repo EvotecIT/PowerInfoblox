@@ -1,4 +1,4 @@
-﻿# PowerInfoblox - PowerShell Module
+# PowerInfoblox - PowerShell Module
 
 <p align="center">
   <!-- <a href="https://dev.azure.com/evotecpl/PowerInfoblox/_build/results?buildId=latest"><img src="https://img.shields.io/azure-devops/build/evotecpl/39c74615-8f34-4af0-a835-68dc33f9214f/14?label=Azure%20Pipelines&style=flat-square"></a> -->
@@ -198,12 +198,12 @@ $addInfobloxSubnetSplat = @{
     DHCPGateway                 = "10.22.35.1"
     DHCPLeaseTime               = 5000
     DHCPDomainNameServers       = "192.168.4.56,192.168.4.57"
-    ExtensinbleAttributeCountry = "Poland"
-    #ExtensinbleAttributeName    = "Test"
-    ExtensinbleAttributeRegion  = "Europe"
-    ExtensinbleAttributeSite    = "Site1"
-    ExtensinbleAttributeState   = "Mazowieckie"
-    ExtensinbleAttributeVLAN    = "810"
+    ExtensibleAttributeCountry = "Poland"
+    #ExtensibleAttributeName    = "Test"
+    ExtensibleAttributeRegion  = "Europe"
+    ExtensibleAttributeSite    = "Site1"
+    ExtensibleAttributeState   = "Mazowieckie"
+    ExtensibleAttributeVLAN    = "810"
 }
 
 Add-InfobloxNetwork @addInfobloxSubnetSplat
@@ -216,12 +216,23 @@ $addInfobloxSubnetSplat = @{
     DHCPGateway           = "10.22.36.1"
     DHCPLeaseTime         = 5000
     DHCPDomainNameServers = "192.168.4.56,192.168.4.57"
-    ExtensinbleAttribute  = [ordered] @{
+    ExtensibleAttribute  = [ordered] @{
         #Name    = 'Test'
         VLAN    = '810'
         Country = 'Poland'
         Region  = 'Europe'
         Site    = 'Site1'
+    }
+}
+
+Add-InfobloxNetwork @addInfobloxSubnetSplat
+
+$addInfobloxSubnetSplat = @{
+    Subnet               = '10.22.37.0/24'
+    Comment              = 'List EA example'
+    ExtensibleAttribute = [ordered] @{
+        NetworkType     = 'on-prem SDC'
+        'Support group' = @('Tier1', 'Tier2')
     }
 }
 
@@ -241,7 +252,7 @@ $addInfobloxSubnetSplat = @{
     DHCPGateway           = "10.22.41.1"
     DHCPLeaseTime         = 5000
     DHCPDomainNameServers = "192.168.4.56,192.168.4.57"
-    ExtensinbleAttribute  = [ordered] @{
+    ExtensibleAttribute  = [ordered] @{
         #Name    = 'Test'
         VLAN    = '810'
         Country = 'Poland'

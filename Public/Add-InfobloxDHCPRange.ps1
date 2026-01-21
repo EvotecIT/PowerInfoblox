@@ -113,7 +113,7 @@
         [string] $NetworkView = 'default',
         [string] $MSServer,
         [switch] $ReturnOutput,
-        [System.Collections.IDictionary] $ExtensinbleAttribute,
+        [Alias('ExtensibleAttribute')][System.Collections.IDictionary] $ExtensinbleAttribute,
         [Array] $Options,
         [Alias('ms_options')][Array] $MSOptions,
         [alias('failover_association')][string] $FailoverAssociation,
@@ -151,16 +151,7 @@
         }
     }
     if ($ExtensinbleAttribute) {
-        $Body["extattrs"] = [ordered] @{}
-        foreach ($Key in $ExtensinbleAttribute.Keys) {
-            if ($ExtensinbleAttribute[$Key] -is [System.Collections.IDictionary]) {
-                $Body["extattrs"][$Key] = $ExtensinbleAttribute[$Key]
-            } else {
-                $Body["extattrs"][$Key] = @{
-                    value = $ExtensinbleAttribute[$Key]
-                }
-            }
-        }
+        $Body["extattrs"] = ConvertTo-InfobloxExtattrs -Attributes $ExtensinbleAttribute
     }
     if ($Options) {
         $Body["options"] = @(

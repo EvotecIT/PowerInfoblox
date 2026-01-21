@@ -116,13 +116,13 @@
         [Array] $Options,
         [Alias('ms_options')][Array] $MSOptions,
         [string[]] $Members,
-        [string] $ExtensinbleAttributeName,
-        [string] $ExtensinbleAttributeSite,
-        [string] $ExtensinbleAttributeState,
-        [string] $ExtensinbleAttributeCountry,
-        [string] $ExtensinbleAttributeRegion,
-        [string] $ExtensinbleAttributeVLAN,
-        [System.Collections.IDictionary] $ExtensinbleAttribute,
+        [Alias('ExtensibleAttributeName')][string] $ExtensinbleAttributeName,
+        [Alias('ExtensibleAttributeSite')][string] $ExtensinbleAttributeSite,
+        [Alias('ExtensibleAttributeState')][string] $ExtensinbleAttributeState,
+        [Alias('ExtensibleAttributeCountry')][string] $ExtensinbleAttributeCountry,
+        [Alias('ExtensibleAttributeRegion')][string] $ExtensinbleAttributeRegion,
+        [Alias('ExtensibleAttributeVLAN')][string] $ExtensinbleAttributeVLAN,
+        [Alias('ExtensibleAttribute')][System.Collections.IDictionary] $ExtensinbleAttribute,
         [switch] $ReturnOutput
     )
 
@@ -220,45 +220,32 @@
         }
     }
     if ($ExtensibleAttributeExists) {
-        $Body["extattrs"] = [ordered] @{}
+        $CollectedExtattrs = [ordered] @{}
         if ($ExtensinbleAttributeName) {
-            $Body["extattrs"]["Name"] = @{
-                value = $ExtensinbleAttributeName
-            }
+            $CollectedExtattrs["Name"] = $ExtensinbleAttributeName
         }
         if ($ExtensinbleAttributeSite) {
-            $Body["extattrs"]["Site"] = @{
-                value = $ExtensinbleAttributeSite
-            }
+            $CollectedExtattrs["Site"] = $ExtensinbleAttributeSite
         }
         if ($ExtensinbleAttributeState) {
-            $Body["extattrs"]["State"] = @{
-                value = $ExtensinbleAttributeState
-            }
+            $CollectedExtattrs["State"] = $ExtensinbleAttributeState
         }
         if ($ExtensinbleAttributeCountry) {
-            $Body["extattrs"]["Country"] = @{
-                value = $ExtensinbleAttributeCountry
-            }
+            $CollectedExtattrs["Country"] = $ExtensinbleAttributeCountry
         }
         if ($ExtensinbleAttributeRegion) {
-            $Body["extattrs"]["Region"] = @{
-                value = $ExtensinbleAttributeRegion
-            }
+            $CollectedExtattrs["Region"] = $ExtensinbleAttributeRegion
         }
         if ($ExtensinbleAttributeVLAN) {
-            $Body["extattrs"]["VLAN"] = @{
-                value = $ExtensinbleAttributeVLAN
+            $CollectedExtattrs["VLAN"] = $ExtensinbleAttributeVLAN
+        }
+        if ($ExtensinbleAttribute) {
+            foreach ($Key in $ExtensinbleAttribute.Keys) {
+                $CollectedExtattrs[$Key] = $ExtensinbleAttribute[$Key]
             }
         }
-        foreach ($Key in $ExtensinbleAttribute.Keys) {
-            if ($ExtensinbleAttribute[$Key] -is [System.Collections.IDictionary]) {
-                $Body["extattrs"][$Key] = $ExtensinbleAttribute[$Key]
-            } else {
-                $Body["extattrs"][$Key] = @{
-                    value = $ExtensinbleAttribute[$Key]
-                }
-            }
+        if ($CollectedExtattrs.Count -gt 0) {
+            $Body["extattrs"] = ConvertTo-InfobloxExtattrs -Attributes $CollectedExtattrs
         }
     }
 

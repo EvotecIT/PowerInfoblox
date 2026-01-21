@@ -27,8 +27,8 @@
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory)][alias('Subnet')][string] $Network,
-        [Parameter(Mandatory)][alias('ExtensinbleAttribute')][string] $Attribute,
-        [Parameter(Mandatory)][alias('ExtensinbleAttributeValue')][string] $Value
+        [Parameter(Mandatory)][alias('ExtensinbleAttribute', 'ExtensibleAttribute')][string] $Attribute,
+        [Parameter(Mandatory)][alias('ExtensinbleAttributeValue', 'ExtensibleAttributeValue')][string] $Value
     )
     if (-not $Script:InfobloxConfiguration) {
         if ($ErrorActionPreference -eq 'Stop') {
@@ -44,12 +44,12 @@
         return
     }
 
+    $ResolvedExtattrs = ConvertTo-InfobloxExtattrs -Attributes @{
+        $Attribute = $Value
+    }
+
     $Body = [ordered] @{
-        "extattrs+" = @{
-            $Attribute = @{
-                "value" = $Value
-            }
-        }
+        "extattrs+" = $ResolvedExtattrs
     }
 
     Remove-EmptyValue -Hashtable $Body
