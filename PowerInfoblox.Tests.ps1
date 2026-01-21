@@ -1,4 +1,8 @@
 $ModuleName = (Get-ChildItem $PSScriptRoot\*.psd1).BaseName
+$PinnedModules = @{
+    'Pester'       = '5.7.1'
+    'PSWriteColor' = '1.0.4'
+}
 $PrimaryModule = Get-ChildItem -Path $PSScriptRoot -Filter '*.psd1' -File -ErrorAction SilentlyContinue
 if (-not $PrimaryModule) {
     $PrimaryModule = Get-ChildItem -Path $PSScriptRoot -Directory -ErrorAction SilentlyContinue | ForEach-Object {
@@ -28,12 +32,30 @@ foreach ($Module in $RequiredModules) {
         $Exists = Get-Module -ListAvailable -Name $Module.ModuleName
         if (-not $Exists) {
             Write-Warning "$ModuleName - Downloading $($Module.ModuleName) from PSGallery"
-            Install-Module -Name $Module.ModuleName -Force -SkipPublisherCheck -AllowClobber
+            $installModuleSplat = @{
+                Name         = $Module.ModuleName
+                Force        = $true
+                SkipPublisherCheck = $true
+                AllowClobber = $true
+            }
+            if ($Module.ModuleVersion) {
+                $installModuleSplat['RequiredVersion'] = $Module.ModuleVersion
+            }
+            Install-Module @installModuleSplat
         }
     } else {
         $Exists = Get-Module -ListAvailable $Module -ErrorAction SilentlyContinue
         if (-not $Exists) {
-            Install-Module -Name $Module -Force -SkipPublisherCheck -AllowClobber
+            $installModuleSplat = @{
+                Name         = $Module
+                Force        = $true
+                SkipPublisherCheck = $true
+                AllowClobber = $true
+            }
+            if ($PinnedModules.ContainsKey($Module)) {
+                $installModuleSplat['RequiredVersion'] = $PinnedModules[$Module]
+            }
+            Install-Module @installModuleSplat
         }
     }
 }
