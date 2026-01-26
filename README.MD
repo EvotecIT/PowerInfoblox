@@ -1,9 +1,8 @@
 # PowerInfoblox - PowerShell Module
 
 <p align="center">
-  <!-- <a href="https://dev.azure.com/evotecpl/PowerInfoblox/_build/results?buildId=latest"><img src="https://img.shields.io/azure-devops/build/evotecpl/39c74615-8f34-4af0-a835-68dc33f9214f/14?label=Azure%20Pipelines&style=flat-square"></a> -->
   <a href="https://www.powershellgallery.com/packages/PowerInfoblox"><img src="https://img.shields.io/powershellgallery/v/PowerInfoblox.svg?style=flat-square"></a>
-  <a href="https://www.powershellgallery.com/packages/PowerInfoblox"><img src="https://img.shields.io/powershellgallery/vpre/PowerInfoblox.svg?label=powershell%20gallery%20preview&colorB=yellow&style=flat-square"></a>
+  <a href="https://www.powershellgallery.com/packages/PowerInfoblox"><img src="https://img.shields.io/powershellgallery/v/PowerInfoblox?include_prereleases&label=powershell%20gallery%20preview&colorB=yellow&style=flat-square"></a>
   <a href="https://github.com/EvotecIT/PowerInfoblox"><img src="https://img.shields.io/github/license/EvotecIT/PowerInfoblox.svg?style=flat-square"></a>
 </p>
 
