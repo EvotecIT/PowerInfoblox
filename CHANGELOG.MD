@@ -1,3 +1,6 @@
+### 1.0.36 - 2026.01.26
+- Fix EA definition lookup on grids where `allow_multiple` is not a readable field (avoid 400 on `extensibleattributedef`)
+
 ### 1.0.32 - 2026.01.26
 - Auto-resolve list/enum Extensible Attribute display values to internal IDs (single and multi-value)
 - Shared EA conversion helper for consistent behavior across network and DHCP cmdlets

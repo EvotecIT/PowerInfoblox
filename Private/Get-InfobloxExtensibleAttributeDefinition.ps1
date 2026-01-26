@@ -21,10 +21,15 @@ function Get-InfobloxExtensibleAttributeDefinition {
 
     $QueryParameter = @{
         name           = $Name
-        _return_fields = 'name,type,list_values,allow_multiple'
+        _return_fields = 'name,type,list_values'
     }
 
     $Result = Invoke-InfobloxQuery -RelativeUri "extensibleattributedef" -Method 'GET' -QueryParameter $QueryParameter -WhatIf:$false
+    if (-not $Result) {
+        # As a last resort, let the API decide default fields.
+        $QueryParameter.Remove('_return_fields')
+        $Result = Invoke-InfobloxQuery -RelativeUri "extensibleattributedef" -Method 'GET' -QueryParameter $QueryParameter -WhatIf:$false
+    }
     if ($Result -is [array]) {
         $Result = $Result | Select-Object -First 1
     }
