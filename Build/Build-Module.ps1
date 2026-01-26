@@ -3,7 +3,7 @@ Import-Module PSPublishModule -Force #-RequiredVersion '2.0.26'
 Build-Module -ModuleName 'PowerInfoblox' {
     # Usual defaults as per standard module
     $Manifest = [ordered] @{
-        ModuleVersion        = '1.0.X'
+        ModuleVersion        = '1.0.35'
         GUID                 = '9fc9fd61-7f11-4f4b-a527-084086f1905f'
         # Supported PSEditions
         CompatiblePSEditions = @('Desktop', 'Core')
