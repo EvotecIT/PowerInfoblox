@@ -193,6 +193,19 @@ Add-InfoBloxDNSRecord -Type CNAME -Name 'test123.example.lab' -CanonicalName 'mc
 List/enum extensible attributes can now be provided using the display value shown in the UI.
 The module resolves the display value to the internal ID automatically (single and multi-value).
 
+To modify MS DHCP servers on a network, use the generic members helper:
+
+```powershell
+Set-InfobloxMembers -Network '10.46.5.128/25' -Members @(
+    'dhcp01.example.com',
+    'dhcp02.example.com'
+)
+
+# Add or remove
+Set-InfobloxMembers -Network '10.46.5.128/25' -AddMembers 'dhcp02.example.com'
+Set-InfobloxMembers -Network '10.46.5.128/25' -RemoveMembers 'dhcp01.example.com'
+```
+
 ```powershell
 $addInfobloxSubnetSplat = @{
     Subnet                      = '10.22.35.0/24'
