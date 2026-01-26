@@ -1,13 +1,4 @@
-$PublishModulePath = 'C:\Support\GitHub\PSPublishModule\PSPublishModule.psd1'
-if (Test-Path -LiteralPath $PublishModulePath) {
-    Import-Module $PublishModulePath -Force
-} else {
-    if (-not (Get-Module -ListAvailable -Name PSPublishModule)) {
-        Install-Module PSPublishModule -Force -Scope CurrentUser -AllowClobber
-    }
-    Import-Module PSPublishModule -Force
-}
-
+Import-Module PSPublishModule -Force -RequiredVersion '2.0.26'
 
 Build-Module -ModuleName 'PowerInfoblox' {
     # Usual defaults as per standard module
