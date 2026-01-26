@@ -1,4 +1,4 @@
-function Set-InfobloxMembers {
+function Set-InfobloxNetworkMembers {
     <#
     .SYNOPSIS
     Sets or modifies members for an Infoblox object.
@@ -32,18 +32,18 @@ function Set-InfobloxMembers {
     If provided, returns the API response.
 
     .EXAMPLE
-    Set-InfobloxMembers -Network '10.46.5.128/25' -Members @(
+    Set-InfobloxNetworkMembers -Network '10.46.5.128/25' -Members @(
         'dhcp01.example.com', 'dhcp02.example.com'
     )
 
     .EXAMPLE
-    Set-InfobloxMembers -Network '10.46.5.128/25' -AddMembers 'dhcp02.example.com'
+    Set-InfobloxNetworkMembers -Network '10.46.5.128/25' -AddMembers 'dhcp02.example.com'
 
     .EXAMPLE
-    Set-InfobloxMembers -Network '10.46.5.128/25' -RemoveMembers 'dhcp01.example.com'
+    Set-InfobloxNetworkMembers -Network '10.46.5.128/25' -RemoveMembers 'dhcp01.example.com'
 
     .EXAMPLE
-    Set-InfobloxMembers -Network '10.46.5.128/25' -MemberStruct 'dhcpmember' -MemberProperty 'name' -Members @(
+    Set-InfobloxNetworkMembers -Network '10.46.5.128/25' -MemberStruct 'dhcpmember' -MemberProperty 'name' -Members @(
         'dhcp01.example.com', 'dhcp02.example.com'
     )
 
@@ -54,8 +54,12 @@ function Set-InfobloxMembers {
         MemberProperty = 'name'
         AddMembers     = 'dhcp03.example.com'
     }
-    Set-InfobloxMembers @customMembersSplat
+    Set-InfobloxNetworkMembers @customMembersSplat
+
+    .EXAMPLE
+    Set-InfobloxNetworkMembers -Network '10.46.5.128/25' -Members @()
     #>
+    [Alias('Set-InfobloxMembers')]
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory)][string] $Network,
@@ -72,16 +76,20 @@ function Set-InfobloxMembers {
         if ($ErrorActionPreference -eq 'Stop') {
             throw 'You must first connect to an Infoblox server using Connect-Infoblox'
         }
-        Write-Warning -Message 'Set-InfobloxMembers - You must first connect to an Infoblox server using Connect-Infoblox'
+        Write-Warning -Message 'Set-InfobloxNetworkMembers - You must first connect to an Infoblox server using Connect-Infoblox'
         return
     }
 
-    if (-not $Members -and -not $AddMembers -and -not $RemoveMembers) {
-        Write-Warning -Message 'Set-InfobloxMembers - You must provide Members, AddMembers, or RemoveMembers'
+    $hasMembers = $PSBoundParameters.ContainsKey('Members')
+    $hasAddMembers = $PSBoundParameters.ContainsKey('AddMembers')
+    $hasRemoveMembers = $PSBoundParameters.ContainsKey('RemoveMembers')
+
+    if (-not $hasMembers -and -not $hasAddMembers -and -not $hasRemoveMembers) {
+        Write-Warning -Message 'Set-InfobloxNetworkMembers - You must provide Members, AddMembers, or RemoveMembers'
         return
     }
-    if ($Members -and ($AddMembers -or $RemoveMembers)) {
-        Write-Warning -Message 'Set-InfobloxMembers - Use Members to replace or AddMembers/RemoveMembers to modify, not both'
+    if ($hasMembers -and ($hasAddMembers -or $hasRemoveMembers)) {
+        Write-Warning -Message 'Set-InfobloxNetworkMembers - Use Members to replace or AddMembers/RemoveMembers to modify, not both'
         return
     }
 
@@ -92,12 +100,12 @@ function Set-InfobloxMembers {
     }
     $Object = Invoke-InfobloxQuery -RelativeUri 'network' -Method 'GET' -QueryParameter $QueryParameter -WhatIf:$false
     if (-not $Object) {
-        Write-Warning -Message "Set-InfobloxMembers - Network $Network not found"
+        Write-Warning -Message "Set-InfobloxNetworkMembers - Network $Network not found"
         return
     }
     if ($Object -is [array]) {
         if ($Object.Count -gt 1) {
-            Write-Warning -Message "Set-InfobloxMembers - Multiple networks found for $Network in view $NetworkView, using the first result."
+            Write-Warning -Message "Set-InfobloxNetworkMembers - Multiple networks found for $Network in view $NetworkView, using the first result."
         }
         $Object = $Object | Select-Object -First 1
     }
@@ -111,7 +119,7 @@ function Set-InfobloxMembers {
         }
     }
 
-    if ($Members) {
+    if ($hasMembers) {
         $FinalMembers = $Members
     } else {
         $FinalMembers = $CurrentMembers
@@ -140,7 +148,9 @@ function Set-InfobloxMembers {
         )
     }
 
-    Remove-EmptyValue -Hashtable $Body
+    if ($FinalMembers.Count -gt 0) {
+        Remove-EmptyValue -Hashtable $Body
+    }
 
     $invokeInfobloxQuerySplat = @{
         RelativeUri = $Object._ref
@@ -150,7 +160,7 @@ function Set-InfobloxMembers {
 
     $Output = Invoke-InfobloxQuery @invokeInfobloxQuerySplat
     if ($Output) {
-        Write-Verbose -Message "Set-InfobloxMembers - Modified $Output"
+        Write-Verbose -Message "Set-InfobloxNetworkMembers - Modified $Output"
         if ($ReturnOutput) {
             $Output
         }

@@ -1,4 +1,4 @@
-Describe 'Set-InfobloxMembers' {
+Describe 'Set-InfobloxNetworkMembers' {
     InModuleScope PowerInfoblox {
         BeforeEach {
             $Script:InfobloxConfiguration = @{ BaseUri = 'https://example.test/wapi/v2.12' }
@@ -8,7 +8,7 @@ Describe 'Set-InfobloxMembers' {
 
         It 'returns warning when no members inputs are provided' {
             Mock Write-Warning {}
-            Set-InfobloxMembers -Network '10.46.5.128/25'
+            Set-InfobloxNetworkMembers -Network '10.46.5.128/25'
             Assert-MockCalled Write-Warning -Times 1
         }
 
@@ -30,7 +30,7 @@ Describe 'Set-InfobloxMembers' {
                 return @{ ok = $true }
             }
 
-            Set-InfobloxMembers -Network '10.46.5.128/25' -Members @('b', 'c') | Out-Null
+            Set-InfobloxNetworkMembers -Network '10.46.5.128/25' -Members @('b', 'c') | Out-Null
 
             Assert-MockCalled Invoke-InfobloxQuery -ParameterFilter { $Method -eq 'PUT' } -Times 1
             $script:putBody.members | Should -HaveCount 2
@@ -55,7 +55,7 @@ Describe 'Set-InfobloxMembers' {
                 return @{ ok = $true }
             }
 
-            Set-InfobloxMembers -Network '10.46.5.128/25' -AddMembers @('a', 'b') | Out-Null
+            Set-InfobloxNetworkMembers -Network '10.46.5.128/25' -AddMembers @('a', 'b') | Out-Null
 
             $script:putBody.members | Should -HaveCount 2
             $script:putBody.members[0]._struct | Should -Be 'msdhcpserver'
@@ -80,7 +80,7 @@ Describe 'Set-InfobloxMembers' {
                 return @{ ok = $true }
             }
 
-            Set-InfobloxMembers -Network '10.46.5.128/25' -RemoveMembers @('a') | Out-Null
+            Set-InfobloxNetworkMembers -Network '10.46.5.128/25' -RemoveMembers @('a') | Out-Null
 
             $script:putBody.members | Should -HaveCount 1
             $script:putBody.members[0]._struct | Should -Be 'msdhcpserver'
@@ -100,11 +100,31 @@ Describe 'Set-InfobloxMembers' {
                 return @{ ok = $true }
             }
 
-            Set-InfobloxMembers -Network '10.46.5.128/25' -MemberStruct 'dhcpmember' -MemberProperty 'name' -Members @('dhcp01') | Out-Null
+            Set-InfobloxNetworkMembers -Network '10.46.5.128/25' -MemberStruct 'dhcpmember' -MemberProperty 'name' -Members @('dhcp01') | Out-Null
 
             $script:putBody.members | Should -HaveCount 1
             $script:putBody.members[0]._struct | Should -Be 'dhcpmember'
             $script:putBody.members[0].name | Should -Be 'dhcp01'
+        }
+
+        It 'allows clearing members with empty list' {
+            $result = [pscustomobject]@{
+                _ref    = 'network/ref'
+                members = @(
+                    @{ _struct = 'msdhcpserver'; ipv4addr = 'a' }
+                )
+            }
+            $script:putBody = $null
+            Mock Invoke-InfobloxQuery -MockWith {
+                param($RelativeUri, $Method, $BaseUri)
+                if ($Method -eq 'GET') { return $result }
+                $script:putBody = $Body
+                return @{ ok = $true }
+            }
+
+            Set-InfobloxNetworkMembers -Network '10.46.5.128/25' -Members @() | Out-Null
+
+            $script:putBody.members | Should -Be @()
         }
     }
 }
