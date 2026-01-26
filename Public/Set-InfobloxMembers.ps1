@@ -35,16 +35,39 @@ function Set-InfobloxMembers {
     If provided, returns the API response.
 
     .EXAMPLE
-    Set-InfobloxMembers -Network '10.46.5.128/25' -Members @(
-        'dhcp01.example.com',
-        'dhcp02.example.com'
-    )
+    $setMembersSplat = @{
+        Network = '10.46.5.128/25'
+        Members = @(
+            'dhcp01.example.com'
+            'dhcp02.example.com'
+        )
+    }
+    Set-InfobloxMembers @setMembersSplat
 
     .EXAMPLE
-    Set-InfobloxMembers -Network '10.46.5.128/25' -AddMembers 'dhcp02.example.com'
+    $addMembersSplat = @{
+        Network    = '10.46.5.128/25'
+        AddMembers = 'dhcp02.example.com'
+    }
+    Set-InfobloxMembers @addMembersSplat
 
     .EXAMPLE
-    Set-InfobloxMembers -ReferenceID 'network/...' -MemberStruct 'msdhcpserver' -MemberProperty 'ipv4addr' -RemoveMembers 'dhcp01.example.com'
+    $removeMembersSplat = @{
+        ReferenceID    = 'network/...'
+        MemberStruct   = 'msdhcpserver'
+        MemberProperty = 'ipv4addr'
+        RemoveMembers  = 'dhcp01.example.com'
+    }
+    Set-InfobloxMembers @removeMembersSplat
+
+    .EXAMPLE
+    $dhcpMembersSplat = @{
+        Network        = '10.46.5.128/25'
+        MemberStruct   = 'dhcpmember'
+        MemberProperty = 'name'
+        Members        = @('dhcp01.example.com', 'dhcp02.example.com')
+    }
+    Set-InfobloxMembers @dhcpMembersSplat
     #>
     [CmdletBinding(SupportsShouldProcess)]
     param(

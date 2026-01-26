@@ -196,14 +196,27 @@ The module resolves the display value to the internal ID automatically (single a
 To modify MS DHCP servers on a network, use the generic members helper:
 
 ```powershell
-Set-InfobloxMembers -Network '10.46.5.128/25' -Members @(
-    'dhcp01.example.com',
-    'dhcp02.example.com'
-)
+$setMembersSplat = @{
+    Network = '10.46.5.128/25'
+    Members = @(
+        'dhcp01.example.com'
+        'dhcp02.example.com'
+    )
+}
+Set-InfobloxMembers @setMembersSplat
 
 # Add or remove
-Set-InfobloxMembers -Network '10.46.5.128/25' -AddMembers 'dhcp02.example.com'
-Set-InfobloxMembers -Network '10.46.5.128/25' -RemoveMembers 'dhcp01.example.com'
+$addMembersSplat = @{
+    Network    = '10.46.5.128/25'
+    AddMembers = 'dhcp02.example.com'
+}
+Set-InfobloxMembers @addMembersSplat
+
+$removeMembersSplat = @{
+    Network       = '10.46.5.128/25'
+    RemoveMembers = 'dhcp01.example.com'
+}
+Set-InfobloxMembers @removeMembersSplat
 ```
 
 ```powershell
