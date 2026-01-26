@@ -211,13 +211,11 @@ Set-InfobloxMembers -Network '10.46.5.128/25' -MemberStruct 'dhcpmember' -Member
     'dhcp01.example.com', 'dhcp02.example.com'
 )
 
-Set-InfobloxMembers -ReferenceID 'network/...' -MemberStruct 'dhcpmember' -MemberProperty 'name' -AddMembers 'dhcp03.example.com'
-
 $customMembersSplat = @{
     Network        = '10.46.5.128/25'
     MemberStruct   = 'dhcpmember'
     MemberProperty = 'name'
-    Members        = @('dhcp01.example.com', 'dhcp02.example.com')
+    AddMembers     = 'dhcp03.example.com'
 }
 Set-InfobloxMembers @customMembersSplat
 ```
