@@ -204,6 +204,24 @@ Set-InfobloxMembers -Network '10.46.5.128/25' -AddMembers 'dhcp02.example.com'
 Set-InfobloxMembers -Network '10.46.5.128/25' -RemoveMembers 'dhcp01.example.com'
 ```
 
+To use other member types, specify `-MemberStruct` and `-MemberProperty`:
+
+```powershell
+Set-InfobloxMembers -Network '10.46.5.128/25' -MemberStruct 'dhcpmember' -MemberProperty 'name' -Members @(
+    'dhcp01.example.com', 'dhcp02.example.com'
+)
+
+Set-InfobloxMembers -ReferenceID 'network/...' -MemberStruct 'dhcpmember' -MemberProperty 'name' -AddMembers 'dhcp03.example.com'
+
+$customMembersSplat = @{
+    Network        = '10.46.5.128/25'
+    MemberStruct   = 'dhcpmember'
+    MemberProperty = 'name'
+    Members        = @('dhcp01.example.com', 'dhcp02.example.com')
+}
+Set-InfobloxMembers @customMembersSplat
+```
+
 ```powershell
 $addInfobloxSubnetSplat = @{
     Subnet                      = '10.22.35.0/24'
