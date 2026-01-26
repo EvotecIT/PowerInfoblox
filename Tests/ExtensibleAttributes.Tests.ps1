@@ -73,3 +73,97 @@ Describe 'Extensible Attributes resolution' {
         }
     }
 }
+
+Describe 'EA definition lookup fallback' {
+    InModuleScope PowerInfoblox {
+        BeforeAll {
+            $moduleBase = (Get-Module PowerInfoblox).ModuleBase
+            . (Join-Path $moduleBase 'Private\Get-InfobloxExtensibleAttributeDefinition.ps1')
+
+            $script:previousDefaults = @{}
+            foreach ($Key in $PSDefaultParameterValues.Keys) {
+                $script:previousDefaults[$Key] = $PSDefaultParameterValues[$Key]
+            }
+            $PSDefaultParameterValues['Invoke-InfobloxQuery:BaseUri'] = 'https://example.test'
+        }
+
+        AfterAll {
+            $PSDefaultParameterValues.Clear()
+            foreach ($Key in $script:previousDefaults.Keys) {
+                $PSDefaultParameterValues[$Key] = $script:previousDefaults[$Key]
+            }
+        }
+
+        It 'retries without return_fields when the first call throws' {
+            $script:invokeCalls = @()
+            Mock Invoke-InfobloxQuery -MockWith {
+                param($RelativeUri, $Method, $QueryParameter)
+                $clonedQuery = @{}
+                if ($QueryParameter) {
+                    foreach ($Key in $QueryParameter.Keys) {
+                        $clonedQuery[$Key] = $QueryParameter[$Key]
+                    }
+                }
+                $script:invokeCalls += [pscustomobject]@{ QueryParameter = $clonedQuery }
+                if ($script:invokeCalls.Count -eq 1) {
+                    throw 'Bad request'
+                }
+                [pscustomobject]@{ name = 'VLAN'; list_values = @() }
+            }
+
+            $null = Get-InfobloxExtensibleAttributeDefinition -Name 'VLAN' -SkipCache
+
+            $script:invokeCalls.Count | Should -Be 2
+            $script:invokeCalls[0].QueryParameter.ContainsKey('_return_fields') | Should -BeTrue
+            $script:invokeCalls[1].QueryParameter.ContainsKey('_return_fields') | Should -BeFalse
+        }
+
+        It 'does not retry when the response is an empty array' {
+            $script:invokeCalls = @()
+            Mock Invoke-InfobloxQuery -MockWith {
+                param($RelativeUri, $Method, $QueryParameter)
+                $clonedQuery = @{}
+                if ($QueryParameter) {
+                    foreach ($Key in $QueryParameter.Keys) {
+                        $clonedQuery[$Key] = $QueryParameter[$Key]
+                    }
+                }
+                $script:invokeCalls += [pscustomobject]@{ QueryParameter = $clonedQuery }
+                return @()
+            }
+
+            $null = Get-InfobloxExtensibleAttributeDefinition -Name 'Missing' -SkipCache
+
+            $script:invokeCalls.Count | Should -Be 1
+        }
+
+        It 'retries even when the first call throws and ErrorActionPreference is Stop' {
+            $script:invokeCalls = @()
+            Mock Invoke-InfobloxQuery -MockWith {
+                param($RelativeUri, $Method, $QueryParameter)
+                $clonedQuery = @{}
+                if ($QueryParameter) {
+                    foreach ($Key in $QueryParameter.Keys) {
+                        $clonedQuery[$Key] = $QueryParameter[$Key]
+                    }
+                }
+                $script:invokeCalls += [pscustomobject]@{ QueryParameter = $clonedQuery }
+                if ($script:invokeCalls.Count -eq 1) {
+                    throw 'Bad request'
+                }
+                [pscustomobject]@{ name = 'VLAN'; list_values = @() }
+            }
+
+            $previous = $ErrorActionPreference
+            $ErrorActionPreference = 'Stop'
+            try {
+                $null = Get-InfobloxExtensibleAttributeDefinition -Name 'VLAN' -SkipCache
+            } finally {
+                $ErrorActionPreference = $previous
+            }
+
+            $script:invokeCalls.Count | Should -Be 2
+            $script:invokeCalls[1].QueryParameter.ContainsKey('_return_fields') | Should -BeFalse
+        }
+    }
+}

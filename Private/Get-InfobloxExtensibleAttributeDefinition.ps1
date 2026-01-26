@@ -24,11 +24,33 @@ function Get-InfobloxExtensibleAttributeDefinition {
         _return_fields = 'name,type,list_values'
     }
 
-    $Result = Invoke-InfobloxQuery -RelativeUri "extensibleattributedef" -Method 'GET' -QueryParameter $QueryParameter -WhatIf:$false
-    if (-not $Result) {
+    $Result = $null
+    $FirstError = $null
+    $PreviousErrorAction = $ErrorActionPreference
+    try {
+        $ErrorActionPreference = 'Stop'
+        $Result = Invoke-InfobloxQuery -RelativeUri "extensibleattributedef" -Method 'GET' -QueryParameter $QueryParameter -WhatIf:$false
+    } catch {
+        $FirstError = $_
+        $Result = $null
+    } finally {
+        $ErrorActionPreference = $PreviousErrorAction
+    }
+
+    if ($FirstError) {
         # As a last resort, let the API decide default fields.
         $QueryParameter.Remove('_return_fields')
-        $Result = Invoke-InfobloxQuery -RelativeUri "extensibleattributedef" -Method 'GET' -QueryParameter $QueryParameter -WhatIf:$false
+        try {
+            $ErrorActionPreference = 'Stop'
+            $Result = Invoke-InfobloxQuery -RelativeUri "extensibleattributedef" -Method 'GET' -QueryParameter $QueryParameter -WhatIf:$false
+        } catch {
+            if ($PreviousErrorAction -eq 'Stop') {
+                throw $FirstError
+            }
+            $Result = $null
+        } finally {
+            $ErrorActionPreference = $PreviousErrorAction
+        }
     }
     if ($Result -is [array]) {
         $Result = $Result | Select-Object -First 1
