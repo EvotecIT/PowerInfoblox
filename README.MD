@@ -196,18 +196,20 @@ The module resolves the display value to the internal ID automatically (single a
 To modify MS DHCP servers on a network, use the generic members helper:
 
 ```powershell
-Set-InfobloxMembers -Network '10.46.5.128/25' -Members @(
+Set-InfobloxNetworkMembers -Network '10.46.5.128/25' -Members @(
     'xe-s-dhcpis02p.xe.abb.com', 'se-s-dhcpap02p.se.abb.com'
 )
 
-Set-InfobloxMembers -Network '10.46.5.128/25' -AddMembers 'se-s-dhcpap02p.se.abb.com'
-Set-InfobloxMembers -Network '10.46.5.128/25' -RemoveMembers 'xe-s-dhcpis02p.xe.abb.com'
+Set-InfobloxNetworkMembers -Network '10.46.5.128/25' -AddMembers 'se-s-dhcpap02p.se.abb.com'
+Set-InfobloxNetworkMembers -Network '10.46.5.128/25' -RemoveMembers 'xe-s-dhcpis02p.xe.abb.com'
+
+Set-InfobloxNetworkMembers -Network '10.46.5.128/25' -Members @()
 ```
 
 To use other member types, specify `-MemberStruct` and `-MemberProperty`:
 
 ```powershell
-Set-InfobloxMembers -Network '10.46.5.128/25' -MemberStruct 'dhcpmember' -MemberProperty 'name' -Members @(
+Set-InfobloxNetworkMembers -Network '10.46.5.128/25' -MemberStruct 'dhcpmember' -MemberProperty 'name' -Members @(
     'dhcp01.example.com', 'dhcp02.example.com'
 )
 
@@ -217,7 +219,7 @@ $customMembersSplat = @{
     MemberProperty = 'name'
     AddMembers     = 'dhcp03.example.com'
 }
-Set-InfobloxMembers @customMembersSplat
+Set-InfobloxNetworkMembers @customMembersSplat
 ```
 
 ```powershell
