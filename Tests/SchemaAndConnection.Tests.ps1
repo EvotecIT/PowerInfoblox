@@ -31,7 +31,7 @@ Describe 'Infoblox schema requests' {
         It 'uses the valueless schema option for object schema requests' {
             $null = Get-InfobloxSchema -Object 'NetworkContainer'
 
-            Assert-MockCalled Invoke-RestMethod -Times 1 -ParameterFilter {
+            Should -Invoke -CommandName Invoke-RestMethod -Times 1 -ParameterFilter {
                 $Uri -eq 'https://example.test/wapi/v2.13.8/networkcontainer?_schema'
             }
         }
@@ -42,7 +42,7 @@ Describe 'Infoblox schema requests' {
 
             $null = Get-FieldsFromSchema -SchemaObject 'networkcontainer'
 
-            Assert-MockCalled Write-Warning -Times 1 -ParameterFilter {
+            Should -Invoke -CommandName Write-Warning -Times 1 -ParameterFilter {
                 $Message -eq "Get-FieldsFromSchema - Failed to fetch schema for record type 'networkcontainer'. Using defaults"
             }
         }
@@ -77,7 +77,7 @@ Describe 'Infoblox request timeout' {
 
             $null = Invoke-InfobloxQuery -RelativeUri 'network'
 
-            Assert-MockCalled Invoke-RestMethod -Times 1 -ParameterFilter { $TimeoutSec -eq 600 }
+            Should -Invoke -CommandName Invoke-RestMethod -Times 1 -ParameterFilter { $TimeoutSec -eq 600 }
         }
 
         It 'uses the timeout configured by Connect-Infoblox' {
@@ -86,7 +86,7 @@ Describe 'Infoblox request timeout' {
             $null = Invoke-InfobloxQuery -RelativeUri 'network'
 
             $connection.TimeoutSec | Should -Be 3600
-            Assert-MockCalled Invoke-RestMethod -Times 1 -ParameterFilter { $TimeoutSec -eq 3600 }
+            Should -Invoke -CommandName Invoke-RestMethod -Times 1 -ParameterFilter { $TimeoutSec -eq 3600 }
         }
 
         It 'allows a request to override the connection timeout' {
@@ -94,7 +94,7 @@ Describe 'Infoblox request timeout' {
 
             $null = Invoke-InfobloxQuery -RelativeUri 'network' -TimeoutSec 30
 
-            Assert-MockCalled Invoke-RestMethod -Times 1 -ParameterFilter { $TimeoutSec -eq 30 }
+            Should -Invoke -CommandName Invoke-RestMethod -Times 1 -ParameterFilter { $TimeoutSec -eq 30 }
         }
 
         It 'clears the configured timeout when disconnecting' {

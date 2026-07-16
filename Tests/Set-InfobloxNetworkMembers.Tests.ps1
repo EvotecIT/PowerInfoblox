@@ -9,7 +9,7 @@ Describe 'Set-InfobloxNetworkMembers' {
         It 'returns warning when no members inputs are provided' {
             Mock Write-Warning {}
             Set-InfobloxNetworkMembers -Network '10.46.5.128/25'
-            Assert-MockCalled Write-Warning -Times 1
+            Should -Invoke -CommandName Write-Warning -Times 1
         }
 
         It 'builds members payload from Network with defaults' {
@@ -32,7 +32,7 @@ Describe 'Set-InfobloxNetworkMembers' {
 
             Set-InfobloxNetworkMembers -Network '10.46.5.128/25' -Members @('b', 'c') | Out-Null
 
-            Assert-MockCalled Invoke-InfobloxQuery -ParameterFilter { $Method -eq 'PUT' } -Times 1
+            Should -Invoke -CommandName Invoke-InfobloxQuery -ParameterFilter { $Method -eq 'PUT' } -Times 1
             $script:putBody.members | Should -HaveCount 2
             $script:putBody.members[0]._struct | Should -Be 'msdhcpserver'
             $script:putBody.members[0].ipv4addr | Should -Be 'b'

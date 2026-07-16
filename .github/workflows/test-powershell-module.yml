@@ -133,9 +133,6 @@ jobs:
           name: psd1
           path: .
 
-      - name: Install PowerShell
-        run: brew install --cask powershell
-
       - name: Install PowerShell modules
         shell: pwsh
         run: |
