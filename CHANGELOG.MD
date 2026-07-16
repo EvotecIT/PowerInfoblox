@@ -1,3 +1,7 @@
+### 1.0.37 - 2026.07.16
+- Use the valueless `_schema` option required by stricter Infoblox NIOS releases
+- Add configurable request timeouts through `Connect-Infoblox` and `Invoke-InfobloxQuery`
+
 ### 1.0.36 - 2026.01.26
 - Fix EA definition lookup on grids where `allow_multiple` is not a readable field (avoid 400 on `extensibleattributedef`)
 
