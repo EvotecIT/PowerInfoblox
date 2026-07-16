@@ -28,10 +28,8 @@ jobs:
 
       - name: Refresh module manifest
         shell: pwsh
-        env:
-          RefreshPSD1Only: 'true'
         run: |
-          ./Build/Build-Module.ps1
+          ./Build/Build-Module.ps1 -ConfigurationGateMode Manifest
 
       - name: Upload refreshed manifest
         uses: actions/upload-artifact@v4

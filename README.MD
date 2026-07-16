@@ -97,6 +97,12 @@ Connect to Infoblox using your credentials.
 Connect-Infoblox -Server 'ipam.example.com' -ApiVersion '2.12' -EnableTLS12 -Credential (Get-Credential)
 ```
 
+Set a longer timeout for environments with long-running WAPI requests. The default is 600 seconds.
+
+```powershell
+Connect-Infoblox -Server 'ipam.example.com' -ApiVersion '2.13.8' -Credential (Get-Credential) -TimeoutSec 3600
+```
+
 ```powershell
 $Username = '<your username>'
 # Encrypted password
