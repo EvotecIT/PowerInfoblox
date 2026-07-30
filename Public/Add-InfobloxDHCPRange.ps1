@@ -16,7 +16,7 @@
     The name of the DHCP range.
 
     .PARAMETER Comment
-    A comment for the DHCP range.
+    A comment for the DHCP range. Null, blank, and Boolean false values are treated as no comment.
 
     .PARAMETER NetworkView
     The network view in which the DHCP range will be added. The default is 'default'.
@@ -46,7 +46,13 @@
     An array of IP addresses or IP address ranges to be excluded from the DHCP range.
 
     .PARAMETER AlwaysUpdateDns
-    If this switch is present, DNS will always be updated for the DHCP range.
+    Controls whether the DHCP server always updates DNS when DDNS is enabled. This setting does not enable DDNS.
+
+    .PARAMETER DDNSUpdateMode
+    Controls whether the range inherits the DDNS enablement setting or overrides it locally.
+
+    .PARAMETER DDNSEnabled
+    Enables or disables DDNS on the range. Supplying this value automatically selects local override mode.
 
     .PARAMETER Disable
     If this switch is present, the DHCP range will be disabled.
@@ -70,6 +76,10 @@
     }
 
     Add-InfobloxDHCPRange @addInfobloxDHCPRangeSplat
+
+    .EXAMPLE
+    Add-InfobloxDHCPRange -StartAddress '10.22.41.100' -EndAddress '10.22.41.150' -DDNSUpdateMode Override -DDNSEnabled $false
+    Adds a DHCP range that overrides the inherited DDNS setting and disables DDNS updates.
 
     .EXAMPLE
     $addInfobloxDHCPRangeSplat = @{
@@ -109,7 +119,7 @@
         [Parameter(Mandatory)][string] $StartAddress,
         [Parameter(Mandatory)][string] $EndAddress,
         [string] $Name,
-        [string] $Comment,
+        [AllowNull()][object] $Comment,
         [string] $NetworkView = 'default',
         [string] $MSServer,
         [switch] $ReturnOutput,
@@ -120,6 +130,8 @@
         [ValidateSet('MEMBER', 'MS_FAILOVER', 'NONE', 'MS_SERVER', 'FAILOVER')] [string] $ServerAssociationType,
         [Array] $Exclude,
         [switch] $AlwaysUpdateDns,
+        [ValidateSet('Inherit', 'Override')][string] $DDNSUpdateMode,
+        [Nullable[bool]] $DDNSEnabled,
         [switch] $Disable
     )
     if (-not $Script:InfobloxConfiguration) {
@@ -138,8 +150,11 @@
     if ($Name) {
         $Body["name"] = $Name
     }
-    if ($Comment) {
-        $Body["comment"] = $Comment
+    if ($PSBoundParameters.ContainsKey('Comment')) {
+        $NormalizedComment = ConvertTo-InfobloxComment -Comment $Comment
+        if ($NormalizedComment) {
+            $Body["comment"] = $NormalizedComment
+        }
     }
     if ($ServerAssociationType) {
         $Body["server_association_type"] = $ServerAssociationType
@@ -199,6 +214,17 @@
 
     if ($PSBoundParameters.ContainsKey('AlwaysUpdateDns')) {
         $Body["always_update_dns"] = $AlwaysUpdateDns.IsPresent
+    }
+    $convertToInfobloxDHCPRangeDDNSSettingSplat = @{}
+    if ($PSBoundParameters.ContainsKey('DDNSUpdateMode')) {
+        $convertToInfobloxDHCPRangeDDNSSettingSplat['DDNSUpdateMode'] = $DDNSUpdateMode
+    }
+    if ($PSBoundParameters.ContainsKey('DDNSEnabled')) {
+        $convertToInfobloxDHCPRangeDDNSSettingSplat['DDNSEnabled'] = $DDNSEnabled
+    }
+    $DDNSSetting = ConvertTo-InfobloxDHCPRangeDDNSSetting @convertToInfobloxDHCPRangeDDNSSettingSplat
+    foreach ($Key in $DDNSSetting.Keys) {
+        $Body[$Key] = $DDNSSetting[$Key]
     }
     if ($PSBoundParameters.ContainsKey('Disable')) {
         $Body["disable"] = $Disable.IsPresent

@@ -1,3 +1,8 @@
+### 1.0.38 - 2026.07.29
+- Add explicit inherit/override and enabled/disabled controls for DHCP range DDNS updates
+- Keep the existing `AlwaysUpdateDns` policy separate from DDNS enablement
+- Clear or omit empty DHCP range comments instead of storing Boolean false as text
+
 ### 1.0.37 - 2026.07.16
 - Use the valueless `_schema` option required by stricter Infoblox NIOS releases
 - Add configurable request timeouts through `Connect-Infoblox` and `Invoke-InfobloxQuery`

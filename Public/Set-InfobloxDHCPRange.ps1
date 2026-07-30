@@ -10,7 +10,7 @@
     The unique identifier for the DHCP range to be modified.
 
     .PARAMETER Comment
-    A comment to associate with the DHCP range.
+    A comment to associate with the DHCP range. Pass an empty, null, or Boolean false value to clear the comment.
 
     .PARAMETER MSServer
     The Microsoft DHCP server associated with the range.
@@ -34,13 +34,27 @@
     An array of IP addresses or address ranges to exclude from the DHCP range.
 
     .PARAMETER AlwaysUpdateDns
-    Indicates whether to always update DNS.
+    Controls whether the DHCP server always updates DNS when DDNS is enabled. This setting does not enable DDNS.
+
+    .PARAMETER DDNSUpdateMode
+    Controls whether the range inherits the DDNS enablement setting or overrides it locally.
+
+    .PARAMETER DDNSEnabled
+    Enables or disables DDNS on the range. Supplying this value automatically selects local override mode.
 
     .PARAMETER Disable
     Indicates whether to disable the DHCP range.
 
     .EXAMPLE
     Set-InfobloxDHCPRange -ReferenceID 'DHCPRange-1' -Comment 'This is a DHCP range.'
+
+    .EXAMPLE
+    Set-InfobloxDHCPRange -ReferenceID 'DHCPRange-1' -DDNSUpdateMode Override -DDNSEnabled $false
+    Overrides the inherited DDNS setting and disables DDNS updates for the range.
+
+    .EXAMPLE
+    Set-InfobloxDHCPRange -ReferenceID 'DHCPRange-1' -DDNSUpdateMode Inherit
+    Restores the inherited DDNS enablement setting for the range.
 
     .EXAMPLE
     Set-InfobloxDHCPRange -ReferenceID 'DHCPRange-1' -Options @(
@@ -56,7 +70,7 @@
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [parameter(ParameterSetName = 'ReferenceID', Mandatory)][string] $ReferenceID,
-        [string] $Comment,
+        [AllowNull()][object] $Comment,
         [string] $MSServer,
         [Alias('ExtensibleAttribute')][System.Collections.IDictionary] $ExtensinbleAttribute,
         [Array] $Options,
@@ -65,6 +79,8 @@
         [ValidateSet('MEMBER', 'MS_FAILOVER', 'NONE', 'MS_SERVER', 'FAILOVER')] [string] $ServerAssociationType,
         [Array] $Exclude,
         [switch] $AlwaysUpdateDns,
+        [ValidateSet('Inherit', 'Override')][string] $DDNSUpdateMode,
+        [Nullable[bool]] $DDNSEnabled,
         [switch] $Disable
     )
 
@@ -77,8 +93,8 @@
     }
 
     $Body = [ordered] @{}
-    if ($Comment) {
-        $Body["comment"] = $Comment
+    if ($PSBoundParameters.ContainsKey('Comment')) {
+        $Body["comment"] = ConvertTo-InfobloxComment -Comment $Comment
     }
     if ($ServerAssociationType) {
         $Body["server_association_type"] = $ServerAssociationType
@@ -135,6 +151,17 @@
     }
     if ($PSBoundParameters.ContainsKey('AlwaysUpdateDns')) {
         $Body["always_update_dns"] = $AlwaysUpdateDns.IsPresent
+    }
+    $convertToInfobloxDHCPRangeDDNSSettingSplat = @{}
+    if ($PSBoundParameters.ContainsKey('DDNSUpdateMode')) {
+        $convertToInfobloxDHCPRangeDDNSSettingSplat['DDNSUpdateMode'] = $DDNSUpdateMode
+    }
+    if ($PSBoundParameters.ContainsKey('DDNSEnabled')) {
+        $convertToInfobloxDHCPRangeDDNSSettingSplat['DDNSEnabled'] = $DDNSEnabled
+    }
+    $DDNSSetting = ConvertTo-InfobloxDHCPRangeDDNSSetting @convertToInfobloxDHCPRangeDDNSSettingSplat
+    foreach ($Key in $DDNSSetting.Keys) {
+        $Body[$Key] = $DDNSSetting[$Key]
     }
     if ($PSBoundParameters.ContainsKey('Disable')) {
         $Body["disable"] = $Disable.IsPresent
