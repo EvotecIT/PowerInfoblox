@@ -31,4 +31,5 @@
     $PSDefaultParameterValues.Remove('Invoke-InfobloxQuery:Server')
     $PSDefaultParameterValues.Remove('Invoke-InfobloxQuery:BaseUri')
     $PSDefaultParameterValues.Remove('Invoke-InfobloxQuery:WebSession')
+    $PSDefaultParameterValues.Remove('Invoke-InfobloxQuery:TimeoutSec')
 }

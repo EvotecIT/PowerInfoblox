@@ -1,4 +1,11 @@
-Import-Module PSPublishModule -Force #-RequiredVersion '2.0.26'
+param(
+    [ValidateSet('Manifest', 'Build', 'Publish')]
+    [string] $ConfigurationGateMode = 'Build',
+
+    [bool] $SignModule = $true
+)
+
+Import-Module PSPublishModule -Force -ErrorAction Stop
 
 Build-Module -ModuleName 'PowerInfoblox' {
     # Usual defaults as per standard module
@@ -82,14 +89,14 @@ Build-Module -ModuleName 'PowerInfoblox' {
     New-ConfigurationFormat -ApplyTo 'DefaultPSD1', 'OnMergePSD1' -PSD1Style 'Minimal'
 
     # configuration for documentation, at the same time it enables documentation processing
-    New-ConfigurationDocumentation -Enable:$false -StartClean -UpdateWhenNew -PathReadme 'Docs\Readme.md' -Path 'Docs'
+    New-ConfigurationDocumentation -Enable:$false -PathReadme 'Docs\Readme.md' -Path 'Docs'
 
     New-ConfigurationImportModule -ImportSelf -ImportRequiredModules
 
     $newConfigurationBuildSplat = @{
         Enable                            = $true
-        SignModule                        = $true
-        CertificateThumbprint             = '483292C9E317AA13B07BB7A96AE9D1A5ED9E7703'
+        SignModule                        = $SignModule
+        CertificateThumbprint             = '92E95FB58EFFA6A4A75E77A33CDD6BFE6DD30F1A'
         DeleteTargetModuleBeforeBuild     = $true
         MergeModuleOnBuild                = $true
         MergeFunctionsFromApprovedModules = $true
@@ -106,16 +113,9 @@ Build-Module -ModuleName 'PowerInfoblox' {
 
     } -CopyFilesRelative -IncludeTagName
 
-    $newConfigurationArtefactSplat = @{
-        Type                = 'Script'
-        Enable              = $true
-        Path                = "$PSScriptRoot\..\Artefacts\Script"
-        ScriptName          = 'InfoBloxTest.ps1'
-        PostScriptMergePath = "$PSScriptRoot\..\Examples\Package\ExampleProd.ps1"
-    }
-    New-ConfigurationArtefact @newConfigurationArtefactSplat
-
     # global options for publishing to github/psgallery
     #New-ConfigurationPublish -Type PowerShellGallery -FilePath 'C:\Support\Important\PowerShellGalleryAPI.txt' -Enabled:$true
     #New-ConfigurationPublish -Type GitHub -FilePath 'C:\Support\Important\GitHubAPI.txt' -UserName 'EvotecIT' -Enabled:$true
-}
+
+    New-ConfigurationGate -Mode $ConfigurationGateMode
+} -ExitCode

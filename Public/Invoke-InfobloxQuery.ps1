@@ -1,4 +1,41 @@
 ﻿function Invoke-InfobloxQuery {
+    <#
+    .SYNOPSIS
+    Sends a request to an Infoblox WAPI endpoint.
+
+    .DESCRIPTION
+    Builds an Infoblox WAPI URI, sends the request, and returns the deserialized response.
+
+    .PARAMETER BaseUri
+    The WAPI base URI.
+
+    .PARAMETER RelativeUri
+    The object path or URI relative to the WAPI base URI.
+
+    .PARAMETER Credential
+    The credential used to authenticate to Infoblox.
+
+    .PARAMETER WebSession
+    The web request session used for cookie-based authentication.
+
+    .PARAMETER QueryParameter
+    Query parameters appended to the request URI.
+
+    .PARAMETER Method
+    The HTTP method. The default is GET.
+
+    .PARAMETER Body
+    The request body, serialized as JSON.
+
+    .PARAMETER TimeoutSec
+    The request timeout in seconds. The default is 600 seconds.
+
+    .EXAMPLE
+    Invoke-InfobloxQuery -BaseUri 'https://grid.example.com/wapi/v2.13.8' -RelativeUri 'network' -Credential $Credential
+
+    .EXAMPLE
+    Invoke-InfobloxQuery -BaseUri 'https://grid.example.com/wapi/v2.13.8' -RelativeUri 'network' -Credential $Credential -TimeoutSec 30
+    #>
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [parameter(Mandatory)][string] $BaseUri,
@@ -7,7 +44,8 @@
         [Parameter()][Microsoft.PowerShell.Commands.WebRequestSession] $WebSession,
         [parameter()][System.Collections.IDictionary] $QueryParameter,
         [parameter()][string] $Method = 'GET',
-        [parameter()][System.Collections.IDictionary] $Body
+        [parameter()][System.Collections.IDictionary] $Body,
+        [parameter()][ValidateRange(1, 2147483647)][int] $TimeoutSec = 600
     )
 
     if (-not $Script:InfobloxConfiguration) {
@@ -50,7 +88,7 @@
                 ErrorAction = 'Stop'
                 Verbose     = $false
                 WebSession  = $WebSession
-                TimeoutSec  = 600
+                TimeoutSec  = $TimeoutSec
             }
             if ($Body) {
                 $invokeRestMethodSplat.Body = $JSONBody

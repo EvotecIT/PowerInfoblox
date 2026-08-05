@@ -22,7 +22,7 @@
             $Script:InfobloxSchemaFields[$SchemaObject] = ($FilteredFields -join ',')
             $Script:InfobloxSchemaFields[$SchemaObject]
         } else {
-            Write-Warning -Message "Get-FieldsFromSchema - Failed to fetch schema for record type 'allrecords'. Using defaults"
+            Write-Warning -Message "Get-FieldsFromSchema - Failed to fetch schema for record type '$SchemaObject'. Using defaults"
         }
     }
 }

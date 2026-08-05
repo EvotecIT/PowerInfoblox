@@ -43,11 +43,8 @@
     }
     if ($Object) {
         $invokeInfobloxQuerySplat = @{
-            RelativeUri = "$($Object.ToLower())"
+            RelativeUri = "$($Object.ToLower())?_schema"
             Method      = 'Get'
-            Query       = @{
-                _schema = $true
-            }
         }
     } else {
         $invokeInfobloxQuerySplat = @{

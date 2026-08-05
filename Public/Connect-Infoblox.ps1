@@ -1,4 +1,47 @@
 ﻿function Connect-Infoblox {
+    <#
+    .SYNOPSIS
+    Configures a connection to an Infoblox WAPI endpoint.
+
+    .DESCRIPTION
+    Stores the server, authentication, API version, web session, and request timeout used by PowerInfoblox commands.
+
+    .PARAMETER Server
+    The Infoblox server name or IP address.
+
+    .PARAMETER Username
+    The user name used with an encrypted password.
+
+    .PARAMETER EncryptedPassword
+    A string created from a secure string for the specified user name.
+
+    .PARAMETER Credential
+    The credential used to authenticate to Infoblox.
+
+    .PARAMETER ApiVersion
+    The WAPI version used to build the base URI.
+
+    .PARAMETER EnableTLS12
+    Enables TLS 1.2 for the current PowerShell process.
+
+    .PARAMETER AllowSelfSignedCerts
+    Allows self-signed server certificates.
+
+    .PARAMETER SkipInitialConnection
+    Skips the initial schema request that verifies the connection.
+
+    .PARAMETER TimeoutSec
+    The request timeout in seconds. The default is 600 seconds.
+
+    .PARAMETER ReturnObject
+    Returns the stored connection configuration.
+
+    .EXAMPLE
+    Connect-Infoblox -Server 'grid.example.com' -Credential $Credential
+
+    .EXAMPLE
+    Connect-Infoblox -Server 'grid.example.com' -Credential $Credential -TimeoutSec 3600
+    #>
     [CmdletBinding()]
     param(
         [Parameter(Mandatory, ParameterSetName = 'UserName')]
@@ -22,6 +65,8 @@
         [Parameter(ParameterSetName = 'UserName')]
         [Parameter(ParameterSetName = 'Credential')]
         [switch] $SkipInitialConnection,
+        [ValidateRange(1, 2147483647)]
+        [int] $TimeoutSec = 600,
         [switch] $ReturnObject
     )
 
@@ -49,6 +94,7 @@
     $PSDefaultParameterValues['Invoke-InfobloxQuery:Server'] = $Server
     $PSDefaultParameterValues['Invoke-InfobloxQuery:BaseUri'] = "https://$Server/wapi/v$apiVersion"
     $PSDefaultParameterValues['Invoke-InfobloxQuery:WebSession'] = [Microsoft.PowerShell.Commands.WebRequestSession]::new()
+    $PSDefaultParameterValues['Invoke-InfobloxQuery:TimeoutSec'] = $TimeoutSec
 
     # The infoblox configuration is not really used anywhere. It's just a placeholder
     # It's basecause we use $PSDefaultParameterValues to pass the parameters to Invoke-InfobloxQuery
@@ -57,6 +103,7 @@
         ApiVersion = $ApiVersion
         Server     = $Server
         BaseUri    = "https://$Server/wapi/v$apiVersion"
+        TimeoutSec = $TimeoutSec
     }
 
     if ($AllowSelfSignedCerts) {
