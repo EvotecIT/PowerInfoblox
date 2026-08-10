@@ -19,7 +19,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup PowerShell modules
         shell: pwsh
@@ -32,7 +32,7 @@ jobs:
           ./Build/Build-Module.ps1 -ConfigurationGateMode Manifest
 
       - name: Upload refreshed manifest
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: psd1
           path: PowerInfoblox.psd1
@@ -43,10 +43,10 @@ jobs:
     needs: refresh-psd1
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Download manifest
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: psd1
           path: .
@@ -68,10 +68,10 @@ jobs:
     needs: refresh-psd1
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Download manifest
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: psd1
           path: .
@@ -93,10 +93,10 @@ jobs:
     needs: refresh-psd1
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Download manifest
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: psd1
           path: .
@@ -125,10 +125,10 @@ jobs:
     needs: refresh-psd1
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Download manifest
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: psd1
           path: .
