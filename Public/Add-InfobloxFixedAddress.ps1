@@ -22,7 +22,7 @@
     Comment for the fixed address
 
     .PARAMETER MicrosoftServer
-    Microsoft server to use for the fixed address
+    IPv4 address or FQDN of the Microsoft DHCP server to use for the fixed address.
 
     .EXAMPLE
     Add-InfobloxFixedAddress -IPv4Address '10.2.2.18' -MacAddress '00:50:56:9A:00:01'
@@ -49,22 +49,23 @@
 
     Write-Verbose -Message "Add-InfobloxFixedAddress - Adding IPv4Address $IPv4Address to MacAddress $MacAddress"
 
-    $invokeInfobloxQuerySplat = @{
-        RelativeUri    = 'fixedaddress'
-        Method         = 'POST'
-        QueryParameter = @{
-            ipv4addr = $IPv4Address
-            mac      = $MacAddress.ToLower()
-        }
+    $Body = [ordered] @{
+        ipv4addr = $IPv4Address
+        mac      = $MacAddress.ToLower()
     }
     if ($Name) {
-        $invokeInfobloxQuerySplat.QueryParameter.name = $Name
+        $Body['name'] = $Name
     }
     if ($Comment) {
-        $invokeInfobloxQuerySplat.QueryParameter.comment = $Comment
+        $Body['comment'] = $Comment
     }
     if ($MicrosoftServer) {
-        $invokeInfobloxQuerySplat.QueryParameter.ms_server = $MicrosoftServer
+        $Body['ms_server'] = ConvertTo-InfobloxMicrosoftDHCPServer -MicrosoftServer $MicrosoftServer
+    }
+    $invokeInfobloxQuerySplat = @{
+        RelativeUri = 'fixedaddress'
+        Method      = 'POST'
+        Body        = $Body
     }
     $Output = Invoke-InfobloxQuery @invokeInfobloxQuerySplat #-WarningAction SilentlyContinue -WarningVariable varWarning
     if ($Output) {

@@ -22,7 +22,7 @@
     The network view in which the DHCP range will be added. The default is 'default'.
 
     .PARAMETER MSServer
-    The Microsoft server to which the DHCP range will be added.
+    The IPv4 address or FQDN of the Microsoft DHCP server to which the range will be added.
 
     .PARAMETER ReturnOutput
     If this switch is present, the function will return the output of the operation.
@@ -160,10 +160,7 @@
         $Body["server_association_type"] = $ServerAssociationType
     }
     if ($MSServer) {
-        $Body["ms_server"] = [PSCustomObject] @{
-            "_struct"  = "msdhcpserver"
-            "ipv4addr" = $MSServer
-        }
+        $Body["ms_server"] = ConvertTo-InfobloxMicrosoftDHCPServer -MicrosoftServer $MSServer
     }
     if ($ExtensinbleAttribute) {
         $Body["extattrs"] = ConvertTo-InfobloxExtattrs -Attributes $ExtensinbleAttribute

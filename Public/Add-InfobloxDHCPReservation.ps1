@@ -22,7 +22,7 @@
     Subnet to add the reservation to
 
     .PARAMETER MicrosoftServer
-    Microsoft server to use for the fixed address
+    IPv4 address or FQDN of the Microsoft DHCP server to use for the reservation.
 
     .EXAMPLE
     Add-InfobloxDHCPReservation -IPv4Address '10.2.2.18' -MacAddress '00:50:56:9A:00:01' -Name 'MyReservation' -Network '10.2.2.0/24' -Comment 'This is a test reservation' -MicrosoftServer 'myserver'
@@ -47,23 +47,24 @@
         return
     }
 
-    $invokeInfobloxQuerySplat = @{
-        RelativeUri    = 'record:dhcpreservation'
-        Method         = 'POST'
-        QueryParameter = @{
-            ipv4addr = $IPv4Address
-            mac      = $MacAddress.ToLower()
-            network  = $Network
-        }
+    $Body = [ordered] @{
+        ipv4addr = $IPv4Address
+        mac      = $MacAddress.ToLower()
+        network  = $Network
     }
     if ($Name) {
-        $invokeInfobloxQuerySplat.QueryParameter.name = $Name
+        $Body['name'] = $Name
     }
     if ($Comment) {
-        $invokeInfobloxQuerySplat.QueryParameter.comment = $Comment
+        $Body['comment'] = $Comment
     }
     if ($MicrosoftServer) {
-        $invokeInfobloxQuerySplat.QueryParameter.ms_server = $MicrosoftServer
+        $Body['ms_server'] = ConvertTo-InfobloxMicrosoftDHCPServer -MicrosoftServer $MicrosoftServer
+    }
+    $invokeInfobloxQuerySplat = @{
+        RelativeUri = 'fixedaddress'
+        Method      = 'POST'
+        Body        = $Body
     }
     $Output = Invoke-InfobloxQuery @invokeInfobloxQuerySplat
     if ($Output) {

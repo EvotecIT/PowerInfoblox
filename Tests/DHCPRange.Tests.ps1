@@ -79,6 +79,20 @@ Describe 'DHCP range mutations' {
             $script:requestBody.Contains('use_enable_ddns') | Should -BeFalse
         }
 
+        It 'maps a Microsoft server through the shared WAPI structure when creating a range' {
+            Add-InfobloxDHCPRange -StartAddress '192.0.2.10' -EndAddress '192.0.2.20' -MSServer 'ms-dhcp.example.test'
+
+            $script:requestBody.ms_server._struct | Should -Be 'msdhcpserver'
+            $script:requestBody.ms_server.ipv4addr | Should -Be 'ms-dhcp.example.test'
+        }
+
+        It 'maps a Microsoft server through the shared WAPI structure when updating a range' {
+            Set-InfobloxDHCPRange -ReferenceID 'range/reference' -MSServer 'ms-dhcp.example.test'
+
+            $script:requestBody.ms_server._struct | Should -Be 'msdhcpserver'
+            $script:requestBody.ms_server.ipv4addr | Should -Be 'ms-dhcp.example.test'
+        }
+
         It 'warns when no range changes are requested' {
             Mock Write-Warning
 
