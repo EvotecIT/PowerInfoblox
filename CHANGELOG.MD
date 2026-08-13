@@ -1,3 +1,7 @@
+### Unreleased
+- Send Microsoft DHCP server associations as WAPI `msdhcpserver` structures in JSON request bodies
+- Create DHCP reservations through the NIOS `fixedaddress` object endpoint
+
 ### 1.0.38 - 2026.07.29
 - Add explicit inherit/override and enabled/disabled controls for DHCP range DDNS updates
 - Keep the existing `AlwaysUpdateDns` policy separate from DDNS enablement

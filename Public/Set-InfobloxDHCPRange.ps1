@@ -13,7 +13,7 @@
     A comment to associate with the DHCP range. Pass an empty, null, or Boolean false value to clear the comment.
 
     .PARAMETER MSServer
-    The Microsoft DHCP server associated with the range.
+    The IPv4 address or FQDN of the Microsoft DHCP server associated with the range.
 
     .PARAMETER ExtensinbleAttribute
     A hashtable of extensible attributes to associate with the DHCP range.
@@ -100,10 +100,7 @@
         $Body["server_association_type"] = $ServerAssociationType
     }
     if ($MSServer) {
-        $Body["ms_server"] = [PSCustomObject] @{
-            "_struct"  = "msdhcpserver"
-            "ipv4addr" = $MSServer
-        }
+        $Body["ms_server"] = ConvertTo-InfobloxMicrosoftDHCPServer -MicrosoftServer $MSServer
     }
     if ($ExtensinbleAttribute) {
         $Body["extattrs"] = ConvertTo-InfobloxExtattrs -Attributes $ExtensinbleAttribute
