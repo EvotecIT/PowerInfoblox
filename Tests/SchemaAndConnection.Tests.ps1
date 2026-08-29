@@ -9,6 +9,7 @@ Describe 'Infoblox schema requests' {
 
         BeforeEach {
             $Script:InfobloxConfiguration = @{ BaseUri = 'https://example.test/wapi/v2.13.8' }
+            $Script:InfobloxSchemaFields = $null
             $PSDefaultParameterValues['Invoke-InfobloxQuery:BaseUri'] = 'https://example.test/wapi/v2.13.8'
             $PSDefaultParameterValues['Invoke-InfobloxQuery:Credential'] = [pscredential]::new('user', (ConvertTo-SecureString 'pass' -AsPlainText -Force))
             $PSDefaultParameterValues['Invoke-InfobloxQuery:WebSession'] = [Microsoft.PowerShell.Commands.WebRequestSession]::new()
@@ -36,6 +37,20 @@ Describe 'Infoblox schema requests' {
             }
         }
 
+        It 'supports readable root schema fields without an object argument' {
+            Mock Invoke-RestMethod -MockWith {
+                [pscustomobject]@{
+                    fields = @(
+                        [pscustomobject]@{ name = 'supported_objects'; supports = 'r' }
+                    )
+                }
+            }
+
+            $fields = Get-InfobloxSchema -ReturnReadOnlyFields
+
+            $fields | Should -Be 'supported_objects'
+        }
+
         It 'reports the object type when schema retrieval fails' {
             Mock Get-InfobloxSchema
             Mock Write-Warning
@@ -43,7 +58,7 @@ Describe 'Infoblox schema requests' {
             $null = Get-FieldsFromSchema -SchemaObject 'networkcontainer'
 
             Should -Invoke -CommandName Write-Warning -Times 1 -ParameterFilter {
-                $Message -eq "Get-FieldsFromSchema - Failed to fetch schema for record type 'networkcontainer'. Using defaults"
+                $Message -eq "Get-FieldsFromSchema - Failed to fetch schema for record type 'networkcontainer'. Using server default fields"
             }
         }
     }
@@ -99,10 +114,12 @@ Describe 'Infoblox request timeout' {
 
         It 'clears the configured timeout when disconnecting' {
             Connect-Infoblox -Server 'example.test' -Credential $script:testCredential -TimeoutSec 3600 -SkipInitialConnection
+            $Script:InfobloxSchemaFields = [ordered] @{ network = @('network') }
 
             Disconnect-Infoblox
 
             $PSDefaultParameterValues.ContainsKey('Invoke-InfobloxQuery:TimeoutSec') | Should -BeFalse
+            $Script:InfobloxSchemaFields | Should -BeNullOrEmpty
         }
     }
 }

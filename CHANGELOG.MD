@@ -1,4 +1,5 @@
 ### Unreleased
+- Select default network return fields from each connected WAPI schema for compatibility across NIOS versions
 - Send Microsoft DHCP server associations as WAPI `msdhcpserver` structures in JSON request bodies
 - Create DHCP reservations through the NIOS `fixedaddress` object endpoint
 

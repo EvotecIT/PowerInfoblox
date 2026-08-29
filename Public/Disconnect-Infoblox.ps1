@@ -27,6 +27,7 @@
     }
     # lets remove the default parameters so that user has to connect again
     $Script:InfobloxConfiguration = $null
+    $Script:InfobloxSchemaFields = $null
     $PSDefaultParameterValues.Remove('Invoke-InfobloxQuery:Credential')
     $PSDefaultParameterValues.Remove('Invoke-InfobloxQuery:Server')
     $PSDefaultParameterValues.Remove('Invoke-InfobloxQuery:BaseUri')
