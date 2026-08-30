@@ -113,12 +113,14 @@ function Set-InfobloxNetworkMembers {
 
     $CurrentMemberObject = $Object
     if ($NeedsCurrentMembers -and $null -eq $CurrentMemberObject.PSObject.Properties['members']) {
-        $MemberReturnFields = Get-FieldsFromSchema -SchemaObject 'network' -RequestedFields @('members')
-        if ($MemberReturnFields) {
-            $CurrentMemberObject = Invoke-InfobloxQuery -RelativeUri $Object._ref -Method 'GET' -QueryParameter @{ _return_fields = $MemberReturnFields } -WhatIf:$false
-            if ($CurrentMemberObject -is [array]) {
-                $CurrentMemberObject = $CurrentMemberObject | Select-Object -First 1
-            }
+        try {
+            $CurrentMemberObject = Invoke-InfobloxQuery -RelativeUri $Object._ref -Method 'GET' -QueryParameter @{ _return_fields = 'members' } -ErrorAction Stop -WhatIf:$false
+        } catch {
+            Write-Verbose -Message "Set-InfobloxNetworkMembers - Reading members for $($Object._ref) failed. $($_.Exception.Message)"
+            $CurrentMemberObject = $null
+        }
+        if ($CurrentMemberObject -is [array]) {
+            $CurrentMemberObject = $CurrentMemberObject | Select-Object -First 1
         }
     }
     if ($NeedsCurrentMembers -and (-not $CurrentMemberObject -or $null -eq $CurrentMemberObject.PSObject.Properties['members'])) {

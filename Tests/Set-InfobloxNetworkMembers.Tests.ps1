@@ -185,7 +185,7 @@ Describe 'Set-InfobloxNetworkMembers' {
             Should -Invoke -CommandName Invoke-InfobloxQuery -ParameterFilter { $Method -eq 'PUT' } -Times 0 -Exactly
         }
 
-        It 'fetches members by reference when the default network response omits them but the schema permits reads' {
+        It 'fetches members by reference without requiring schema access' {
             $result = [pscustomobject]@{
                 _ref         = 'network/ref'
                 network      = '10.46.5.128/25'
@@ -199,7 +199,7 @@ Describe 'Set-InfobloxNetworkMembers' {
             }
             $script:memberQueryParameter = $null
             $script:putBody = $null
-            Mock Get-FieldsFromSchema -MockWith { 'members' }
+            Mock Get-FieldsFromSchema -MockWith { throw 'Schema access denied' }
             Mock Invoke-InfobloxQuery -MockWith {
                 if ($Method -eq 'GET' -and $RelativeUri -eq 'network') { return $result }
                 if ($Method -eq 'GET' -and $RelativeUri -eq 'network/ref') {
@@ -214,6 +214,7 @@ Describe 'Set-InfobloxNetworkMembers' {
 
             $script:memberQueryParameter._return_fields | Should -Be 'members'
             $script:putBody.members.ipv4addr | Should -Be @('a', 'b')
+            Should -Invoke -CommandName Get-FieldsFromSchema -Times 0 -Exactly
         }
 
         It 'supports custom member struct and property' {
