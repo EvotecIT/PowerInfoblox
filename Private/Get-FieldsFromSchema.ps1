@@ -3,7 +3,9 @@ function Get-FieldsFromSchema {
     param(
         [PSCustomobject] $Schema,
         [string] $SchemaObject,
-        [string[]] $RequestedFields
+        [string[]] $RequestedFields,
+        [ValidateSet('r', 'w', 'u', 's')]
+        [string] $Supports = 'r'
     )
 
     if (-not $Script:InfobloxSchemaFields) {
@@ -19,13 +21,13 @@ function Get-FieldsFromSchema {
     }
     $BaseUri = $Script:InfobloxConfiguration.BaseUri
     if ($BaseUri) {
-        $CacheKey = '{0}|{1}' -f $BaseUri.ToString().TrimEnd([char] '/').ToLowerInvariant(), $NormalizedSchemaObject
+        $CacheKey = '{0}|{1}|{2}' -f $BaseUri.ToString().TrimEnd([char] '/').ToLowerInvariant(), $NormalizedSchemaObject, $Supports
     } else {
-        $CacheKey = $NormalizedSchemaObject
+        $CacheKey = '{0}|{1}' -f $NormalizedSchemaObject, $Supports
     }
 
     if ($Script:InfobloxSchemaFields.Contains($CacheKey)) {
-        $ReadableFields = @($Script:InfobloxSchemaFields[$CacheKey])
+        $SupportedFields = @($Script:InfobloxSchemaFields[$CacheKey])
     } else {
         if (-not $Schema) {
             try {
@@ -40,14 +42,14 @@ function Get-FieldsFromSchema {
         }
 
         if ($Schema -and $Schema.fields.name) {
-            $ReadableFields = @(
+            $SupportedFields = @(
                 foreach ($Field in $Schema.fields) {
-                    if ($Field.supports -like '*r*') {
+                    if ($Field.supports -like "*$Supports*") {
                         $Field.Name
                     }
                 }
             )
-            $Script:InfobloxSchemaFields[$CacheKey] = $ReadableFields
+            $Script:InfobloxSchemaFields[$CacheKey] = $SupportedFields
         } else {
             Write-Warning -Message "Get-FieldsFromSchema - Failed to fetch schema for record type '$SchemaDescription'. Using server default fields"
             return
@@ -55,18 +57,18 @@ function Get-FieldsFromSchema {
     }
 
     if ($RequestedFields) {
-        $ReadableFieldLookup = @{}
-        foreach ($FieldName in $ReadableFields) {
-            $ReadableFieldLookup[$FieldName] = $true
+        $SupportedFieldLookup = @{}
+        foreach ($FieldName in $SupportedFields) {
+            $SupportedFieldLookup[$FieldName] = $true
         }
-        $ReadableFields = @(
+        $SupportedFields = @(
             foreach ($FieldName in $RequestedFields) {
-                if ($ReadableFieldLookup.ContainsKey($FieldName)) {
+                if ($SupportedFieldLookup.ContainsKey($FieldName)) {
                     $FieldName
                 }
             }
         )
     }
 
-    $ReadableFields -join ','
+    $SupportedFields -join ','
 }

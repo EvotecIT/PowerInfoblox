@@ -113,6 +113,22 @@ Describe 'Get-InfobloxNetwork schema compatibility' {
             Should -Invoke -CommandName Get-InfobloxSchema -Times 2 -Exactly
         }
 
+        It 'keeps readable and writable schema caches separate' {
+            $Schema = [pscustomobject]@{
+                fields = @(
+                    [pscustomobject]@{ name = 'read_only'; supports = 'r' }
+                    [pscustomobject]@{ name = 'read_write'; supports = 'rw' }
+                    [pscustomobject]@{ name = 'write_only'; supports = 'w' }
+                )
+            }
+
+            $ReadableFields = Get-FieldsFromSchema -Schema $Schema -SchemaObject 'network'
+            $WritableFields = Get-FieldsFromSchema -Schema $Schema -SchemaObject 'network' -Supports 'w'
+
+            $ReadableFields | Should -Be 'read_only,read_write'
+            $WritableFields | Should -Be 'read_write,write_only'
+        }
+
         It 'returns every readable schema field with FetchFromSchema' {
             Mock Get-InfobloxSchema -MockWith {
                 [pscustomobject]@{

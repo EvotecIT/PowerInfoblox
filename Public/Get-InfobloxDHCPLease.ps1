@@ -7,6 +7,7 @@
         [string] $Hostname,
         [switch] $PartialMatch,
         [switch] $FetchFromSchema,
+        [string[]] $ReturnFields,
         [int] $MaxResults = 1000000
     )
     if (-not $Script:InfobloxConfiguration) {
@@ -24,7 +25,7 @@
     } elseif ($ReturnFields) {
         $ReturnFields = ($ReturnFields | Sort-Object -Unique) -join ','
     } else {
-        $ReturnFields = 'binding_state,hardware,client_hostname,fingerprint,address,network_view'
+        $ReturnFields = Get-FieldsFromSchema -SchemaObject 'lease' -RequestedFields ('binding_state,hardware,client_hostname,fingerprint,address,network_view' -split ',')
     }
 
     $invokeInfobloxQuerySplat = @{

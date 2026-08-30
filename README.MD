@@ -47,11 +47,11 @@ Connect-Infoblox `
 
 Call `Disconnect-Infoblox` when the connection context is no longer needed. This clears credentials, session defaults, and cached schema information from the module session.
 
-## Network queries across WAPI versions
+## Queries across WAPI versions
 
-Infoblox Grids can expose different readable fields depending on their WAPI version and configuration. `Get-InfobloxNetwork` reads the connected endpoint schema and requests only the preferred fields supported by that Grid. For example, `vlans` is requested when the schema marks it as readable and omitted when it is unavailable.
+Infoblox Grids can expose different readable fields depending on their WAPI version and configuration. PowerInfoblox checks the connected endpoint schema before requesting optional fields from network, DNS, DHCP, Grid, and member objects. For example, `vlans` is requested when the network schema marks it as readable and omitted when it is unavailable.
 
-Schema results are cached per endpoint and object type. If schema discovery is unavailable, the network request falls back to the server's default return fields.
+Schema results are cached per endpoint, object type, and operation. If schema discovery is unavailable, the request omits `_return_fields` and uses the server's default fields. Commands that support `FetchFromSchema` can still request every field marked readable by the connected Grid. Explicit field parameters, such as `ReturnFields` or `Properties`, remain under the caller's control.
 
 ```powershell
 # Get one network with the module's normalized output
@@ -71,6 +71,11 @@ Get-InfobloxNetwork `
     -Network '10.20.30.0/24' `
     -ReturnFields 'network', 'comment', 'vlans' `
     -Native
+
+# Request selected lease fields explicitly
+Get-InfobloxDHCPLease `
+    -Network '10.20.30.0/24' `
+    -ReturnFields 'address', 'binding_state', 'client_hostname'
 ```
 
 Use `Get-InfobloxSchema` to inspect the capabilities exposed by the connected endpoint:
@@ -78,6 +83,7 @@ Use `Get-InfobloxSchema` to inspect the capabilities exposed by the connected en
 ```powershell
 Get-InfobloxSchema -Object 'network'
 Get-InfobloxSchema -Object 'network' -ReturnReadOnlyFields
+Get-InfobloxSchema -Object 'network' -ReturnWriteFields
 ```
 
 ## Common workflows
@@ -159,6 +165,8 @@ Set-InfobloxNetworkMembers -Network '10.20.40.0/24' -Members @()
 ```
 
 The default member structure is `msdhcpserver`. Use `MemberStruct` and `MemberProperty` for another WAPI member structure.
+
+Replacing the complete list with `Members` only requires the network reference. `AddMembers` and `RemoveMembers` first read the current list; if the connected Grid does not expose `network.members` as readable, PowerInfoblox stops without writing rather than risk replacing an unknown configuration.
 
 ### DHCP ranges
 

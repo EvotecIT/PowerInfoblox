@@ -51,6 +51,59 @@ Describe 'Infoblox schema requests' {
             $fields | Should -Be 'supported_objects'
         }
 
+        It 'returns writable fields without issuing a second schema request' {
+            Mock Invoke-RestMethod -MockWith {
+                [pscustomobject]@{
+                    fields = @(
+                        [pscustomobject]@{ name = 'read_only'; supports = 'r' }
+                        [pscustomobject]@{ name = 'read_write'; supports = 'rw' }
+                        [pscustomobject]@{ name = 'write_only'; supports = 'w' }
+                    )
+                }
+            }
+
+            $fields = Get-InfobloxSchema -Object 'network' -ReturnWriteFields
+
+            $fields | Should -Be 'read_write,write_only'
+            Should -Invoke -CommandName Invoke-RestMethod -Times 1 -Exactly
+        }
+
+        It 'returns field objects without issuing a second schema request' {
+            Mock Invoke-RestMethod -MockWith {
+                [pscustomobject]@{
+                    fields = @(
+                        [pscustomobject]@{ name = 'network'; supports = 'r' }
+                    )
+                }
+            }
+
+            $fields = @(Get-InfobloxSchema -Object 'network' -ReturnFields)
+
+            $fields | Should -HaveCount 1
+            $fields[0].name | Should -Be 'network'
+            Should -Invoke -CommandName Invoke-RestMethod -Times 1 -Exactly
+        }
+
+        It 'omits empty return field parameters while preserving other query values' {
+            $script:capturedUri = $null
+            Mock Invoke-RestMethod -MockWith {
+                param($Uri)
+                $script:capturedUri = [string] $Uri
+                @()
+            }
+
+            $null = Invoke-InfobloxQuery -RelativeUri 'range' -QueryParameter ([ordered]@{
+                    _return_fields  = $null
+                    '_return_fields+' = '   '
+                    network_view    = 'default'
+                    _max_results    = 1000
+                }) -WhatIf:$false
+
+            $script:capturedUri | Should -Not -Match '_return_fields'
+            $script:capturedUri | Should -Match 'network_view=default'
+            $script:capturedUri | Should -Match '_max_results=1000'
+        }
+
         It 'reports the object type when schema retrieval fails' {
             Mock Get-InfobloxSchema
             Mock Write-Warning

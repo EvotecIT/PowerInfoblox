@@ -57,10 +57,9 @@
         if ($ReturnReadOnlyFields) {
             Get-FieldsFromSchema -Schema $Query -SchemaObject $Object
         } elseif ($ReturnWriteFields) {
-            $Fields = ((Get-InfobloxSchema -Object $Object).Fields | Where-Object { $_.supports -like "*r*" }).Name
-            $Fields -join ','
+            Get-FieldsFromSchema -Schema $Query -SchemaObject $Object -Supports 'w'
         } elseif ($ReturnFields) {
-            (Get-InfobloxSchema -Object $Object).Fields
+            $Query.Fields
         } else {
             $Query
         }

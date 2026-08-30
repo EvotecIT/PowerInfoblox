@@ -25,21 +25,23 @@
     }
 
     $invokeInfobloxQuerySplat = @{
-        RelativeUri    = "record:$($Type.ToLower())"
+        RelativeUri    = "record:$($Type.ToLowerInvariant())"
         Method         = 'GET'
         QueryParameter = @{
             _max_results = 1000000
         }
     }
     if ($Type -eq 'Host') {
-        $invokeInfobloxQuerySplat.QueryParameter._return_fields = 'name,dns_name,aliases,dns_aliases,ipv4addrs,configure_for_dns,view'
+        $PreferredFields = 'name,dns_name,aliases,dns_aliases,ipv4addrs,configure_for_dns,view' -split ','
     } elseif ($Type -eq 'PTR') {
-        $invokeInfobloxQuerySplat.QueryParameter._return_fields = 'aws_rte53_record_info,cloud_info,comment,creation_time,creator,ddns_principal,ddns_protected,disable,discovered_data,dns_name,dns_ptrdname,extattrs,forbid_reclamation,ipv4addr,ipv6addr,last_queried,ms_ad_user_data,name,ptrdname,reclaimable,shared_record_group,ttl,use_ttl,view,zone'
+        $PreferredFields = 'aws_rte53_record_info,cloud_info,comment,creation_time,creator,ddns_principal,ddns_protected,disable,discovered_data,dns_name,dns_ptrdname,extattrs,forbid_reclamation,ipv4addr,ipv6addr,last_queried,ms_ad_user_data,name,ptrdname,reclaimable,shared_record_group,ttl,use_ttl,view,zone' -split ','
     } elseif ($Type -eq 'A') {
-        $invokeInfobloxQuerySplat.QueryParameter._return_fields = 'ipv4addr,name,view,zone,cloud_info,comment,creation_time,creator,ddns_principal,ddns_protected,disable,discovered_data,dns_name,last_queried,ms_ad_user_data,reclaimable,shared_record_group,ttl,use_ttl'
+        $PreferredFields = 'ipv4addr,name,view,zone,cloud_info,comment,creation_time,creator,ddns_principal,ddns_protected,disable,discovered_data,dns_name,last_queried,ms_ad_user_data,reclaimable,shared_record_group,ttl,use_ttl' -split ','
     }
     if ($FetchFromSchema) {
         $invokeInfobloxQuerySplat.QueryParameter._return_fields = Get-FieldsFromSchema -SchemaObject "record:$Type"
+    } elseif ($PreferredFields) {
+        $invokeInfobloxQuerySplat.QueryParameter._return_fields = Get-FieldsFromSchema -SchemaObject "record:$Type" -RequestedFields $PreferredFields
     }
     if ($Zone) {
         if ($PartialMatch) {
