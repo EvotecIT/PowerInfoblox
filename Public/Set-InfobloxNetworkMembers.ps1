@@ -93,10 +93,10 @@ function Set-InfobloxNetworkMembers {
         return
     }
 
+    $NeedsCurrentMembers = $hasAddMembers -or $hasRemoveMembers
     $QueryParameter = [ordered]@{
-        network        = $Network
-        network_view   = $NetworkView
-        _return_fields = "members,network,network_view"
+        network      = $Network
+        network_view = $NetworkView
     }
     $Object = Invoke-InfobloxQuery -RelativeUri 'network' -Method 'GET' -QueryParameter $QueryParameter -WhatIf:$false
     if (-not $Object) {
@@ -105,51 +105,71 @@ function Set-InfobloxNetworkMembers {
     }
     if ($Object -is [array]) {
         if ($Object.Count -gt 1) {
-            Write-Warning -Message "Set-InfobloxNetworkMembers - Multiple networks found for $Network in view $NetworkView, using the first result."
+            Write-Error -Category InvalidData -Message "Set-InfobloxNetworkMembers - Multiple networks were returned for $Network in view $NetworkView. No changes were made."
+            return
         }
         $Object = $Object | Select-Object -First 1
     }
 
-    $CurrentMembers = @()
-    if ($Object.members) {
-        foreach ($Member in $Object.members) {
-            if ($Member.$MemberProperty) {
-                $CurrentMembers += $Member.$MemberProperty
-            }
+    $CurrentMemberObject = $Object
+    if ($NeedsCurrentMembers -and $null -eq $CurrentMemberObject.PSObject.Properties['members']) {
+        try {
+            $CurrentMemberObject = Invoke-InfobloxQuery -RelativeUri $Object._ref -Method 'GET' -QueryParameter @{ _return_fields = 'members' } -ErrorAction Stop -WhatIf:$false
+        } catch {
+            Write-Verbose -Message "Set-InfobloxNetworkMembers - Reading members for $($Object._ref) failed. $($_.Exception.Message)"
+            $CurrentMemberObject = $null
         }
+        if ($CurrentMemberObject -is [array]) {
+            $CurrentMemberObject = $CurrentMemberObject | Select-Object -First 1
+        }
+    }
+    if ($NeedsCurrentMembers -and (-not $CurrentMemberObject -or $null -eq $CurrentMemberObject.PSObject.Properties['members'])) {
+        Write-Error -Category InvalidData -Message 'Set-InfobloxNetworkMembers - The connected Grid did not return readable network members. AddMembers and RemoveMembers cannot safely calculate an update. Use Members to replace the complete list or use a WAPI endpoint whose network schema supports reading members.'
+        return
     }
 
     if ($hasMembers) {
-        $FinalMembers = $Members
-    } else {
-        $FinalMembers = $CurrentMembers
-        if ($AddMembers) {
-            foreach ($Member in $AddMembers) {
-                if ($FinalMembers -notcontains $Member) {
-                    $FinalMembers += $Member
-                }
-            }
-        }
-        if ($RemoveMembers) {
-            $FinalMembers = $FinalMembers | Where-Object { $RemoveMembers -notcontains $_ }
-        }
-    }
-
-    $FinalMembers = $FinalMembers | Where-Object { $_ } | Sort-Object -Unique
-
-    $Body = [ordered] @{
-        "members" = @(
-            foreach ($Member in $FinalMembers) {
+        $FinalMemberObjects = @(
+            foreach ($Member in ($Members | Where-Object { $_ } | Sort-Object -Unique)) {
                 [ordered] @{
-                    "_struct"  = $MemberStruct
+                    '_struct'      = $MemberStruct
                     $MemberProperty = $Member
                 }
             }
         )
+    } else {
+        $FinalMemberObjects = @($CurrentMemberObject.members)
+        if ($AddMembers) {
+            $CurrentMemberValues = @(
+                foreach ($MemberObject in $FinalMemberObjects) {
+                    if ($MemberObject.$MemberProperty) {
+                        $MemberObject.$MemberProperty
+                    }
+                }
+            )
+            foreach ($Member in ($AddMembers | Where-Object { $_ } | Sort-Object -Unique)) {
+                if ($CurrentMemberValues -notcontains $Member) {
+                    $FinalMemberObjects += [ordered] @{
+                        '_struct'      = $MemberStruct
+                        $MemberProperty = $Member
+                    }
+                    $CurrentMemberValues += $Member
+                }
+            }
+        }
+        if ($RemoveMembers) {
+            $FinalMemberObjects = @(
+                foreach ($MemberObject in $FinalMemberObjects) {
+                    if ($RemoveMembers -notcontains $MemberObject.$MemberProperty) {
+                        $MemberObject
+                    }
+                }
+            )
+        }
     }
 
-    if ($FinalMembers.Count -gt 0) {
-        Remove-EmptyValue -Hashtable $Body
+    $Body = [ordered] @{
+        'members' = @($FinalMemberObjects)
     }
 
     $invokeInfobloxQuerySplat = @{

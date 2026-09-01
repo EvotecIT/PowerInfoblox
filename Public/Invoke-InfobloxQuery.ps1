@@ -68,7 +68,16 @@
         RelativeOrAbsoluteUri = $RelativeUri
     }
     if ($QueryParameter) {
-        $joinUriQuerySplat['QueryParameter'] = $QueryParameter
+        $NormalizedQueryParameter = [ordered]@{}
+        foreach ($Entry in $QueryParameter.GetEnumerator()) {
+            if ($Entry.Key -in @('_return_fields', '_return_fields+') -and [string]::IsNullOrWhiteSpace([string] $Entry.Value)) {
+                continue
+            }
+            $NormalizedQueryParameter[$Entry.Key] = $Entry.Value
+        }
+        if ($NormalizedQueryParameter.Count -gt 0) {
+            $joinUriQuerySplat['QueryParameter'] = $NormalizedQueryParameter
+        }
     }
 
     $Url = Join-UriQuery @joinUriQuerySplat

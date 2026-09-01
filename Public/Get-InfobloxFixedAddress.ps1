@@ -22,7 +22,7 @@
         Method         = 'GET'
         QueryParameter = @{
             _max_results   = 1000000
-            _return_fields = 'mac,ipv4addr,network_view'
+            _return_fields = Get-FieldsFromSchema -SchemaObject 'fixedaddress' -RequestedFields @('mac', 'ipv4addr', 'network_view')
         }
     }
     if ($FetchFromSchema) {

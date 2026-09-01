@@ -19,7 +19,7 @@
         Method         = 'GET'
         QueryParameter = @{
             _max_results   = 1000000
-            _return_fields = @(
+            _return_fields = (Get-FieldsFromSchema -SchemaObject 'zone_auth' -RequestedFields @(
                 'address'
                 'allow_active_dir'
                 'allow_fixed_rrset_order'
@@ -128,7 +128,7 @@
                 'view'
                 'zone_format'
                 'zone_not_queried_enabled_time'
-            ) -join ','
+            ))
         }
     }
     if ($View) {

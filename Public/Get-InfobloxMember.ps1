@@ -12,17 +12,18 @@
         return
     }
 
-    # defalt return fields
-    $ReturnFields = 'config_addr_type,host_name,platform,service_type_configuration,vip_setting,node_info,service_status'
+    $PreferredFields = 'config_addr_type,host_name,platform,service_type_configuration,vip_setting,node_info,service_status' -split ','
     if ($FetchFromSchema) {
         $ReturnFields = Get-FieldsFromSchema -SchemaObject "member"
+    } else {
+        $ReturnFields = Get-FieldsFromSchema -SchemaObject 'member' -RequestedFields $PreferredFields
     }
 
     $invokeInfobloxQuerySplat = @{
         RelativeUri    = 'member'
         Method         = 'GET'
         QueryParameter = @{
-            _max_results = 1000000
+            _max_results   = 1000000
             _return_fields = $ReturnFields
         }
     }
