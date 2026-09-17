@@ -5,14 +5,19 @@
         [string]$IPAddress
     )
 
-    # Split the IP address into its octets
-    $octets = $IPAddress -split "\."
+    $ParsedAddress = $null
+    if (-not [System.Net.IPAddress]::TryParse($IPAddress, [ref] $ParsedAddress)) {
+        throw "Convert-IpAddressToPtrString - '$IPAddress' is not a valid IPv4 or IPv6 address."
+    }
 
-    # Reverse the octets
-    [array]::Reverse($octets)
+    if ($ParsedAddress.AddressFamily -eq [System.Net.Sockets.AddressFamily]::InterNetwork) {
+        $Octets = $ParsedAddress.GetAddressBytes()
+        [array]::Reverse($Octets)
+        return (($Octets -join '.') + '.in-addr.arpa')
+    }
 
-    # Join the reversed octets with dots and append the standard PTR suffix
-    $ptrString = ($octets -join ".") + ".in-addr.arpa"
-
-    $ptrString
+    $HexAddress = -join ($ParsedAddress.GetAddressBytes() | ForEach-Object { $_.ToString('x2') })
+    $Nibbles = $HexAddress.ToCharArray()
+    [array]::Reverse($Nibbles)
+    ($Nibbles -join '.') + '.ip6.arpa'
 }

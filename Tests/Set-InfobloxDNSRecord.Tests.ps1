@@ -63,10 +63,63 @@ Describe 'Set-InfobloxDNSRecord' {
             Should -Invoke -CommandName Invoke-InfobloxQuery -Times 0 -Exactly
         }
 
-        It 'rejects an unsupported record type from ReferenceID' {
+        It 'requires Properties for a structured record type' {
             {
                 Set-InfobloxDNSRecord -ReferenceID 'record:srv/opaque:_service._tcp.example.test/default' -Value 'target.example.test'
-            } | Should -Throw "*Record type 'SRV' is not supported*"
+            } | Should -Throw "*requires the Properties parameter set*"
+
+            Should -Invoke -CommandName Invoke-InfobloxQuery -Times 0 -Exactly
+        }
+
+        It 'updates structured HOST data through Properties' {
+            $properties = @{ ipv4addrs = @(@{ ipv4addr = '192.0.2.30' }) }
+
+            Set-InfobloxDNSRecord -ReferenceID 'record:host/opaque:host.example.test/default' -Properties $properties
+
+            $script:requestBody.ipv4addrs[0].ipv4addr | Should -Be '192.0.2.30'
+            Should -Invoke -CommandName Invoke-InfobloxQuery -Times 1 -Exactly
+        }
+
+        It 'updates an arbitrary WAPI record type through Properties' {
+            Set-InfobloxDNSRecord -ReferenceID 'record:srv/opaque:_service._tcp.example.test/default' -Properties @{
+                target = 'host.example.test'
+                port = 443
+                priority = 10
+                weight = 5
+            }
+
+            $script:requestBody.target | Should -Be 'host.example.test'
+            $script:requestBody.port | Should -Be 443
+            Should -Invoke -CommandName Invoke-InfobloxQuery -Times 1 -Exactly
+        }
+
+        It 'updates MX preference with the exchanger' {
+            Set-InfobloxDNSRecord -ReferenceID 'record:mx/opaque:example.test/default' -Value 'mail.example.test' -Preference 20
+
+            $script:requestBody.mail_exchanger | Should -Be 'mail.example.test'
+            $script:requestBody.preference | Should -Be 20
+        }
+
+        It 'updates NS glue addresses with the nameserver' {
+            Set-InfobloxDNSRecord -ReferenceID 'record:ns/opaque:example.test/default' -Value 'ns1.example.test' -Address '192.0.2.53', '2001:db8::53'
+
+            $script:requestBody.nameserver | Should -Be 'ns1.example.test'
+            $script:requestBody.addresses.Count | Should -Be 2
+            $script:requestBody.addresses[1].address | Should -Be '2001:db8::53'
+        }
+
+        It 'rejects an address family mismatch' {
+            {
+                Set-InfobloxDNSRecord -ReferenceID 'record:a/opaque:host.example.test/default' -Value '2001:db8::20'
+            } | Should -Throw '*not a valid IPv4 address*'
+
+            Should -Invoke -CommandName Invoke-InfobloxQuery -Times 0 -Exactly
+        }
+
+        It 'rejects empty Properties' {
+            {
+                Set-InfobloxDNSRecord -ReferenceID 'record:host/opaque:host.example.test/default' -Properties @{}
+            } | Should -Throw '*Properties cannot be empty*'
 
             Should -Invoke -CommandName Invoke-InfobloxQuery -Times 0 -Exactly
         }

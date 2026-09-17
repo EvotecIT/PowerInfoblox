@@ -1,158 +1,256 @@
-﻿function Remove-InfobloxDnsRecord {
+function Remove-InfobloxDnsRecord {
     <#
     .SYNOPSIS
-    Remove Infoblox DNS records
+    Removes Infoblox DNS records.
 
     .DESCRIPTION
-    Remove Infoblox DNS records
+    Removes one DNS record selected by ReferenceID or records found by Name and Type. Name-based
+    removal stops when a lookup is ambiguous unless RemoveAllMatching is explicitly supplied.
+    Associated PTR cleanup for A and AAAA records is limited to the same view and matching ptrdname.
 
     .PARAMETER Name
-    Name of the record to remove
+    One or more exact DNS record names to find and remove.
+
+    .PARAMETER ReferenceID
+    The exact DNS record WAPI object reference to remove.
 
     .PARAMETER Type
-    Type of the record to remove
+    The WAPI record type. It is required with Name and optional as a safety check with ReferenceID.
+
+    .PARAMETER View
+    Limits a name-based lookup to one DNS view.
+
+    .PARAMETER RemoveAllMatching
+    Explicitly allows every record returned for a Name, Type, and optional View to be removed.
+    Without this switch, an ambiguous lookup is skipped.
 
     .PARAMETER SkipPTR
-    Skip PTR record removal, when removing A record
+    Skips associated PTR record removal when removing A or AAAA records.
 
     .PARAMETER LogPath
-    Path to log file. Changes are logged to this file
+    The path to a log file that receives removal messages.
 
     .EXAMPLE
-    Remove-InfobloxDnsRecord -Name 'test.example.com' -Type 'A' -WhatIf
+    Remove-InfobloxDnsRecord -ReferenceID 'record:mx/example-reference:example.com/default' -WhatIf
 
     .EXAMPLE
-    Remove-InfobloxDnsRecord -Name 'test.example.com' -Type 'A' -SkipPTR -WhatIf
+    Remove-InfobloxDnsRecord -Name 'host.example.com' -Type A -View Internal -WhatIf
 
-    .NOTES
-    General notes
+    .EXAMPLE
+    Remove-InfobloxDnsRecord -Name 'example.com' -Type MX -View default -RemoveAllMatching -WhatIf
     #>
-    [CmdletBinding(SupportsShouldProcess)]
+    [CmdletBinding(SupportsShouldProcess, DefaultParameterSetName = 'ByName')]
     param(
-        [Parameter(Mandatory)][string[]] $Name,
-        [ValidateSet(
-            'A', 'CNAME', 'AAAA', 'PTR'
-        )]
-        [Parameter(Mandatory)][string] $Type,
+        [Parameter(Mandatory, ParameterSetName = 'ByName')]
+        [ValidateNotNullOrEmpty()]
+        [string[]] $Name,
+
+        [Parameter(Mandatory, ParameterSetName = 'ByReference')]
+        [ValidateNotNullOrEmpty()]
+        [string] $ReferenceID,
+
+        [Parameter(Mandatory, ParameterSetName = 'ByName')]
+        [Parameter(ParameterSetName = 'ByReference')]
+        [ValidateNotNullOrEmpty()]
+        [string] $Type,
+
+        [Parameter(ParameterSetName = 'ByName')]
+        [string] $View,
+
+        [switch] $RemoveAllMatching,
         [switch] $SkipPTR,
         [string] $LogPath
     )
-    [Array] $ToBeDeleted = foreach ($Record in $Name) {
-        $FoundRecord = Get-InfobloxDNSRecord -Name $Record -Type $Type -Verbose:$false
-        if ($FoundRecord) {
-            $FoundRecord
-            if ($LogPath) {
-                Write-Color -Text "Found $($FoundRecord.name) with type $Type to be removed" -LogFile $LogPath -NoConsoleOutput
-            }
-        } else {
-            Write-Verbose -Message "Remove-InfobloxDnsRecord - No record for $Record were found. Skipping"
-            if ($LogPath) {
-                Write-Color -Text "No record for $Record were found. Skipping" -LogFile $LogPath -NoConsoleOutput
+
+    if ($PSCmdlet.ParameterSetName -eq 'ByReference') {
+        if ($ReferenceID -notmatch '^record:(?<RecordType>[^/]+)/') {
+            throw "Remove-InfobloxDnsRecord - ReferenceID '$ReferenceID' is not a DNS record WAPI object reference."
+        }
+        $NormalizedType = Resolve-InfobloxDNSRecordType -Type $Matches.RecordType
+        if ($PSBoundParameters.ContainsKey('Type')) {
+            $ExpectedType = Resolve-InfobloxDNSRecordType -Type $Type
+            if ($ExpectedType -ne $NormalizedType) {
+                throw "Remove-InfobloxDnsRecord - Type '$Type' does not match record type '$($NormalizedType.ToUpperInvariant())' in ReferenceID."
             }
         }
+    } else {
+        $NormalizedType = Resolve-InfobloxDNSRecordType -Type $Type
     }
 
-    Write-Verbose -Message "Remove-InfobloxDnsRecord - Found $($ToBeDeleted.Count) records to delete"
+    if ($NormalizedType -in @('host_ipv4addr', 'host_ipv6addr')) {
+        throw "Remove-InfobloxDnsRecord - Record type '$NormalizedType' cannot be deleted directly. Remove or update its parent HOST record."
+    }
+    $DisplayType = $NormalizedType.ToUpperInvariant()
 
-    [Array] $ToBeDeletedPTR = @(
-        if ($Type -eq 'A' -and -not $SkipPTR) {
-            foreach ($Record in $ToBeDeleted) {
-                if ($null -eq $Record.ipv4addr) {
+    [Array] $ToBeDeleted = @(
+        if ($PSCmdlet.ParameterSetName -eq 'ByReference') {
+            $ReturnFields = switch ($NormalizedType) {
+                'a' { 'name', 'ipv4addr', 'view' }
+                'aaaa' { 'name', 'ipv6addr', 'view' }
+                default { 'name', 'view' }
+            }
+            [Array] $FoundByReference = @(Get-InfobloxDNSRecord -ReferenceID $ReferenceID -ReturnFields $ReturnFields -Verbose:$false)
+            if ($FoundByReference.Count -gt 1) {
+                throw "Remove-InfobloxDnsRecord - Exact ReferenceID lookup returned $($FoundByReference.Count) records. Refusing to remove any record."
+            }
+            if ($FoundByReference.Count -eq 1) {
+                $FoundRecord = $FoundByReference[0]
+                if ($FoundRecord._ref -and $FoundRecord._ref -cne $ReferenceID) {
+                    throw "Remove-InfobloxDnsRecord - Exact ReferenceID lookup returned a different object reference. Refusing to remove any record."
+                }
+                if (-not $FoundRecord._ref) {
+                    $FoundRecord | Add-Member -NotePropertyName '_ref' -NotePropertyValue $ReferenceID
+                }
+                $FoundRecord
+            }
+        } else {
+            foreach ($RecordName in $Name) {
+                $getRecordSplat = @{
+                    Name = $RecordName
+                    Type = $NormalizedType
+                    Verbose = $false
+                }
+                if ($View) {
+                    $getRecordSplat.View = $View
+                }
+                [Array] $MatchesForName = @(Get-InfobloxDNSRecord @getRecordSplat)
+                if ($MatchesForName.Count -gt 1 -and -not $RemoveAllMatching) {
+                    Write-Warning -Message "Remove-InfobloxDnsRecord - Found $($MatchesForName.Count) $DisplayType records for '$RecordName'. Specify View, use ReferenceID, or explicitly use RemoveAllMatching. Skipping."
                     continue
                 }
-                try {
-                    $PTRAddress = Convert-IpAddressToPtrString -IPAddress $Record.ipv4addr -ErrorAction Stop
-                } catch {
-                    Write-Warning -Message "Remove-InfobloxDnsRecord - Failed to convert $($Record.ipv4addr) to PTR"
-                    if ($LogPath) {
-                        Write-Color -Text "Failed to convert $($Record.ipv4addr) to PTR" -NoConsoleOutput -LogFile $LogPath
-                    }
+                if ($MatchesForName.Count -eq 0) {
+                    Write-Verbose -Message "Remove-InfobloxDnsRecord - No $DisplayType record for '$RecordName' was found. Skipping."
+                    continue
                 }
-                if ($PTRAddress) {
-                    $PTRRecord = Get-InfobloxDNSRecord -Type PTR -Name $PTRAddress -Verbose:$false
-                    if ($PTRRecord) {
-                        $PTRRecord
-                        if ($LogPath) {
-                            Write-Color -Text "Found $($PTRRecord.name) with type PTR to be removed" -NoConsoleOutput -LogFile $LogPath
-                        }
-                    } else {
-                        Write-Verbose -Message "Remove-InfobloxDnsRecord - No PTR record for $($Record.name) were found. Skipping"
-                        if ($LogPath) {
-                            Write-Color -Text "No PTR record for $($Record.name) were found. Skipping" -NoConsoleOutput -LogFile $LogPath
-                        }
-                    }
-                }
+                $MatchesForName
             }
         }
     )
 
-    if ($ToBeDeletedPTR.Count -gt 0) {
-        Write-Verbose -Message "Remove-InfobloxDnsRecord - Found $($ToBeDeletedPTR.Count) PTR records to delete"
-    }
+    $SeenReference = @{}
+    [Array] $ToBeDeleted = @($ToBeDeleted | Where-Object {
+            if (-not $_._ref) {
+                return $true
+            }
+            if ($SeenReference.ContainsKey($_._ref)) {
+                return $false
+            }
+            $SeenReference[$_._ref] = $true
+            $true
+        })
 
     foreach ($Record in $ToBeDeleted) {
-        if (-not $Record._ref) {
-            Write-Warning -Message "Remove-InfobloxDnsRecord - Record does not have a reference ID, skipping"
-            if ($LogPath) {
-                Write-Color -Text "Record does not have a reference ID, skipping" -NoConsoleOutput -LogFile $LogPath
-            }
-            continue
-        }
-        Write-Verbose -Message "Remove-InfobloxDnsRecord - Removing $($Record.name) with type $Type / WhatIf:$WhatIfPreference"
         if ($LogPath) {
-            Write-Color -Text "Removing $($Record.name) with type $Type" -NoConsoleOutput -LogFile $LogPath
-        }
-        try {
-            $Success = Remove-InfobloxObject -ReferenceID $Record._ref -WhatIf:$WhatIfPreference -ErrorAction Stop -ReturnSuccess -Verbose:$false
-            if ($Success -eq $true -or $WhatIfPreference) {
-                Write-Verbose -Message "Remove-InfobloxDnsRecord - Removed $($Record.name) with type $Type / WhatIf: $WhatIfPreference"
-                if ($LogPath) {
-                    Write-Color -Text "Removed $($Record.name) with type $Type" -NoConsoleOutput -LogFile $LogPath
-                }
-            } else {
-                # this shouldn't really happen as the error action is set to stop
-                Write-Warning -Message "Remove-InfobloxDnsRecord - Failed to remove $($Record.name) with type $Type / WhatIf: $WhatIfPreference"
-                if ($LogPath) {
-                    Write-Color -Text "Failed to remove $($Record.name) with type $Type / WhatIf: $WhatIfPreference" -NoConsoleOutput -LogFile $LogPath
-                }
-            }
-        } catch {
-            Write-Warning -Message "Remove-InfobloxDnsRecord - Failed to remove $($Record.name) with type $Type, error: $($_.Exception.Message)"
-            if ($LogPath) {
-                Write-Color -Text "Failed to remove $($Record.name) with type $Type, error: $($_.Exception.Message)" -NoConsoleOutput -LogFile $LogPath
-            }
+            Write-Color -Text "Found $($Record.name) with type $DisplayType to be removed" -LogFile $LogPath -NoConsoleOutput
         }
     }
-    foreach ($Record in $ToBeDeletedPTR) {
-        if (-not $Record._ref) {
-            Write-Warning -Message "Remove-InfobloxDnsRecord - PTR record does not have a reference ID, skipping"
-            if ($LogPath) {
-                Write-Color -Text "PTR record does not have a reference ID, skipping" -NoConsoleOutput -LogFile $LogPath
+    Write-Verbose -Message "Remove-InfobloxDnsRecord - Found $($ToBeDeleted.Count) $DisplayType records to delete"
+
+    $AssociatedPTRBySource = @{}
+    if (($NormalizedType -in @('a', 'aaaa')) -and -not $SkipPTR) {
+        foreach ($Record in $ToBeDeleted) {
+            if (-not $Record._ref) {
+                continue
             }
+            $AddressValue = if ($NormalizedType -eq 'a') { $Record.ipv4addr } else { $Record.ipv6addr }
+            if (-not $AddressValue -or -not $Record.name) {
+                continue
+            }
+            try {
+                $PTRAddress = Convert-IpAddressToPtrString -IPAddress $AddressValue -ErrorAction Stop
+            } catch {
+                Write-Warning -Message "Remove-InfobloxDnsRecord - Failed to convert $AddressValue to a PTR name."
+                if ($LogPath) {
+                    Write-Color -Text "Failed to convert $AddressValue to a PTR name" -NoConsoleOutput -LogFile $LogPath
+                }
+                continue
+            }
+
+            $getPTRSplat = @{
+                Type = 'PTR'
+                Name = $PTRAddress
+                ReturnFields = @('name', 'ptrdname', 'view')
+                Verbose = $false
+            }
+            if ($Record.view) {
+                $PTRView = $Record.view
+            } elseif ($View) {
+                $PTRView = $View
+            } else {
+                Write-Warning -Message "Remove-InfobloxDnsRecord - Cannot safely find the PTR associated with '$($Record.name)' because its DNS view is unknown. Skipping PTR removal."
+                continue
+            }
+            $getPTRSplat.View = $PTRView
+            [Array] $PTRCandidates = @(Get-InfobloxDNSRecord @getPTRSplat)
+            $ExpectedPTRTarget = ([string] $Record.name).TrimEnd('.')
+            [Array] $AssociatedPTR = @($PTRCandidates | Where-Object {
+                    $_.ptrdname -and
+                    $_.view -and
+                    ([string] $_.ptrdname).TrimEnd('.') -ieq $ExpectedPTRTarget -and
+                    ([string] $_.view) -ieq ([string] $PTRView)
+                })
+
+            if ($AssociatedPTR.Count -gt 1 -and -not $RemoveAllMatching) {
+                Write-Warning -Message "Remove-InfobloxDnsRecord - Found $($AssociatedPTR.Count) associated PTR records for '$($Record.name)'. Use ReferenceID or explicitly use RemoveAllMatching. Skipping PTR removal."
+                continue
+            }
+            if ($AssociatedPTR.Count -eq 0) {
+                Write-Verbose -Message "Remove-InfobloxDnsRecord - No PTR record associated with '$($Record.name)' was found. Skipping PTR removal."
+                continue
+            }
+            $AssociatedPTRBySource[$Record._ref] = @($AssociatedPTR)
+        }
+    }
+
+    $ProcessedPTRReference = @{}
+    foreach ($Record in $ToBeDeleted) {
+        if (-not $Record._ref) {
+            Write-Warning -Message 'Remove-InfobloxDnsRecord - Record does not have a reference ID. Skipping.'
             continue
         }
-        Write-Verbose -Message "Remove-InfobloxDnsRecord - Removing $($Record.name) with type PTR / WhatIf:$WhatIfPreference"
+        Write-Verbose -Message "Remove-InfobloxDnsRecord - Removing $($Record.name) with type $DisplayType / WhatIf:$WhatIfPreference"
         if ($LogPath) {
-            Write-Color -Text "Removing $($Record.name) with type PTR / WhatIf: $WhatIfPreference" -NoConsoleOutput -LogFile $LogPath
+            Write-Color -Text "Removing $($Record.name) with type $DisplayType" -NoConsoleOutput -LogFile $LogPath
         }
+        $ForwardRemoved = $false
         try {
             $Success = Remove-InfobloxObject -ReferenceID $Record._ref -WhatIf:$WhatIfPreference -ErrorAction Stop -ReturnSuccess -Verbose:$false
             if ($Success -eq $true -or $WhatIfPreference) {
-                Write-Verbose -Message "Remove-InfobloxDnsRecord - Removed $($Record.name) with type PTR / WhatIf: $WhatIfPreference"
-                if ($LogPath) {
-                    Write-Color -Text "Removed $($Record.name) with type PTR / WhatIf: $WhatIfPreference" -NoConsoleOutput -LogFile $LogPath
-                }
+                $ForwardRemoved = $true
+                Write-Verbose -Message "Remove-InfobloxDnsRecord - Removed $($Record.name) with type $DisplayType / WhatIf:$WhatIfPreference"
             } else {
-                # this shouldn't really happen as the error action is set to stop
-                Write-Warning -Message "Remove-InfobloxDnsRecord - Failed to remove $($Record.name) with type PTR / WhatIf: $WhatIfPreference"
-                if ($LogPath) {
-                    Write-Color -Text "Failed to remove $($Record.name) with type PTR / WhatIf: $WhatIfPreference" -NoConsoleOutput -LogFile $LogPath
-                }
+                Write-Warning -Message "Remove-InfobloxDnsRecord - Failed to remove $($Record.name) with type $DisplayType."
             }
         } catch {
-            Write-Warning -Message "Remove-InfobloxDnsRecord - Failed to remove $($Record.name) with type PTR, error: $($_.Exception.Message)"
+            Write-Warning -Message "Remove-InfobloxDnsRecord - Failed to remove $($Record.name) with type $DisplayType, error: $($_.Exception.Message)"
+        }
+        if (-not $ForwardRemoved) {
+            continue
+        }
+
+        foreach ($PTRRecord in @($AssociatedPTRBySource[$Record._ref])) {
+            if (-not $PTRRecord._ref) {
+                Write-Warning -Message 'Remove-InfobloxDnsRecord - PTR record does not have a reference ID. Skipping.'
+                continue
+            }
+            if ($ProcessedPTRReference.ContainsKey($PTRRecord._ref)) {
+                continue
+            }
+            $ProcessedPTRReference[$PTRRecord._ref] = $true
+
+            Write-Verbose -Message "Remove-InfobloxDnsRecord - Removing $($PTRRecord.name) with type PTR / WhatIf:$WhatIfPreference"
             if ($LogPath) {
-                Write-Color -Text "Failed to remove $($Record.name) with type PTR, error: $($_.Exception.Message)" -NoConsoleOutput -LogFile $LogPath
+                Write-Color -Text "Removing $($PTRRecord.name) with type PTR" -NoConsoleOutput -LogFile $LogPath
+            }
+            try {
+                $Success = Remove-InfobloxObject -ReferenceID $PTRRecord._ref -WhatIf:$WhatIfPreference -ErrorAction Stop -ReturnSuccess -Verbose:$false
+                if ($Success -eq $true -or $WhatIfPreference) {
+                    Write-Verbose -Message "Remove-InfobloxDnsRecord - Removed $($PTRRecord.name) with type PTR / WhatIf:$WhatIfPreference"
+                } else {
+                    Write-Warning -Message "Remove-InfobloxDnsRecord - Failed to remove $($PTRRecord.name) with type PTR."
+                }
+            } catch {
+                Write-Warning -Message "Remove-InfobloxDnsRecord - Failed to remove $($PTRRecord.name) with type PTR, error: $($_.Exception.Message)"
             }
         }
     }

@@ -4,17 +4,27 @@ function Set-InfobloxDNSRecord {
     Updates the value of an existing Infoblox DNS record.
 
     .DESCRIPTION
-    Updates one value field on an existing DNS record by using its Infoblox WAPI object reference.
-    The record type is read from ReferenceID and mapped to the corresponding WAPI field. Type can
-    be supplied as an additional safety check and must match the type encoded in ReferenceID.
+    Updates an existing DNS record by using its Infoblox WAPI object reference. Value maps to the
+    primary data field for A, AAAA, CNAME, HOST, MX, NS, PTR, and TXT records. Properties supports
+    structured HOST changes and other record types or multi-field updates without guessing at nested WAPI fields.
+    Type is optional and, when supplied, must match the type encoded in ReferenceID.
 
     .PARAMETER ReferenceID
     The WAPI object reference of the DNS record to update, for example record:cname/... or record:a/....
 
     .PARAMETER Value
     The new record value. The WAPI field depends on the record type: ipv4addr for A, ipv6addr for AAAA,
-    canonical for CNAME, name for HOST, ptrdname for PTR, mail_exchanger for MX, nameserver for NS, and
-    text for TXT.
+    canonical for CNAME, name for HOST, ptrdname for PTR, mail_exchanger for MX, nameserver for NS,
+    and text for TXT.
+
+    .PARAMETER Properties
+    A field dictionary for HOST records, complex record types, or updates that affect multiple fields.
+
+    .PARAMETER Preference
+    An optional MX preference from 0 through 65535, updated together with Value.
+
+    .PARAMETER Address
+    Optional NS glue addresses, updated together with Value.
 
     .PARAMETER Type
     The optional expected record type. When supplied, it must match the type encoded in ReferenceID.
@@ -33,28 +43,36 @@ function Set-InfobloxDNSRecord {
     Set-InfobloxDNSRecord -ReferenceID 'record:txt/ZG5zLmJpbmRfdHh0:test01.example.com/default' -Value 'Verification=AbC123' -WhatIf
 
     Previews a TXT record update without sending the PUT request.
+
+    .EXAMPLE
+    Set-InfobloxDNSRecord -ReferenceID 'record:host/example-reference:host.example.com/default' -Properties @{ ipv4addrs = @(@{ ipv4addr = '192.0.2.20' }) }
+
+    Replaces the IPv4 address collection of a HOST record with an explicitly structured WAPI value.
     #>
-    [CmdletBinding(SupportsShouldProcess)]
+    [CmdletBinding(SupportsShouldProcess, DefaultParameterSetName = 'Value')]
     param(
         [Parameter(Mandatory)]
         [string] $ReferenceID,
 
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory, ParameterSetName = 'Value')]
         [Alias('Object', 'Name', 'PtrName', 'PTR', 'NameServer', 'Text', 'CanonicalName', 'IPAddress', 'MailExchanger')]
         [ValidateNotNullOrEmpty()]
         [string] $Value,
 
-        [ValidateSet(
-            'A',
-            'AAAA',
-            'CNAME',
-            'HOST',
-            'PTR',
-            'MX',
-            'NS',
-            'TXT'
-        )]
-        [string] $Type
+        [Parameter(Mandatory, ParameterSetName = 'Properties')]
+        [ValidateNotNull()]
+        [System.Collections.IDictionary] $Properties,
+
+        [ValidateNotNullOrEmpty()]
+        [string] $Type,
+
+        [Parameter(ParameterSetName = 'Value')]
+        [ValidateRange(0, 65535)]
+        [int] $Preference,
+
+        [Alias('Addresses')]
+        [Parameter(ParameterSetName = 'Value')]
+        [string[]] $Address
     )
     if (-not $Script:InfobloxConfiguration) {
         if ($ErrorActionPreference -eq 'Stop') {
@@ -68,31 +86,34 @@ function Set-InfobloxDNSRecord {
         throw "Set-InfobloxDNSRecord - ReferenceID '$ReferenceID' is not a DNS record WAPI object reference."
     }
 
-    $ReferenceRecordType = $Matches.RecordType.ToUpperInvariant()
-    $FieldByRecordType = @{
-        A     = 'ipv4addr'
-        AAAA  = 'ipv6addr'
-        CNAME = 'canonical'
-        HOST  = 'name'
-        PTR   = 'ptrdname'
-        MX    = 'mail_exchanger'
-        NS    = 'nameserver'
-        TXT   = 'text'
+    $ReferenceRecordType = Resolve-InfobloxDNSRecordType -Type $Matches.RecordType
+
+    if ($PSBoundParameters.ContainsKey('Type')) {
+        $ExpectedRecordType = Resolve-InfobloxDNSRecordType -Type $Type
+        if ($ExpectedRecordType -ne $ReferenceRecordType) {
+            throw "Set-InfobloxDNSRecord - Type '$Type' does not match record type '$($ReferenceRecordType.ToUpperInvariant())' in ReferenceID."
+        }
     }
 
-    if (-not $FieldByRecordType.ContainsKey($ReferenceRecordType)) {
-        throw "Set-InfobloxDNSRecord - Record type '$ReferenceRecordType' is not supported."
+    $bodySplat = @{
+        Type = $ReferenceRecordType
     }
-
-    if ($PSBoundParameters.ContainsKey('Type') -and $Type.ToUpperInvariant() -ne $ReferenceRecordType) {
-        throw "Set-InfobloxDNSRecord - Type '$Type' does not match record type '$ReferenceRecordType' in ReferenceID."
+    if ($PSCmdlet.ParameterSetName -eq 'Properties') {
+        $bodySplat.Properties = $Properties
+    } else {
+        $bodySplat.Value = $Value
+        if ($PSBoundParameters.ContainsKey('Preference')) {
+            $bodySplat.Preference = $Preference
+            $bodySplat.PreferenceSpecified = $true
+        }
+        if ($PSBoundParameters.ContainsKey('Address')) {
+            $bodySplat.Address = $Address
+        }
     }
+    $Body = ConvertTo-InfobloxDNSRecordUpdateBody @bodySplat
 
-    $FieldName = $FieldByRecordType[$ReferenceRecordType]
-    $Body = @{}
-    $Body[$FieldName] = $Value
-
-    if (-not $PSCmdlet.ShouldProcess($ReferenceID, "Set $ReferenceRecordType record field '$FieldName'")) {
+    $FieldNames = @($Body.Keys) -join ', '
+    if (-not $PSCmdlet.ShouldProcess($ReferenceID, "Set $($ReferenceRecordType.ToUpperInvariant()) record field(s): $FieldNames")) {
         return
     }
 
@@ -104,6 +125,6 @@ function Set-InfobloxDNSRecord {
 
     $Output = Invoke-InfobloxQuery @invokeInfobloxQuerySplat -Confirm:$false
     if ($Output) {
-        Write-Verbose -Message "Set-InfobloxDNSRecord - Modified $ReferenceRecordType / $Output"
+        Write-Verbose -Message "Set-InfobloxDNSRecord - Modified $($ReferenceRecordType.ToUpperInvariant()) / $Output"
     }
 }
