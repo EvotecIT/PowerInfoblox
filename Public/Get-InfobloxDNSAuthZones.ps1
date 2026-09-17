@@ -1,4 +1,28 @@
 ﻿function Get-InfobloxDNSAuthZone {
+    <#
+    .SYNOPSIS
+    Retrieves authoritative DNS zones from an Infoblox server.
+
+    .DESCRIPTION
+    Queries Infoblox WAPI zone_auth objects. Results can be filtered by fully
+    qualified domain name and DNS view.
+
+    .PARAMETER FQDN
+    Filters authoritative zones by fully qualified domain name.
+
+    .PARAMETER View
+    Filters authoritative zones by DNS view name.
+
+    .EXAMPLE
+    Get-InfobloxDNSAuthZone -FQDN 'example.com' -View 'default'
+
+    Returns the example.com authoritative zone from the default DNS view.
+
+    .EXAMPLE
+    Get-InfobloxDNSAuthZones -View 'default'
+
+    Uses the plural compatibility alias to return authoritative zones from the default view.
+    #>
     [alias('Get-InfobloxDNSAuthZones')]
     [cmdletbinding()]
     param(

@@ -1,4 +1,25 @@
 ﻿function Get-InfobloxGrid {
+    <#
+    .SYNOPSIS
+    Retrieves Infoblox Grid configuration.
+
+    .DESCRIPTION
+    Queries the Infoblox WAPI grid object. By default, the command requests a
+    curated set of commonly useful Grid properties supported by the connected schema.
+
+    .PARAMETER FetchFromSchema
+    Requests every field advertised for the grid object by the connected WAPI schema.
+
+    .EXAMPLE
+    Get-InfobloxGrid
+
+    Returns Grid configuration using the preferred field set.
+
+    .EXAMPLE
+    Get-InfobloxGrid -FetchFromSchema
+
+    Returns Grid configuration with all fields advertised by the connected WAPI schema.
+    #>
     [cmdletbinding()]
     param(
         [switch] $FetchFromSchema

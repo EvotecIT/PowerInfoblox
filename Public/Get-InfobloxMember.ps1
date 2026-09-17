@@ -1,4 +1,25 @@
 ﻿function Get-InfobloxMember {
+    <#
+    .SYNOPSIS
+    Retrieves Infoblox Grid members.
+
+    .DESCRIPTION
+    Queries Infoblox WAPI member objects. By default, the command requests a
+    curated set of identity, platform, network, and service-status properties.
+
+    .PARAMETER FetchFromSchema
+    Requests every field advertised for the member object by the connected WAPI schema.
+
+    .EXAMPLE
+    Get-InfobloxMember
+
+    Returns Grid members using the preferred field set.
+
+    .EXAMPLE
+    Get-InfobloxMember -FetchFromSchema
+
+    Returns Grid members with all fields advertised by the connected WAPI schema.
+    #>
     [cmdletbinding()]
     param(
         [switch] $FetchFromSchema

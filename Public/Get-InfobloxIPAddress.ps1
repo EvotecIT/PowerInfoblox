@@ -30,8 +30,6 @@
     .EXAMPLE
     Get-InfobloxIPAddress -Network '10.2.2.0' -Verbose | Format-Table
 
-    .NOTES
-    General notes
     #>
     [cmdletbinding()]
     param(

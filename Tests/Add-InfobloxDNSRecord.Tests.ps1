@@ -75,6 +75,14 @@ Describe 'Add-InfoBloxDNSRecord' {
             $script:requestBody.addresses[0].address | Should -Be '192.0.2.53'
         }
 
+        It 'creates NS records without optional glue addresses' {
+            Add-InfoBloxDNSRecord -Type NS -Name 'example.test' -NameServer 'ns.external.example'
+
+            $script:requestBody.name | Should -Be 'example.test'
+            $script:requestBody.nameserver | Should -Be 'ns.external.example'
+            $script:requestBody.Contains('addresses') | Should -BeFalse
+        }
+
         It 'creates an arbitrary WAPI record type through Properties' {
             Add-InfoBloxDNSRecord -Type SRV -Properties @{
                 name = '_service._tcp.example.test'

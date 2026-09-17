@@ -7,11 +7,12 @@
     Disconnects from an InfoBlox server
     As this is a REST API it doesn't really disconnect, but it does clear the script variable to clear the credentials from memory
 
+    .PARAMETER ForceLogOut
+    Sends a WAPI logout request before clearing the local connection state.
+
     .EXAMPLE
     Disconnect-Infoblox
 
-    .NOTES
-    General notes
     #>
     [cmdletbinding(SupportsShouldProcess)]
     param(

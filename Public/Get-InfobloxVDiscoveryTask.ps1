@@ -1,4 +1,25 @@
 ﻿function Get-InfobloxVDiscoveryTask {
+    <#
+    .SYNOPSIS
+    Retrieves virtual discovery tasks from an Infoblox server.
+
+    .DESCRIPTION
+    Queries Infoblox WAPI vdiscoverytask objects and returns their properties with
+    the object reference placed last.
+
+    .PARAMETER FetchFromSchema
+    Requests every field advertised for the vdiscoverytask object by the connected WAPI schema.
+
+    .EXAMPLE
+    Get-InfobloxVDiscoveryTask
+
+    Returns virtual discovery tasks using the default WAPI fields.
+
+    .EXAMPLE
+    Get-InfobloxVDiscoveryTask -FetchFromSchema
+
+    Returns virtual discovery tasks with all fields advertised by the connected WAPI schema.
+    #>
     [cmdletbinding()]
     param(
         [switch] $FetchFromSchema

@@ -1,5 +1,5 @@
 param(
-    [ValidateSet('Manifest', 'Build', 'Publish')]
+    [ValidateSet('Manifest', 'Documentation', 'Build', 'Publish')]
     [string] $ConfigurationGateMode = 'Build',
 
     [bool] $SignModule = $true
@@ -89,7 +89,7 @@ Build-Module -ModuleName 'PowerInfoblox' {
     New-ConfigurationFormat -ApplyTo 'DefaultPSD1', 'OnMergePSD1' -PSD1Style 'Minimal'
 
     # configuration for documentation, at the same time it enables documentation processing
-    New-ConfigurationDocumentation -Enable:$false -PathReadme 'Docs\Readme.md' -Path 'Docs'
+    New-ConfigurationDocumentation -Enable -PathReadme 'Docs\Readme.md' -Path 'Docs' -SyncExternalHelpToProjectRoot
 
     New-ConfigurationImportModule -ImportSelf -ImportRequiredModules
 

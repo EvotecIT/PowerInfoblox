@@ -1,4 +1,23 @@
 ﻿function Get-InfobloxDNSDelegatedZone {
+    <#
+    .SYNOPSIS
+    Retrieves delegated DNS zones from an Infoblox server.
+
+    .DESCRIPTION
+    Queries Infoblox WAPI zone_delegated objects. Results can be filtered by zone
+    name and DNS view.
+
+    .PARAMETER Name
+    Filters delegated zones by fully qualified domain name.
+
+    .PARAMETER View
+    Filters delegated zones by DNS view name.
+
+    .EXAMPLE
+    Get-InfobloxDNSDelegatedZone -Name 'delegated.example.com' -View 'default'
+
+    Returns the delegated zone from the default DNS view.
+    #>
     [cmdletbinding()]
     param(
         [string] $Name,

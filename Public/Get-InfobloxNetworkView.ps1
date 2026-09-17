@@ -1,4 +1,25 @@
 ﻿function Get-InfobloxNetworkView {
+    <#
+    .SYNOPSIS
+    Retrieves network views from an Infoblox server.
+
+    .DESCRIPTION
+    Queries Infoblox WAPI networkview objects and returns the network views available
+    to the current connection.
+
+    .PARAMETER FetchFromSchema
+    Requests every field advertised for the networkview object by the connected WAPI schema.
+
+    .EXAMPLE
+    Get-InfobloxNetworkView
+
+    Returns network views using the default WAPI fields.
+
+    .EXAMPLE
+    Get-InfobloxNetworkView -FetchFromSchema
+
+    Returns network views with all fields advertised by the connected WAPI schema.
+    #>
     [cmdletbinding()]
     param(
         [switch] $FetchFromSchema

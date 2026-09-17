@@ -1,4 +1,49 @@
 function Get-InfobloxNetwork {
+    <#
+    .SYNOPSIS
+    Retrieves IPv4 networks from an Infoblox server.
+
+    .DESCRIPTION
+    Queries Infoblox WAPI network objects by exact or partial network value, or
+    returns all networks. Unless Native is specified, each result is enriched with
+    calculated address-range information and selected Infoblox properties.
+
+    .PARAMETER Network
+    Specifies an IPv4 network in CIDR notation.
+
+    .PARAMETER ReturnFields
+    Specifies the network fields to request. Duplicate field names are removed.
+
+    .PARAMETER Partial
+    Uses partial matching for Network and applies MaxResults.
+
+    .PARAMETER All
+    Returns all networks up to MaxResults. Either Network or All must be supplied.
+
+    .PARAMETER MaxResults
+    Specifies the maximum number of results for All or Partial queries. The default is 1000000.
+
+    .PARAMETER FetchFromSchema
+    Requests every field advertised for the network object by the connected WAPI schema.
+
+    .PARAMETER Native
+    Returns native WAPI network objects without calculated address-range enrichment.
+
+    .EXAMPLE
+    Get-InfobloxNetwork -Network '192.0.2.0/24'
+
+    Returns and enriches the specified network.
+
+    .EXAMPLE
+    Get-InfobloxNetwork -Network '192.0.2' -Partial -MaxResults 25
+
+    Returns up to 25 networks whose network value partially matches 192.0.2.
+
+    .EXAMPLE
+    Get-InfobloxNetwork -All -Native -ReturnFields network,comment,network_view
+
+    Returns native WAPI objects for all networks with the selected fields.
+    #>
     [OutputType([system.object[]])]
     [cmdletbinding()]
     param(

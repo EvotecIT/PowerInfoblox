@@ -33,26 +33,33 @@
     .PARAMETER MSOptions
     An array of Microsoft options to be added to the DHCP range.
 
-    .PARAMETER ExtensibleAttributeName
-    The name of an extensible attribute for the network.
+    .PARAMETER ExtensinbleAttributeName
+    The name of an extensible attribute for the network. ExtensibleAttributeName is
+    a correctly spelled alias retained for discoverability.
 
-    .PARAMETER ExtensibleAttributeSite
-    The site associated with the network as an extensible attribute.
+    .PARAMETER ExtensinbleAttributeSite
+    The site associated with the network as an extensible attribute. ExtensibleAttributeSite
+    is a correctly spelled alias retained for discoverability.
 
-    .PARAMETER ExtensibleAttributeState
-    The state associated with the network as an extensible attribute.
+    .PARAMETER ExtensinbleAttributeState
+    The state associated with the network as an extensible attribute. ExtensibleAttributeState
+    is a correctly spelled alias retained for discoverability.
 
-    .PARAMETER ExtensibleAttributeCountry
-    The country associated with the network as an extensible attribute.
+    .PARAMETER ExtensinbleAttributeCountry
+    The country associated with the network as an extensible attribute. ExtensibleAttributeCountry
+    is a correctly spelled alias retained for discoverability.
 
-    .PARAMETER ExtensibleAttributeRegion
-    The region associated with the network as an extensible attribute.
+    .PARAMETER ExtensinbleAttributeRegion
+    The region associated with the network as an extensible attribute. ExtensibleAttributeRegion
+    is a correctly spelled alias retained for discoverability.
 
-    .PARAMETER ExtensibleAttributeVLAN
-    The VLAN associated with the network as an extensible attribute.
+    .PARAMETER ExtensinbleAttributeVLAN
+    The VLAN associated with the network as an extensible attribute. ExtensibleAttributeVLAN
+    is a correctly spelled alias retained for discoverability.
 
-    .PARAMETER ExtensibleAttribute
-    A hashtable of additional extensible attributes to associate with the network.
+    .PARAMETER ExtensinbleAttribute
+    A dictionary of additional extensible attributes to associate with the network.
+    ExtensibleAttribute is a correctly spelled alias retained for discoverability.
 
     .PARAMETER Members
     An array of DHCP members to associate with the network.

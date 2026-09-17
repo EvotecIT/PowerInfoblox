@@ -1,4 +1,23 @@
 ﻿function Get-InfobloxDNSForwardZone {
+    <#
+    .SYNOPSIS
+    Retrieves forward DNS zones from an Infoblox server.
+
+    .DESCRIPTION
+    Queries Infoblox WAPI zone_forward objects. Results can be filtered by zone
+    name and DNS view.
+
+    .PARAMETER Name
+    Filters forward zones by fully qualified domain name.
+
+    .PARAMETER View
+    Filters forward zones by DNS view name.
+
+    .EXAMPLE
+    Get-InfobloxDNSForwardZone -Name 'branch.example.com' -View 'default'
+
+    Returns the forward zone from the default DNS view.
+    #>
     [cmdletbinding()]
     param(
         [string] $Name,

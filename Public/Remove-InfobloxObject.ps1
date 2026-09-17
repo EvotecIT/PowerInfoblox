@@ -13,11 +13,12 @@
     .PARAMETER ReferenceID
     The reference ID of the object to remove
 
+    .PARAMETER ReturnSuccess
+    Returns True when the delete request produces output and False when it does not.
+
     .EXAMPLE
     Remove-InfobloxObject -ReferenceID 'record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmNvbS5pbmZvLmhvc3Q6MTcyLjI2LjEuMjAu:'
 
-    .NOTES
-    General notes
     #>
     [CmdletBinding(SupportsShouldProcess, DefaultParameterSetName = 'ReferenceID')]
     param(

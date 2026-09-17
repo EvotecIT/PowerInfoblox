@@ -114,14 +114,17 @@ function ConvertTo-InfobloxDNSRecordCreateBody {
             [ordered]@{ name = $Name; mail_exchanger = $MailExchanger; preference = $Preference }
         }
         'ns' {
-            if (-not $Name -or -not $NameServer -or -not $Address) {
-                throw 'Add-InfoBloxDNSRecord - Name, NameServer, and at least one Address are required for an NS record.'
+            if (-not $Name -or -not $NameServer) {
+                throw 'Add-InfoBloxDNSRecord - Name and NameServer are required for an NS record.'
             }
-            [ordered]@{
+            $Body = [ordered]@{
                 name       = $Name
                 nameserver = $NameServer
-                addresses  = @($Address | ForEach-Object { @{ address = $_ } })
             }
+            if ($Address) {
+                $Body.addresses = @($Address | ForEach-Object { @{ address = $_ } })
+            }
+            $Body
         }
         'txt' {
             if (-not $Name -or [string]::IsNullOrEmpty($Text)) {

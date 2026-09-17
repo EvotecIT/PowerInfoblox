@@ -1,4 +1,17 @@
 ﻿function Get-InfobloxDNSView {
+    <#
+    .SYNOPSIS
+    Retrieves DNS views from an Infoblox server.
+
+    .DESCRIPTION
+    Queries Infoblox WAPI view objects and returns the DNS views available to the
+    current connection.
+
+    .EXAMPLE
+    Get-InfobloxDNSView
+
+    Returns all DNS views available to the connected account.
+    #>
     [cmdletbinding()]
     param(
 

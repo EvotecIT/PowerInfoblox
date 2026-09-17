@@ -28,7 +28,8 @@ function Remove-InfobloxDnsRecord {
     Skips associated PTR record removal when removing A or AAAA records.
 
     .PARAMETER LogPath
-    The path to a log file that receives removal messages.
+    The path to a log file that receives discovery, removal attempt, preview,
+    success, and failure messages.
 
     .EXAMPLE
     Remove-InfobloxDnsRecord -ReferenceID 'record:mx/example-reference:example.com/default' -WhatIf
@@ -206,6 +207,9 @@ function Remove-InfobloxDnsRecord {
     foreach ($Record in $ToBeDeleted) {
         if (-not $Record._ref) {
             Write-Warning -Message 'Remove-InfobloxDnsRecord - Record does not have a reference ID. Skipping.'
+            if ($LogPath) {
+                Write-Color -Text 'Record does not have a reference ID. Skipping.' -NoConsoleOutput -LogFile $LogPath
+            }
             continue
         }
         Write-Verbose -Message "Remove-InfobloxDnsRecord - Removing $($Record.name) with type $DisplayType / WhatIf:$WhatIfPreference"
@@ -218,11 +222,24 @@ function Remove-InfobloxDnsRecord {
             if ($Success -eq $true -or $WhatIfPreference) {
                 $ForwardRemoved = $true
                 Write-Verbose -Message "Remove-InfobloxDnsRecord - Removed $($Record.name) with type $DisplayType / WhatIf:$WhatIfPreference"
+                if ($LogPath) {
+                    if ($WhatIfPreference) {
+                        Write-Color -Text "WhatIf: Would remove $($Record.name) with type $DisplayType" -NoConsoleOutput -LogFile $LogPath
+                    } else {
+                        Write-Color -Text "Removed $($Record.name) with type $DisplayType" -NoConsoleOutput -LogFile $LogPath
+                    }
+                }
             } else {
                 Write-Warning -Message "Remove-InfobloxDnsRecord - Failed to remove $($Record.name) with type $DisplayType."
+                if ($LogPath) {
+                    Write-Color -Text "Failed to remove $($Record.name) with type $DisplayType" -NoConsoleOutput -LogFile $LogPath
+                }
             }
         } catch {
             Write-Warning -Message "Remove-InfobloxDnsRecord - Failed to remove $($Record.name) with type $DisplayType, error: $($_.Exception.Message)"
+            if ($LogPath) {
+                Write-Color -Text "Failed to remove $($Record.name) with type $DisplayType, error: $($_.Exception.Message)" -NoConsoleOutput -LogFile $LogPath
+            }
         }
         if (-not $ForwardRemoved) {
             continue
@@ -231,6 +248,9 @@ function Remove-InfobloxDnsRecord {
         foreach ($PTRRecord in @($AssociatedPTRBySource[$Record._ref])) {
             if (-not $PTRRecord._ref) {
                 Write-Warning -Message 'Remove-InfobloxDnsRecord - PTR record does not have a reference ID. Skipping.'
+                if ($LogPath) {
+                    Write-Color -Text 'PTR record does not have a reference ID. Skipping.' -NoConsoleOutput -LogFile $LogPath
+                }
                 continue
             }
             if ($ProcessedPTRReference.ContainsKey($PTRRecord._ref)) {
@@ -246,11 +266,24 @@ function Remove-InfobloxDnsRecord {
                 $Success = Remove-InfobloxObject -ReferenceID $PTRRecord._ref -WhatIf:$WhatIfPreference -ErrorAction Stop -ReturnSuccess -Verbose:$false
                 if ($Success -eq $true -or $WhatIfPreference) {
                     Write-Verbose -Message "Remove-InfobloxDnsRecord - Removed $($PTRRecord.name) with type PTR / WhatIf:$WhatIfPreference"
+                    if ($LogPath) {
+                        if ($WhatIfPreference) {
+                            Write-Color -Text "WhatIf: Would remove $($PTRRecord.name) with type PTR" -NoConsoleOutput -LogFile $LogPath
+                        } else {
+                            Write-Color -Text "Removed $($PTRRecord.name) with type PTR" -NoConsoleOutput -LogFile $LogPath
+                        }
+                    }
                 } else {
                     Write-Warning -Message "Remove-InfobloxDnsRecord - Failed to remove $($PTRRecord.name) with type PTR."
+                    if ($LogPath) {
+                        Write-Color -Text "Failed to remove $($PTRRecord.name) with type PTR" -NoConsoleOutput -LogFile $LogPath
+                    }
                 }
             } catch {
                 Write-Warning -Message "Remove-InfobloxDnsRecord - Failed to remove $($PTRRecord.name) with type PTR, error: $($_.Exception.Message)"
+                if ($LogPath) {
+                    Write-Color -Text "Failed to remove $($PTRRecord.name) with type PTR, error: $($_.Exception.Message)" -NoConsoleOutput -LogFile $LogPath
+                }
             }
         }
     }

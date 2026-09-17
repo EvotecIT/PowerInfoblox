@@ -1,4 +1,35 @@
 ﻿function Get-InfobloxFixedAddress {
+    <#
+    .SYNOPSIS
+    Retrieves fixed IPv4 address assignments by MAC address.
+
+    .DESCRIPTION
+    Queries Infoblox WAPI fixedaddress objects for an exact or partial MAC address
+    match. By default, the result includes the MAC address, IPv4 address, network
+    view, and object reference.
+
+    .PARAMETER MacAddress
+    Specifies the MAC address to find.
+
+    .PARAMETER PartialMatch
+    Uses partial matching instead of an exact MAC address match.
+
+    .PARAMETER FetchFromSchema
+    Requests every field advertised for the fixedaddress object by the connected WAPI schema.
+
+    .PARAMETER Properties
+    Specifies the fixedaddress fields to return instead of the default fields.
+
+    .EXAMPLE
+    Get-InfobloxFixedAddress -MacAddress '00:11:22:33:44:55'
+
+    Returns fixed address assignments for the exact MAC address.
+
+    .EXAMPLE
+    Get-InfobloxFixedAddress -MacAddress '00:11:22' -PartialMatch -Properties mac,ipv4addr,comment
+
+    Returns partially matching assignments and limits the returned fields.
+    #>
     [cmdletbinding()]
     param(
         [parameter(Mandatory)][string] $MacAddress,

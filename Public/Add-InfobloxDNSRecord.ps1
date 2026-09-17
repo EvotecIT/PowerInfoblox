@@ -32,7 +32,8 @@ function Add-InfoBloxDNSRecord {
     The authoritative server name of an NS record.
 
     .PARAMETER Address
-    One or more IPv4 or IPv6 glue addresses for an NS record.
+    Optional IPv4 or IPv6 glue addresses for an NS record. Omit this parameter when
+    the nameserver does not require glue.
 
     .PARAMETER Properties
     A field dictionary for a WAPI DNS record type that does not use the typed parameters.

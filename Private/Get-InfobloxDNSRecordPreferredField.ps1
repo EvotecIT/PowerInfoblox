@@ -7,7 +7,7 @@ function Get-InfobloxDNSRecordPreferredField {
 
     switch (Resolve-InfobloxDNSRecordType -Type $Type) {
         'a' {
-            'name,ipv4addr,view,zone,comment,disable,ttl,use_ttl' -split ','
+            'ipv4addr,name,view,zone,cloud_info,comment,creation_time,creator,ddns_principal,ddns_protected,disable,discovered_data,dns_name,last_queried,ms_ad_user_data,reclaimable,shared_record_group,ttl,use_ttl' -split ','
         }
         'aaaa' {
             'name,ipv6addr,view,zone,comment,disable,ttl,use_ttl' -split ','
@@ -25,7 +25,7 @@ function Get-InfobloxDNSRecordPreferredField {
             'name,nameserver,addresses,view,zone,extattrs' -split ','
         }
         'ptr' {
-            'name,ptrdname,ipv4addr,ipv6addr,view,zone,comment,disable,ttl,use_ttl' -split ','
+            'aws_rte53_record_info,cloud_info,comment,creation_time,creator,ddns_principal,ddns_protected,disable,discovered_data,dns_name,dns_ptrdname,extattrs,forbid_reclamation,ipv4addr,ipv6addr,last_queried,ms_ad_user_data,name,ptrdname,reclaimable,shared_record_group,ttl,use_ttl,view,zone' -split ','
         }
         'txt' {
             'name,text,view,zone,comment,disable,ttl,use_ttl' -split ','

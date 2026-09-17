@@ -27,8 +27,9 @@
     .PARAMETER ReturnOutput
     If this switch is present, the function will return the output of the operation.
 
-    .PARAMETER ExtensibleAttribute
-    An extensible attribute to be added to the DHCP range.
+    .PARAMETER ExtensinbleAttribute
+    An extensible attribute to be added to the DHCP range. ExtensibleAttribute is
+    a correctly spelled alias retained for discoverability.
 
     .PARAMETER FailoverAssociation
     The failover association for the DHCP range.

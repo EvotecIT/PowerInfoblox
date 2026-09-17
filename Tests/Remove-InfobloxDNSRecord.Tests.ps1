@@ -2,9 +2,13 @@ Describe 'DNS record removal' {
     InModuleScope PowerInfoblox {
         BeforeEach {
             $script:removedReferences = [System.Collections.Generic.List[string]]::new()
+            $script:logMessages = [System.Collections.Generic.List[string]]::new()
             Mock Remove-InfobloxObject -MockWith {
                 $script:removedReferences.Add($ReferenceID)
                 $true
+            }
+            Mock Write-Color -MockWith {
+                $script:logMessages.Add([string] $Text)
             }
         }
 
@@ -184,6 +188,53 @@ Describe 'DNS record removal' {
             Remove-InfobloxDnsRecord -Name 'txt.example.test' -Type TXT -WhatIf
 
             Should -Invoke Remove-InfobloxObject -ParameterFilter { $WhatIf -eq $true } -Times 1 -Exactly
+        }
+
+        It 'logs successful forward and associated PTR deletion results' {
+            Mock Get-InfobloxDNSRecord -MockWith {
+                if ($Type -eq 'ptr') {
+                    return [pscustomobject]@{ name = $Name; ptrdname = 'host.example.test'; view = 'Internal'; _ref = 'record:ptr/host' }
+                }
+                [pscustomobject]@{ name = 'host.example.test'; ipv4addr = '192.0.2.10'; view = 'Internal'; _ref = 'record:a/host' }
+            }
+
+            Remove-InfobloxDnsRecord -Name 'host.example.test' -Type A -LogPath 'removal.log'
+
+            $script:logMessages | Should -Contain 'Removed host.example.test with type A'
+            $script:logMessages | Should -Contain 'Removed 10.2.0.192.in-addr.arpa with type PTR'
+        }
+
+        It 'logs a failed deletion result when the API reports no success' {
+            Mock Get-InfobloxDNSRecord -MockWith {
+                [pscustomobject]@{ name = 'example.test'; _ref = 'record:mx/example' }
+            }
+            Mock Remove-InfobloxObject -MockWith { $false }
+
+            Remove-InfobloxDnsRecord -Name 'example.test' -Type MX -LogPath 'removal.log' -WarningAction SilentlyContinue
+
+            $script:logMessages | Should -Contain 'Failed to remove example.test with type MX'
+        }
+
+        It 'logs the exception when deletion throws' {
+            Mock Get-InfobloxDNSRecord -MockWith {
+                [pscustomobject]@{ name = 'example.test'; _ref = 'record:mx/example' }
+            }
+            Mock Remove-InfobloxObject -MockWith { throw 'synthetic delete failure' }
+
+            Remove-InfobloxDnsRecord -Name 'example.test' -Type MX -LogPath 'removal.log' -WarningAction SilentlyContinue
+
+            $script:logMessages | Should -Contain 'Failed to remove example.test with type MX, error: synthetic delete failure'
+        }
+
+        It 'logs WhatIf as a preview rather than a successful deletion' {
+            Mock Get-InfobloxDNSRecord -MockWith {
+                [pscustomobject]@{ name = 'txt.example.test'; _ref = 'record:txt/example' }
+            }
+
+            Remove-InfobloxDnsRecord -Name 'txt.example.test' -Type TXT -LogPath 'removal.log' -WhatIf
+
+            $script:logMessages | Should -Contain 'WhatIf: Would remove txt.example.test with type TXT'
+            $script:logMessages | Should -Not -Contain 'Removed txt.example.test with type TXT'
         }
     }
 }
