@@ -93,6 +93,40 @@ Describe 'DNS record removal' {
             Should -Invoke Get-InfobloxDNSRecord -ParameterFilter { $View -eq 'Internal' } -Times 1 -Exactly
         }
 
+        It 'keeps opaque references that differ only by case distinct' {
+            Mock Get-InfobloxDNSRecord -MockWith {
+                @(
+                    [pscustomobject]@{ name = $Name; _ref = 'record:mx/OpaqueReference' }
+                    [pscustomobject]@{ name = $Name; _ref = 'record:mx/opaquereference' }
+                )
+            }
+
+            Remove-InfobloxDnsRecord -Name 'example.test' -Type MX -RemoveAllMatching
+
+            $script:removedReferences | Should -Be @('record:mx/OpaqueReference', 'record:mx/opaquereference')
+        }
+
+        It 'keeps associated PTR references and source references case-sensitive' {
+            Mock Get-InfobloxDNSRecord -MockWith {
+                if ($Type -eq 'ptr') {
+                    $ptrReference = if ($Name -eq '10.2.0.192.in-addr.arpa') { 'record:ptr/OpaqueReference' } else { 'record:ptr/opaquereference' }
+                    return [pscustomobject]@{ name = $Name; ptrdname = 'host.example.test'; view = 'Internal'; _ref = $ptrReference }
+                }
+                @(
+                    [pscustomobject]@{ name = 'host.example.test'; ipv4addr = '192.0.2.10'; view = 'Internal'; _ref = 'record:a/OpaqueReference' }
+                    [pscustomobject]@{ name = 'host.example.test'; ipv4addr = '192.0.2.11'; view = 'Internal'; _ref = 'record:a/opaquereference' }
+                )
+            }
+
+            Remove-InfobloxDnsRecord -Name 'host.example.test' -Type A -RemoveAllMatching
+
+            $script:removedReferences | Should -Contain 'record:a/OpaqueReference'
+            $script:removedReferences | Should -Contain 'record:a/opaquereference'
+            $script:removedReferences | Should -Contain 'record:ptr/OpaqueReference'
+            $script:removedReferences | Should -Contain 'record:ptr/opaquereference'
+            $script:removedReferences.Count | Should -Be 4
+        }
+
         It 'removes one exact object reference' {
             Mock Get-InfobloxDNSRecord -MockWith {
                 [pscustomobject]@{ name = 'example.test'; view = 'Internal'; _ref = $ReferenceID }
@@ -103,6 +137,20 @@ Describe 'DNS record removal' {
 
             $script:removedReferences | Should -Be @($referenceID)
             Should -Invoke Get-InfobloxDNSRecord -ParameterFilter { $ReferenceID -eq 'record:mx/opaque:example.test/Internal' } -Times 1 -Exactly
+        }
+
+        It 'does not request a view field when removing an exact non-address record' {
+            Mock Get-InfobloxDNSRecord -MockWith {
+                [pscustomobject]@{ name = 'service.example.test'; _ref = $ReferenceID }
+            }
+
+            $referenceID = 'record:dtclbdn/opaque:service.example.test/default'
+            Remove-InfobloxDnsRecord -ReferenceID $referenceID
+
+            $script:removedReferences | Should -Be @($referenceID)
+            Should -Invoke Get-InfobloxDNSRecord -ParameterFilter {
+                $ReferenceID -eq 'record:dtclbdn/opaque:service.example.test/default' -and -not $ReturnFields
+            } -Times 1 -Exactly
         }
 
         It 'refuses an exact lookup that returns a different object reference' {

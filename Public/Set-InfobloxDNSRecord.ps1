@@ -24,7 +24,8 @@ function Set-InfobloxDNSRecord {
     An optional MX preference from 0 through 65535, updated together with Value.
 
     .PARAMETER Address
-    Optional NS glue addresses, updated together with Value.
+    Optional NS glue addresses, updated together with Value. Supply an empty array
+    to clear existing glue addresses.
 
     .PARAMETER Type
     The optional expected record type. When supplied, it must match the type encoded in ReferenceID.
@@ -108,6 +109,7 @@ function Set-InfobloxDNSRecord {
         }
         if ($PSBoundParameters.ContainsKey('Address')) {
             $bodySplat.Address = $Address
+            $bodySplat.AddressSpecified = $true
         }
     }
     $Body = ConvertTo-InfobloxDNSRecordUpdateBody @bodySplat

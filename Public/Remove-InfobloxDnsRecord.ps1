@@ -85,12 +85,7 @@ function Remove-InfobloxDnsRecord {
 
     [Array] $ToBeDeleted = @(
         if ($PSCmdlet.ParameterSetName -eq 'ByReference') {
-            $ReturnFields = switch ($NormalizedType) {
-                'a' { 'name', 'ipv4addr', 'view' }
-                'aaaa' { 'name', 'ipv6addr', 'view' }
-                default { 'name', 'view' }
-            }
-            [Array] $FoundByReference = @(Get-InfobloxDNSRecord -ReferenceID $ReferenceID -ReturnFields $ReturnFields -Verbose:$false)
+            [Array] $FoundByReference = @(Get-InfobloxDNSRecord -ReferenceID $ReferenceID -Verbose:$false)
             if ($FoundByReference.Count -gt 1) {
                 throw "Remove-InfobloxDnsRecord - Exact ReferenceID lookup returned $($FoundByReference.Count) records. Refusing to remove any record."
             }
@@ -128,7 +123,7 @@ function Remove-InfobloxDnsRecord {
         }
     )
 
-    $SeenReference = @{}
+    $SeenReference = [System.Collections.Generic.Dictionary[string, bool]]::new([System.StringComparer]::Ordinal)
     [Array] $ToBeDeleted = @($ToBeDeleted | Where-Object {
             if (-not $_._ref) {
                 return $true
@@ -147,7 +142,7 @@ function Remove-InfobloxDnsRecord {
     }
     Write-Verbose -Message "Remove-InfobloxDnsRecord - Found $($ToBeDeleted.Count) $DisplayType records to delete"
 
-    $AssociatedPTRBySource = @{}
+    $AssociatedPTRBySource = [System.Collections.Generic.Dictionary[string, object]]::new([System.StringComparer]::Ordinal)
     if (($NormalizedType -in @('a', 'aaaa')) -and -not $SkipPTR) {
         foreach ($Record in $ToBeDeleted) {
             if (-not $Record._ref) {
@@ -203,7 +198,7 @@ function Remove-InfobloxDnsRecord {
         }
     }
 
-    $ProcessedPTRReference = @{}
+    $ProcessedPTRReference = [System.Collections.Generic.Dictionary[string, bool]]::new([System.StringComparer]::Ordinal)
     foreach ($Record in $ToBeDeleted) {
         if (-not $Record._ref) {
             Write-Warning -Message 'Remove-InfobloxDnsRecord - Record does not have a reference ID. Skipping.'

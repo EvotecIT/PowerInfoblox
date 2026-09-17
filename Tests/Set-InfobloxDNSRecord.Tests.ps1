@@ -108,6 +108,14 @@ Describe 'Set-InfobloxDNSRecord' {
             $script:requestBody.addresses[1].address | Should -Be '2001:db8::53'
         }
 
+        It 'clears NS glue addresses when an empty collection is supplied explicitly' {
+            Set-InfobloxDNSRecord -ReferenceID 'record:ns/opaque:example.test/default' -Value 'ns1.example.test' -Address @()
+
+            $script:requestBody.nameserver | Should -Be 'ns1.example.test'
+            $script:requestBody.Contains('addresses') | Should -BeTrue
+            @($script:requestBody.addresses).Count | Should -Be 0
+        }
+
         It 'rejects an address family mismatch' {
             {
                 Set-InfobloxDNSRecord -ReferenceID 'record:a/opaque:host.example.test/default' -Value '2001:db8::20'

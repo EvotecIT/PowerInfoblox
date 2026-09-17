@@ -17,7 +17,10 @@ function ConvertTo-InfobloxDNSRecordUpdateBody {
         [switch] $PreferenceSpecified,
 
         [Parameter(ParameterSetName = 'Value')]
-        [string[]] $Address
+        [string[]] $Address,
+
+        [Parameter(ParameterSetName = 'Value')]
+        [switch] $AddressSpecified
     )
 
     if ($PSCmdlet.ParameterSetName -eq 'Properties') {
@@ -64,7 +67,7 @@ function ConvertTo-InfobloxDNSRecordUpdateBody {
         }
         'ns' {
             $Body = [ordered]@{ nameserver = $Value }
-            if ($Address) {
+            if ($AddressSpecified) {
                 $Body.addresses = @($Address | ForEach-Object { @{ address = $_ } })
             }
             $Body

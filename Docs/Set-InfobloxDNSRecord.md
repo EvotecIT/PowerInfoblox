@@ -58,7 +58,8 @@ Replaces the IPv4 address collection of a HOST record with an explicitly structu
 ## PARAMETERS
 
 ### -Address
-Optional NS glue addresses, updated together with Value.
+Optional NS glue addresses, updated together with Value. Supply an empty array
+to clear existing glue addresses.
 
 ```yaml
 Type: String[]
