@@ -1,4 +1,20 @@
 ﻿function Get-InfoBloxSearch {
+    <#
+    .SYNOPSIS
+    Searches Infoblox objects by IPv4 address.
+
+    .DESCRIPTION
+    Queries the Infoblox WAPI search endpoint. When IPv4Address is omitted, the
+    endpoint is queried without an address filter.
+
+    .PARAMETER IPv4Address
+    Filters search results by IPv4 address.
+
+    .EXAMPLE
+    Get-InfoBloxSearch -IPv4Address '192.0.2.15'
+
+    Returns Infoblox search results associated with the specified address.
+    #>
     [CmdletBinding()]
     param(
         [parameter(ParameterSetName = 'IPv4')][string] $IPv4Address

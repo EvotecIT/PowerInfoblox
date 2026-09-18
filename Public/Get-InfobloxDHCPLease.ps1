@@ -1,4 +1,44 @@
 ﻿function Get-InfobloxDHCPLease {
+    <#
+    .SYNOPSIS
+    Retrieves DHCP leases from an Infoblox server.
+
+    .DESCRIPTION
+    Queries Infoblox WAPI lease objects. Results can be filtered by network,
+    IPv4 address, or host name. Specify PartialMatch to use WAPI regular-expression
+    matching for every supplied filter.
+
+    .PARAMETER Network
+    Filters leases by network in CIDR notation, such as 192.0.2.0/24.
+
+    .PARAMETER IPv4Address
+    Filters leases by IPv4 address.
+
+    .PARAMETER Hostname
+    Filters leases by client host name.
+
+    .PARAMETER PartialMatch
+    Uses partial matching instead of exact matching for the supplied filters.
+
+    .PARAMETER FetchFromSchema
+    Requests every field advertised for the lease object by the connected WAPI schema.
+
+    .PARAMETER ReturnFields
+    Specifies the lease fields to return. Duplicate field names are removed.
+
+    .PARAMETER MaxResults
+    Specifies the maximum number of leases returned. The default is 1000000.
+
+    .EXAMPLE
+    Get-InfobloxDHCPLease -Network '192.0.2.0/24'
+
+    Returns leases for the specified network.
+
+    .EXAMPLE
+    Get-InfobloxDHCPLease -Hostname 'client-01' -PartialMatch -ReturnFields address,client_hostname,binding_state
+
+    Returns leases whose host name partially matches client-01 and limits the returned fields.
+    #>
     [alias('Get-InfobloxDHCPLeases')]
     [CmdletBinding()]
     param(

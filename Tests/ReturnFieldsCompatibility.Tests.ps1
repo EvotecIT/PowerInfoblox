@@ -62,5 +62,27 @@ Describe 'Schema-aware return fields across public getters' {
             $ObjectUri | Should -Match "(?:\?|&)_return_fields=$Readable(?:&|$)"
             $ObjectUri | Should -Not -Match ([regex]::Escape($Blocked))
         }
+
+        It 'preserves established <Type> default fields when the connected Grid exposes them' -TestCases @(
+            @{
+                Type = 'A'
+                RequiredFields = @('ipv4addr', 'dns_name', 'creator', 'creation_time', 'last_queried', 'cloud_info')
+            }
+            @{
+                Type = 'PTR'
+                RequiredFields = @('ptrdname', 'dns_ptrdname', 'creator', 'creation_time', 'last_queried', 'cloud_info', 'extattrs')
+            }
+        ) {
+            $script:schemaFields = @(
+                $RequiredFields | ForEach-Object { [pscustomobject]@{ name = $_; supports = 'r' } }
+            )
+
+            Get-InfobloxDNSRecord -Type $Type | Out-Null
+
+            $ObjectUri = @($script:capturedUris | Where-Object { $_ -notmatch '\?_schema(?:&|$)' }) | Select-Object -Last 1
+            foreach ($Field in $RequiredFields) {
+                $ObjectUri | Should -Match "(?:%2C|,|=)$([regex]::Escape($Field))(?:%2C|,|&|$)"
+            }
+        }
     }
 }

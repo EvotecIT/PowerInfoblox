@@ -1,4 +1,31 @@
 function Get-InfobloxNetworkNextAvailableIP {
+    <#
+    .SYNOPSIS
+    Gets the next available IPv4 addresses from an Infoblox network.
+
+    .DESCRIPTION
+    Calls the Infoblox WAPI next_available_ip function for a network selected by
+    CIDR value or object reference.
+
+    .PARAMETER Network
+    Specifies the IPv4 network in CIDR notation. The command resolves it to an object reference.
+
+    .PARAMETER NetworkRef
+    Specifies an Infoblox network object reference, such as network/ZG5zLm5ldHdvcmsu...
+
+    .PARAMETER Quantity
+    Specifies how many available addresses to return. The default is 1. Count is an alias.
+
+    .EXAMPLE
+    Get-InfobloxNetworkNextAvailableIP -Network '192.0.2.0/24'
+
+    Returns one available address from the specified network.
+
+    .EXAMPLE
+    Get-InfobloxNetworkNextAvailableIP -NetworkRef 'network/ZG5zLm5ldHdvcmsu...' -Count 3
+
+    Returns three available addresses using a network object reference.
+    #>
     [cmdletbinding(DefaultParameterSetName = 'Network')]
     param(
         [Parameter(Mandatory, ParameterSetName = 'Network')][string] $Network,

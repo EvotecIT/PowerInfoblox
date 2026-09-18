@@ -1,58 +1,99 @@
-﻿function Add-InfoBloxDNSRecord {
+function Add-InfoBloxDNSRecord {
     <#
     .SYNOPSIS
-    Short description
+    Creates an Infoblox DNS record.
 
     .DESCRIPTION
-    Long description
+    Creates a typed A, AAAA, CNAME, HOST, PTR, MX, NS, or TXT record. Other WAPI
+    DNS record types can be created by supplying their fields through Properties.
 
     .PARAMETER Name
-    Parameter description
+    The record name. PTR records created from an IP address do not require Name.
 
     .PARAMETER IPAddress
-    Parameter description
+    The IPv4 or IPv6 address used by A, AAAA, HOST, and reverse-mapping PTR records.
 
     .PARAMETER CanonicalName
-    Parameter description
+    The canonical target of a CNAME record.
 
     .PARAMETER PtrName
-    Parameter description
+    The target domain name of a PTR record.
+
+    .PARAMETER Text
+    The exact TXT record value. Character casing is preserved.
+
+    .PARAMETER MailExchanger
+    The mail exchanger of an MX record.
+
+    .PARAMETER Preference
+    The MX preference from 0 through 65535.
+
+    .PARAMETER NameServer
+    The authoritative server name of an NS record.
+
+    .PARAMETER Address
+    Optional IPv4 or IPv6 glue addresses for an NS record. Omit this parameter when
+    the nameserver does not require glue.
+
+    .PARAMETER Properties
+    A field dictionary for a WAPI DNS record type that does not use the typed parameters.
 
     .PARAMETER Type
-    Parameter description
+    The WAPI DNS record type. The legacy LBDN name is normalized to DTCLBDN.
 
     .EXAMPLE
-    Add-InfoBloxDNSRecord -Name 'Test' -IPv4Address '10.10.10.10' -Type 'A'
+    Add-InfoBloxDNSRecord -Name 'host.example.com' -IPv4Address '192.0.2.10' -Type A
 
     .EXAMPLE
-    Add-InfoBloxDNSRecord -Name 'Test' -IPv4Address '10.10.10.10' -Type 'HOST'
+    Add-InfoBloxDNSRecord -Name 'alias.example.com' -CanonicalName 'host.example.com' -Type CNAME
 
     .EXAMPLE
-    Add-InfoBloxDNSRecord -Name 'Test' -CanonicalName 'test2.mcdonalds.com' -Type 'CNAME'
+    Add-InfoBloxDNSRecord -Name 'example.com' -MailExchanger 'mail.example.com' -Preference 10 -Type MX
 
-    .NOTES
-    General notes
+    .EXAMPLE
+    Add-InfoBloxDNSRecord -Type SRV -Properties @{ name = '_service._tcp.example.com'; target = 'host.example.com'; port = 443; priority = 10; weight = 5 }
     #>
-    [CmdletBinding(SupportsShouldProcess)]
+    [CmdletBinding(SupportsShouldProcess, DefaultParameterSetName = 'Typed')]
     param(
+        [Parameter(ParameterSetName = 'Typed')]
         [string] $Name,
-        [Alias('IPv4Address', 'IPv6Address')][string] $IPAddress,
+
+        [Alias('IPv4Address', 'IPv6Address')]
+        [Parameter(ParameterSetName = 'Typed')]
+        [string] $IPAddress,
+
+        [Parameter(ParameterSetName = 'Typed')]
         [string] $CanonicalName,
+
+        [Parameter(ParameterSetName = 'Typed')]
         [string] $PtrName,
+
+        [Parameter(ParameterSetName = 'Typed')]
         [string] $Text,
-        [parameter(Mandatory)][ValidateSet(
-            'A',
-            #'AAAA',
-            'CNAME',
-            'HOST',
-            'PTR'
-            #'DName',
-            #'DNSKEY', 'DS', 'Host', 'host_ipv4addr', 'host_ipv6addr',
-            #'LBDN', 'MX', 'NAPTR', 'NS', 'NSEC',
-            #'NSEC3', 'NSEC3PARAM', 'PTR', 'RRSIG', 'SRV', 'TXT'
-        )]
+
+        [Parameter(ParameterSetName = 'Typed')]
+        [string] $MailExchanger,
+
+        [Parameter(ParameterSetName = 'Typed')]
+        [ValidateRange(0, 65535)]
+        [int] $Preference,
+
+        [Parameter(ParameterSetName = 'Typed')]
+        [string] $NameServer,
+
+        [Alias('Addresses')]
+        [Parameter(ParameterSetName = 'Typed')]
+        [string[]] $Address,
+
+        [Parameter(Mandatory, ParameterSetName = 'Properties')]
+        [ValidateNotNull()]
+        [System.Collections.IDictionary] $Properties,
+
+        [Parameter(Mandatory)]
+        [ValidateNotNullOrEmpty()]
         [string] $Type
     )
+
     if (-not $Script:InfobloxConfiguration) {
         if ($ErrorActionPreference -eq 'Stop') {
             throw 'You must first connect to an Infoblox server using Connect-Infoblox'
@@ -61,118 +102,46 @@
         return
     }
 
-    # Lets convert it to lowercase, since Infoblox is case sensitive
-    $Type = $Type.ToLower()
-    if ($Type -eq 'A') {
-        Write-Verbose -Message "Add-InfoBloxDNSRecord - Adding $Type record $Name with IPAddress: '$IPAddress'"
-        if ($Name -and $IPAddress) {
-            $Body = [ordered] @{
-                name     = $Name.ToLower()
-                ipv4addr = $IPAddress
-            }
-        } else {
-            if ($ErrorActionPreference -eq 'Stop') {
-                throw "Add-InfoBloxDNSRecord - 'Name' and 'IPAddress' are required for $Type record"
-            }
-            Write-Warning -Message "'Name' and 'IPAddress' are required for $Type record"
-            return
-        }
-    } elseif ($Type -eq 'CNAME') {
-        Write-Verbose -Message "Add-InfoBloxDNSRecord - Adding $Type record $Name with IPAddress: '$IPAddress'"
-        if ($Name -and $CanonicalName) {
-            $Body = [ordered] @{
-                name      = $Name.ToLower()
-                canonical = $CanonicalName.ToLower()
-            }
-        } else {
-            if ($ErrorActionPreference -eq 'Stop') {
-                throw "'Name' and 'CanonicalName' are required for $Type record"
-            }
-            Write-Warning -Message "Add-InfoBloxDNSRecord - 'Name' and 'CanonicalName' are required for $Type record"
-            return
-        }
-    } elseif ($Type -eq 'AAAA') {
-        Write-Verbose -Message "Add-InfoBloxDNSRecord - Adding $Type record $Name with IPAddress: '$IPAddress'"
-        if ($Name -and $IPAddress) {
-            $Body = [ordered] @{
-                name     = $Name.ToLower()
-                ipv6addr = $IPAddress
-            }
-        } else {
-            if ($ErrorActionPreference -eq 'Stop') {
-                throw "'Name' and 'IPAddress' are required for $Type record"
-            }
-            Write-Warning -Message "Add-InfoBloxDNSRecord - 'Name' and 'IPAddress' are required for $Type record"
-            return
-        }
-    } elseif ($Type -eq 'HOST') {
-        Write-Verbose -Message "Add-InfoBloxDNSRecord - Adding $Type record $Name with IPAddress: '$IPAddress'"
-        if ($Name -and $IPAddress) {
-            $Body = [ordered] @{
-                name      = $Name.ToLower()
-                ipv4addrs = @(
-                    @{
-                        ipv4addr = $IPAddress
-                    }
-                )
-            }
-        } else {
-            if ($ErrorActionPreference -eq 'Stop') {
-                throw "'Name' and 'IPAddress' are required for '$Type' record"
-            }
-            Write-Warning -Message "Add-InfoBloxDNSRecord - 'Name' and 'IPAddress' are required for '$Type' record"
-            return
-        }
-    } elseif ($Type -eq 'PTR') {
-        Write-Verbose -Message "Add-InfoBloxDNSRecord - Adding $Type record $Name with IPAddress: '$IPAddress'"
-        if ($Name -and $IPAddress -and $PtrName) {
-            $Body = [ordered] @{
-                name     = $Name.ToLower()
-                ptrdname = $PtrName.ToLower()
-                ipv4addr = $IPAddress
-            }
-        } else {
-            if ($ErrorActionPreference -eq 'Stop') {
-                throw "'Name' and 'IPAddress' and 'PtrName' are required for '$Type' record"
-            }
-            Write-Warning -Message "Add-InfoBloxDNSRecord - 'Name' and 'IPAddress' and 'PtrName' are required for '$Type' record"
-            return
-        }
-    } elseif ($Type -eq 'TXT') {
-        Write-Verbose -Message "Add-InfoBloxDNSRecord - Adding $Type record $Name with TEXT: '$Text'"
-        if ($Name -and $IPAddress) {
-            $Body = [ordered] @{
-                name = $Name.ToLower()
-                text = $Text.ToLower()
-            }
-        } else {
-            if ($ErrorActionPreference -eq 'Stop') {
-                throw "'Name' and 'Text' are required for '$Type' record"
-            }
-            Write-Warning -Message "Add-InfoBloxDNSRecord - 'Name' and 'Text' are required for '$Type' record"
-            return
-        }
+    $NormalizedType = Resolve-InfobloxDNSRecordType -Type $Type
+    $bodySplat = @{
+        Type = $NormalizedType
+    }
+    if ($PSCmdlet.ParameterSetName -eq 'Properties') {
+        $bodySplat.Properties = $Properties
     } else {
-        # won't trigger, but lets leave it like that
-        if ($ErrorActionPreference -eq 'Stop') {
-            throw "Add-InfoBloxDNSRecord - Type $Type not supported"
+        foreach ($ParameterName in @('Name', 'IPAddress', 'CanonicalName', 'PtrName', 'Text', 'MailExchanger', 'Preference', 'NameServer', 'Address')) {
+            if ($PSBoundParameters.ContainsKey($ParameterName)) {
+                $bodySplat[$ParameterName] = $PSBoundParameters[$ParameterName]
+            }
         }
-        Write-Warning -Message "Add-InfoBloxDNSRecord - Type $Type not supported"
+        if ($PSBoundParameters.ContainsKey('Preference')) {
+            $bodySplat.PreferenceSpecified = $true
+        }
+    }
+
+    try {
+        $Body = ConvertTo-InfobloxDNSRecordCreateBody @bodySplat -ErrorAction Stop
+    } catch {
+        if ($ErrorActionPreference -eq 'Stop') {
+            throw
+        }
+        Write-Warning -Message $_.Exception.Message
         return
     }
+
+    $TargetName = if ($Name) { $Name } elseif ($Properties -and $Properties.Contains('name')) { $Properties['name'] } else { "record:$NormalizedType" }
+    if (-not $PSCmdlet.ShouldProcess($TargetName, "Add $($NormalizedType.ToUpperInvariant()) DNS record")) {
+        return
+    }
+
     $invokeInfobloxQuerySplat = @{
-        RelativeUri = "record:$Type"
+        RelativeUri = "record:$NormalizedType"
         Method      = 'POST'
         Body        = $Body
     }
 
-    $Output = Invoke-InfobloxQuery @invokeInfobloxQuerySplat #-WarningAction SilentlyContinue -WarningVariable varWarning
+    $Output = Invoke-InfobloxQuery @invokeInfobloxQuerySplat -Confirm:$false
     if ($Output) {
-        Write-Verbose -Message "Add-InfoBloxDNSRecord - Added $Type / $Output"
+        Write-Verbose -Message "Add-InfoBloxDNSRecord - Added $($NormalizedType.ToUpperInvariant()) / $Output"
     }
-    #else {
-    #    if (-not $WhatIfPreference) {
-    #Write-Warning -Message "Add-InfoBloxDNSRecord - Failed to add $Type, error: $varWarning"
-    #    }
-    #}
 }

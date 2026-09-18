@@ -199,7 +199,19 @@ Add-InfoBloxDNSRecord `
     -Type CNAME `
     -Name 'app.example.com' `
     -CanonicalName 'server01.example.com'
+
+# Update a record by its exact WAPI reference
+$cname = Get-InfobloxDNSRecord -Type CNAME -Name 'app.example.com' -View 'default' | Select-Object -First 1
+
+Set-InfobloxDNSRecord `
+    -ReferenceID $cname._ref `
+    -Value 'server02.example.com'
+
+# Preview removing that exact record
+Remove-InfobloxDnsRecord -ReferenceID $cname._ref -WhatIf
 ```
+
+`Set-InfobloxDNSRecord -Value` maps the value to the correct WAPI field for A, AAAA, CNAME, HOST, PTR, MX, NS, and TXT records. Use `-Properties` for structured or future record types and multi-field updates.
 
 ## Discover commands
 
@@ -216,6 +228,8 @@ Get-Help Connect-Infoblox -Full
 Get-Help Get-InfobloxNetwork -Examples
 Get-Help Add-InfobloxDHCPRange -Full
 ```
+
+The generated [command reference](Docs/Readme.md) contains one page for every exported function and is kept in sync with the module's comment-based help.
 
 ## Releases and support
 

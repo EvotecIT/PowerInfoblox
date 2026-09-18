@@ -27,8 +27,6 @@
     .EXAMPLE
     Add-InfobloxDHCPReservation -IPv4Address '10.2.2.18' -MacAddress '00:50:56:9A:00:01' -Name 'MyReservation' -Network '10.2.2.0/24' -Comment 'This is a test reservation' -MicrosoftServer 'myserver'
 
-    .NOTES
-    General notes
     #>
     [CmdletBinding(SupportsShouldProcess)]
     param(

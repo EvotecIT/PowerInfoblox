@@ -27,8 +27,6 @@
     .EXAMPLE
     Add-InfobloxFixedAddress -IPv4Address '10.2.2.18' -MacAddress '00:50:56:9A:00:01'
 
-    .NOTES
-    General notes
     #>
     [cmdletbinding(SupportsShouldProcess)]
     param(

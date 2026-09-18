@@ -24,8 +24,6 @@
     .EXAMPLE
     Get-InfobloxSchema -Object 'record:host'
 
-    .NOTES
-    General notes
     #>
     [CmdletBinding()]
     param(

@@ -1,4 +1,38 @@
 ﻿function Get-InfobloxObjects {
+    <#
+    .SYNOPSIS
+    Retrieves generic Infoblox WAPI objects.
+
+    .DESCRIPTION
+    Retrieves objects either by WAPI object type or by one or more exact object
+    references. Use this command when no specialized PowerInfoblox getter exists.
+
+    .PARAMETER ReferenceID
+    Specifies one or more exact Infoblox WAPI object references to retrieve.
+
+    .PARAMETER Object
+    Specifies the WAPI object type to retrieve, such as record:caa, network, or member.
+
+    .PARAMETER MaxResults
+    Specifies the maximum number of objects returned when the WAPI endpoint supports it.
+
+    .PARAMETER FetchFromSchema
+    Requests every field advertised for the selected object type by the connected WAPI schema.
+    For ReferenceID queries, the object type is taken from each reference.
+
+    .PARAMETER ReturnFields
+    Specifies the WAPI fields to return.
+
+    .EXAMPLE
+    Get-InfobloxObjects -Object 'record:caa' -ReturnFields name,ca_flag,ca_tag,ca_value -MaxResults 100
+
+    Returns up to 100 CAA records with the selected fields.
+
+    .EXAMPLE
+    Get-InfobloxObjects -ReferenceID 'record:txt/ZG5zLmJpbmRf...:notice.example.com/default' -FetchFromSchema
+
+    Retrieves the exact referenced object with all fields advertised by its schema.
+    #>
     [CmdletBinding()]
     param(
         [Parameter(Mandatory, ParameterSetName = 'ReferenceID')]

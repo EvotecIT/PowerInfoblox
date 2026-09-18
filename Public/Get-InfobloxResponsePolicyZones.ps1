@@ -1,4 +1,24 @@
 ﻿function Get-InfobloxResponsePolicyZones {
+    <#
+    .SYNOPSIS
+    Retrieves response policy zones from an Infoblox server.
+
+    .DESCRIPTION
+    Queries Infoblox WAPI zone_rp objects available to the connected account.
+
+    .PARAMETER FetchFromSchema
+    Requests every field advertised for the zone_rp object by the connected WAPI schema.
+
+    .EXAMPLE
+    Get-InfobloxResponsePolicyZones
+
+    Returns response policy zones using the default WAPI fields.
+
+    .EXAMPLE
+    Get-InfobloxResponsePolicyZones -FetchFromSchema
+
+    Returns response policy zones with all fields advertised by the connected WAPI schema.
+    #>
     [cmdletbinding()]
     param(
         [switch] $FetchFromSchema

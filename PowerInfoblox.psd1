@@ -24,5 +24,4 @@
             ModuleVersion   = '0.0.313.1'
         })
     RootModule           = 'PowerInfoblox.psm1'
-    ScriptsToProcess     = @()
 }

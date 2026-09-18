@@ -21,8 +21,6 @@
     .EXAMPLE
     Get-InfobloxNetworkNextAvailableNetwork -Network '10.2.0.0/16' -Quantity 5 -Cidr 27 -Verbose | Format-Table
 
-    .NOTES
-    General notes
     #>
     [cmdletbinding(DefaultParameterSetName = 'Network')]
     param(

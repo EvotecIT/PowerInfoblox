@@ -1,4 +1,38 @@
 ﻿function Get-InfobloxDNSRecordAll {
+    <#
+    .SYNOPSIS
+    Gets DNS records across all record types.
+
+    .DESCRIPTION
+    Queries the Infoblox allrecords WAPI object and uses schema-aware preferred fields by default.
+
+    .PARAMETER Name
+    The DNS record name to match.
+
+    .PARAMETER Zone
+    The DNS zone to match.
+
+    .PARAMETER View
+    The DNS view to match.
+
+    .PARAMETER PartialMatch
+    Uses WAPI regular-expression matching for Name, Zone, and View.
+
+    .PARAMETER FetchFromSchema
+    Requests every field reported as readable by the connected Grid schema.
+
+    .PARAMETER ReturnFields
+    Requests the specified fields instead of the default schema-aware field set.
+
+    .PARAMETER MaxResults
+    The maximum result count requested from WAPI.
+
+    .EXAMPLE
+    Get-InfobloxDNSRecordAll -Zone 'example.com'
+
+    .EXAMPLE
+    Get-InfobloxDNSRecordAll -Name 'mail' -PartialMatch -ReturnFields name,type,record -MaxResults 100
+    #>
     [alias('Get-InfobloxDNSRecordsAll')]
     [cmdletbinding()]
     param(
@@ -6,7 +40,10 @@
         [string] $Zone,
         [string] $View,
         [switch] $PartialMatch,
-        [switch] $FetchFromSchema
+        [switch] $FetchFromSchema,
+        [string[]] $ReturnFields,
+        [ValidateRange(1, 2147483647)]
+        [int] $MaxResults = 1000000
     )
 
     if (-not $Script:InfobloxConfiguration) {
@@ -18,19 +55,24 @@
     }
 
     $invokeInfobloxQuerySplat = @{
-        RelativeUri    = "allrecords"
+        RelativeUri    = 'allrecords'
         Method         = 'GET'
         QueryParameter = @{
-            _max_results = 1000000
+            _max_results = $MaxResults
         }
     }
 
     $PreferredFields = 'address,comment,creator,ddns_principal,ddns_protected,disable,dtc_obscured,name,reclaimable,record,ttl,type,view,zone' -split ','
 
     if ($FetchFromSchema) {
-        $invokeInfobloxQuerySplat.QueryParameter._return_fields = Get-FieldsFromSchema -SchemaObject "allrecords"
+        $ResolvedReturnFields = Get-FieldsFromSchema -SchemaObject 'allrecords'
+    } elseif ($ReturnFields) {
+        $ResolvedReturnFields = ($ReturnFields | Sort-Object -Unique) -join ','
     } else {
-        $invokeInfobloxQuerySplat.QueryParameter._return_fields = Get-FieldsFromSchema -SchemaObject 'allrecords' -RequestedFields $PreferredFields
+        $ResolvedReturnFields = Get-FieldsFromSchema -SchemaObject 'allrecords' -RequestedFields $PreferredFields
+    }
+    if ($ResolvedReturnFields) {
+        $invokeInfobloxQuerySplat.QueryParameter._return_fields = $ResolvedReturnFields
     }
     if ($Zone) {
         if ($PartialMatch) {

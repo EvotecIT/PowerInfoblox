@@ -24,8 +24,6 @@
     .EXAMPLE
     Get-InfoBloxNetworkContainer -Network '10.2' -Verbose -PartialMatch | Format-Table
 
-    .NOTES
-    General notes
     #>
     [CmdletBinding()]
     param(
