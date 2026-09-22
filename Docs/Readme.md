@@ -2,7 +2,7 @@
 Module Name: PowerInfoblox
 Module Guid: 9fc9fd61-7f11-4f4b-a527-084086f1905f
 Download Help Link: https://github.com/EvotecIT/PowerInfoblox
-Help Version: 1.0.40
+Help Version: 1.0.41
 Locale: en-US
 ---
 # PowerInfoblox Module
