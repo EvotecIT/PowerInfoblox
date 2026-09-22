@@ -239,6 +239,9 @@ function Remove-InfobloxDnsRecord {
         if (-not $ForwardRemoved) {
             continue
         }
+        if (-not $AssociatedPTRBySource.ContainsKey($Record._ref)) {
+            continue
+        }
 
         foreach ($PTRRecord in @($AssociatedPTRBySource[$Record._ref])) {
             if (-not $PTRRecord._ref) {
