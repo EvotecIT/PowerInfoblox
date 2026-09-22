@@ -133,10 +133,25 @@ Describe 'DNS record removal' {
             }
 
             $referenceID = 'record:mx/opaque:example.test/Internal'
-            Remove-InfobloxDnsRecord -ReferenceID $referenceID -Type MX
+            $warnings = @()
+            Remove-InfobloxDnsRecord -ReferenceID $referenceID -Type MX -WarningVariable warnings
 
             $script:removedReferences | Should -Be @($referenceID)
+            $warnings | Should -BeNullOrEmpty
             Should -Invoke Get-InfobloxDNSRecord -ParameterFilter { $ReferenceID -eq 'record:mx/opaque:example.test/Internal' } -Times 1 -Exactly
+        }
+
+        It 'does not report a missing reference after directly removing a PTR record' {
+            Mock Get-InfobloxDNSRecord -MockWith {
+                [pscustomobject]@{ name = '10.2.0.192.in-addr.arpa'; ptrdname = 'host.example.test'; view = 'Internal'; _ref = $ReferenceID }
+            }
+
+            $referenceID = 'record:ptr/opaque:10.2.0.192.in-addr.arpa/Internal'
+            $warnings = @()
+            Remove-InfobloxDnsRecord -ReferenceID $referenceID -Type PTR -WarningVariable warnings
+
+            $script:removedReferences | Should -Be @($referenceID)
+            $warnings | Should -BeNullOrEmpty
         }
 
         It 'does not request a view field when removing an exact non-address record' {
@@ -173,9 +188,11 @@ Describe 'DNS record removal' {
                 [pscustomobject]@{ name = 'stale.example.test'; ipv4addr = '192.0.2.10'; view = 'Internal'; _ref = 'record:a/stale' }
             }
 
-            Remove-InfobloxDnsRecord -Name 'stale.example.test' -Type A
+            $warnings = @()
+            Remove-InfobloxDnsRecord -Name 'stale.example.test' -Type A -WarningVariable warnings
 
             $script:removedReferences | Should -Be @('record:a/stale')
+            $warnings | Should -BeNullOrEmpty
         }
 
         It 'keeps a PTR returned from a different view' {
