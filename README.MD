@@ -224,6 +224,30 @@ Remove-InfobloxDnsRecord -Type PTR -Name $ptrName -Value 'server01.example.com' 
 `Remove-InfobloxDnsRecord -Value` selects one matching A, AAAA, CNAME, MX, NS, PTR, or TXT record. If the selection is still ambiguous, the command lists candidate references and skips deletion; use `-ReferenceID` to select one exactly.
 `Set-InfobloxDNSRecord -RecordName` also requires one matching record. Supply `-CurrentValue` to select or guard a record before updating it. With `-ReferenceID`, `-CurrentValue` and `Remove-InfobloxDnsRecord -Value` guard against a changed value.
 
+### DNS zones and views
+
+```powershell
+# Inspect existing views and zones, including their WAPI references
+Get-InfobloxDNSView -Name Internal
+Get-InfobloxDNSAuthZone -FQDN example.com -View Internal
+Get-InfobloxResponsePolicyZones -FQDN example.com -View Internal
+Get-InfobloxDNSStubZone -FQDN example.com -View Internal
+
+# Create a view and an authoritative zone in it
+Add-InfobloxDNSView -Name Internal -NetworkView default
+Add-InfobloxDNSZone -Type Authoritative -Name example.com -View Internal
+
+# Change one selected zone or view
+Set-InfobloxDNSZone -Type Authoritative -Name example.com -View Internal -Properties @{ comment = 'Managed zone' }
+Set-InfobloxDNSView -Name Internal -Properties @{ comment = 'Internal clients' }
+
+# Preview removing exact objects
+Remove-InfobloxDNSZone -ReferenceID 'zone_auth/opaque:example.com/Internal' -WhatIf
+Remove-InfobloxDNSView -ReferenceID 'view/opaque:Internal/false' -WhatIf
+```
+
+`Add-InfobloxDNSZone` supports authoritative, forward, delegated, response policy, and stub zones. Use `-Properties` for WAPI fields required by the zone type and Grid configuration, such as forwarders, delegated nameservers, RPZ substitution, or stub sources. Set and Remove first resolve one object; ambiguous or mismatched names show the available references and skip the change. Supply `-ReferenceID` when a name alone does not identify one object. The default DNS view cannot be removed.
+
 ## Discover commands
 
 List the commands exported by the installed version:

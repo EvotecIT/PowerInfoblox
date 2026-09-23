@@ -4,71 +4,74 @@ Module Name: PowerInfoblox
 online version: https://github.com/EvotecIT/PowerInfoblox
 schema: 2.0.0
 ---
-# Get-InfobloxDNSView
+# Get-InfobloxDNSStubZone
 ## SYNOPSIS
-Retrieves DNS views from an Infoblox server.
+Retrieves DNS stub zones.
 
 ## SYNTAX
-### ByName (Default)
+### __AllParameterSets
 ```powershell
-Get-InfobloxDNSView [-Name <string>] [<CommonParameters>]
-```
-
-### ByReference
-```powershell
-Get-InfobloxDNSView -ReferenceID <string> [<CommonParameters>]
+Get-InfobloxDNSStubZone [[-FQDN] <string>] [[-View] <string>] [-FetchFromSchema] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Queries Infoblox WAPI view objects and returns the DNS views available to the
-current connection. Use Name or ReferenceID to inspect one view before
-changing or removing it.
+Queries Infoblox WAPI zone_stub objects. Results can be filtered by zone
+FQDN and DNS view.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```powershell
-PS > Get-InfobloxDNSView
+PS > Get-InfobloxDNSStubZone -FQDN example.com -View Internal
 ```
 
-Returns all DNS views available to the connected account.
-
-### EXAMPLE 2
-```powershell
-PS > Get-InfobloxDNSView -Name Internal
-```
-
-Lists the Internal view and its WAPI reference.
+Returns the stub zone and its WAPI reference.
 
 ## PARAMETERS
 
-### -Name
-Filters views by exact name.
+### -FetchFromSchema
+Requests every readable zone_stub field advertised by the connected WAPI schema.
 
 ```yaml
-Type: String
-Parameter Sets: ByName
+Type: SwitchParameter
+Parameter Sets: __AllParameterSets
 Aliases: None
 Possible values:
 
 Required: False
 Position: named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -FQDN
+Filters stub zones by fully qualified domain name.
+
+```yaml
+Type: String
+Parameter Sets: __AllParameterSets
+Aliases: None
+Possible values:
+
+Required: False
+Position: 0
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -ReferenceID
-Retrieves a view by its exact WAPI reference.
+### -View
+Filters stub zones by DNS view name.
 
 ```yaml
 Type: String
-Parameter Sets: ByReference
+Parameter Sets: __AllParameterSets
 Aliases: None
 Possible values:
 
-Required: True
-Position: named
+Required: False
+Position: 1
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False

@@ -11,11 +11,12 @@ Retrieves response policy zones from an Infoblox server.
 ## SYNTAX
 ### __AllParameterSets
 ```powershell
-Get-InfobloxResponsePolicyZones [-FetchFromSchema] [<CommonParameters>]
+Get-InfobloxResponsePolicyZones [[-FQDN] <string>] [[-View] <string>] [-FetchFromSchema] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
 Queries Infoblox WAPI zone_rp objects available to the connected account.
+Results can be filtered by zone FQDN and DNS view.
 
 ## EXAMPLES
 
@@ -28,10 +29,10 @@ Returns response policy zones using the default WAPI fields.
 
 ### EXAMPLE 2
 ```powershell
-PS > Get-InfobloxResponsePolicyZones -FetchFromSchema
+PS > Get-InfobloxResponsePolicyZones -FQDN example.com -View Internal -FetchFromSchema
 ```
 
-Returns response policy zones with all fields advertised by the connected WAPI schema.
+Returns the matching response policy zone with all readable fields advertised by the connected WAPI schema.
 
 ## PARAMETERS
 
@@ -47,6 +48,38 @@ Possible values:
 Required: False
 Position: named
 Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -FQDN
+Filters response policy zones by fully qualified domain name.
+
+```yaml
+Type: String
+Parameter Sets: __AllParameterSets
+Aliases: None
+Possible values:
+
+Required: False
+Position: 0
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -View
+Filters response policy zones by DNS view name.
+
+```yaml
+Type: String
+Parameter Sets: __AllParameterSets
+Aliases: None
+Possible values:
+
+Required: False
+Position: 1
+Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

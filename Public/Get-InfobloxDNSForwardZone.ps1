@@ -43,7 +43,7 @@
         $invokeInfobloxQuerySplat.QueryParameter.view = $View.ToLower()
     }
     if ($Name) {
-        $invokeInfobloxQuerySplat.QueryParameter.fqdn = $Name.ToLower()
+        $invokeInfobloxQuerySplat.QueryParameter.fqdn = Normalize-InfobloxDNSZoneName -Name $Name
     }
     Invoke-InfobloxQuery @invokeInfobloxQuerySplat -WhatIf:$false | Select-ObjectByProperty -LastProperty '_ref'
 }
