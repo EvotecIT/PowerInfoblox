@@ -2,6 +2,7 @@ function Format-InfobloxDNSManagedObjectCandidate {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
         [array] $Records,
 
         [Parameter(Mandatory)]

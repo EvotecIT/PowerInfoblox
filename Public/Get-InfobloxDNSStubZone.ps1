@@ -34,7 +34,7 @@ function Get-InfobloxDNSStubZone {
         return
     }
     $QueryParameter = @{ _max_results = 1000000 }
-    if ($PSBoundParameters.ContainsKey('FQDN')) { $QueryParameter.fqdn = $FQDN.TrimEnd('.') }
+    if ($PSBoundParameters.ContainsKey('FQDN')) { $QueryParameter.fqdn = Normalize-InfobloxDNSZoneName -Name $FQDN }
     if ($PSBoundParameters.ContainsKey('View')) { $QueryParameter.view = $View }
     $PreferredFields = if ($FetchFromSchema) { $null } else { @('fqdn', 'view', 'comment', 'disable', 'stub_from', 'stub_members') }
     $ReturnFields = Get-FieldsFromSchema -SchemaObject 'zone_stub' -RequestedFields $PreferredFields

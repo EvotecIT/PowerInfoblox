@@ -18,6 +18,9 @@ function Find-InfobloxDNSManagedObject {
     )
 
     $NameField = if ($ObjectType -eq 'view') { 'name' } else { 'fqdn' }
+    if ($PSCmdlet.ParameterSetName -eq 'ByName') {
+        $NormalizedName = if ($ObjectType -eq 'view') { $Name } else { Normalize-InfobloxDNSZoneName -Name $Name }
+    }
     if ($PSCmdlet.ParameterSetName -eq 'ByReference') {
         if (-not $ReferenceID.StartsWith("$ObjectType/", [System.StringComparison]::OrdinalIgnoreCase)) {
             throw "ReferenceID '$ReferenceID' does not identify a $ObjectType object."
@@ -27,7 +30,7 @@ function Find-InfobloxDNSManagedObject {
     } else {
         $RelativeUri = $ObjectType
         $QueryParameter = @{ _max_results = 1000000 }
-        $QueryParameter[$NameField] = if ($ObjectType -eq 'view') { $Name } else { $Name.TrimEnd('.') }
+        $QueryParameter[$NameField] = $NormalizedName
     }
 
     $PreferredFields = if ($ObjectType -eq 'view') {
@@ -46,7 +49,7 @@ function Find-InfobloxDNSManagedObject {
         } else {
             $Candidates | Where-Object {
                 $_.$NameField -and
-                ([string] $_.$NameField).TrimEnd('.') -ieq $Name.TrimEnd('.') -and
+                $(if ($ObjectType -eq 'view') { [string] $_.$NameField } else { Normalize-InfobloxDNSZoneName -Name ([string] $_.$NameField) }) -ieq $NormalizedName -and
                 (-not $View -or ($_.view -and ([string] $_.view) -ieq $View))
             }
         }

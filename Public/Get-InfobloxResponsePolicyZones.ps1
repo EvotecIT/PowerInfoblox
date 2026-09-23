@@ -46,7 +46,7 @@
     }
 
     $QueryParameter = @{ _max_results = 1000000 }
-    if ($PSBoundParameters.ContainsKey('FQDN')) { $QueryParameter.fqdn = $FQDN.TrimEnd('.') }
+    if ($PSBoundParameters.ContainsKey('FQDN')) { $QueryParameter.fqdn = Normalize-InfobloxDNSZoneName -Name $FQDN }
     if ($PSBoundParameters.ContainsKey('View')) { $QueryParameter.view = $View }
     if ($FetchFromSchema) {
         $ReturnFields = Get-FieldsFromSchema -SchemaObject "zone_rp"

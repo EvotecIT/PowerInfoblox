@@ -61,6 +61,23 @@ Describe 'DNS zone and view management' {
             ($Captured -join ' ') | Should -Match 'view=Internal'
         }
 
+        It 'warns and skips a missing zone without a parameter-binding error' {
+            $script:Objects = @()
+            $Warnings = @()
+            Set-InfobloxDNSZone -Type Authoritative -Name missing.example.test -Properties @{ comment = 'changed' } -WarningVariable Warnings
+            $script:Calls.Count | Should -Be 1
+            $script:Calls[0].Method | Should -Be 'GET'
+            ($Warnings -join ' ') | Should -Match 'No objects found'
+        }
+
+        It 'preserves the root zone name in lookup and update' {
+            $script:Objects = @([pscustomobject]@{ _ref = 'zone_forward/root:./default'; fqdn = '.'; view = 'default' })
+            Set-InfobloxDNSZone -Type Forward -Name '.' -Properties @{ comment = 'Root forwarding' } -Confirm:$false
+            $script:Calls.Count | Should -Be 2
+            $script:Calls[0].Query.fqdn | Should -BeExactly '.'
+            $script:Calls[1].Uri | Should -Be 'zone_forward/root:./default'
+        }
+
         It 'refuses ambiguous zones and lists both references' {
             $script:Objects = @(
                 [pscustomobject]@{ _ref = 'zone_auth/one:example.test/Internal'; fqdn = 'example.test'; view = 'Internal' }
@@ -102,6 +119,11 @@ Describe 'DNS zone and view management' {
             $script:Calls[0].Uri | Should -Be 'zone_stub'
             $script:Calls[0].Query.fqdn | Should -Be 'example.test'
             $script:Calls[0].Query.view | Should -Be 'Internal'
+        }
+
+        It 'preserves root zone FQDN in the stub-zone reader' {
+            Get-InfobloxDNSStubZone -FQDN '.' | Out-Null
+            $script:Calls[0].Query.fqdn | Should -BeExactly '.'
         }
 
         It 'refuses to remove a default DNS view' {

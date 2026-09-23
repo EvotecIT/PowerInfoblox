@@ -53,7 +53,7 @@ function Add-InfobloxDNSZone {
     }
     if ($Properties) {
         foreach ($Entry in $Properties.GetEnumerator()) {
-            if ($Entry.Key -ieq 'fqdn' -and ([string] $Entry.Value).TrimEnd('.') -ine $Name.TrimEnd('.')) {
+            if ($Entry.Key -ieq 'fqdn' -and (Normalize-InfobloxDNSZoneName -Name ([string] $Entry.Value)) -ine (Normalize-InfobloxDNSZoneName -Name $Name)) {
                 throw "Add-InfobloxDNSZone - Properties.fqdn does not match Name '$Name'."
             }
             if ($Entry.Key -ieq 'view' -and $PSBoundParameters.ContainsKey('View') -and ([string] $Entry.Value) -ine $View) {
