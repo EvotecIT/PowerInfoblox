@@ -11,7 +11,7 @@ Creates an Infoblox DNS record.
 ## SYNTAX
 ### Typed (Default)
 ```powershell
-Add-InfoBloxDNSRecord -Type <string> [-Name <string>] [-IPAddress <string>] [-CanonicalName <string>] [-PtrName <string>] [-Text <string>] [-MailExchanger <string>] [-Preference <int>] [-NameServer <string>] [-Address <string[]>] [-WhatIf] [-Confirm] [<CommonParameters>]
+Add-InfoBloxDNSRecord -Type <string> [-Name <string>] [-IPAddress <string>] [-CanonicalName <string>] [-PtrName <string>] [-Text <string>] [-MailExchanger <string>] [-Preference <int>] [-NameServer <string>] [-Address <string[]>] [-View <string>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### Properties
@@ -39,11 +39,17 @@ PS > Add-InfoBloxDNSRecord -Name 'alias.example.com' -CanonicalName 'host.exampl
 
 ### EXAMPLE 3
 ```powershell
-PS > Add-InfoBloxDNSRecord -Name 'example.com' -MailExchanger 'mail.example.com' -Preference 10 -Type MX
+PS > Add-InfoBloxDNSRecord -Name '5.10.2.10.in-addr.arpa' -PtrName 'host.example.com' -Type PTR -View Internal
 ```
 
 
 ### EXAMPLE 4
+```powershell
+PS > Add-InfoBloxDNSRecord -Name 'example.com' -MailExchanger 'mail.example.com' -Preference 10 -Type MX
+```
+
+
+### EXAMPLE 5
 ```powershell
 PS > Add-InfoBloxDNSRecord -Type SRV -Properties @{ name = '_service._tcp.example.com'; target = 'host.example.com'; port = 443; priority = 10; weight = 5 }
 ```
@@ -222,6 +228,22 @@ Aliases: None
 Possible values:
 
 Required: True
+Position: named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -View
+The DNS view in which to create a typed record. When omitted, WAPI uses its default view.
+
+```yaml
+Type: String
+Parameter Sets: Typed
+Aliases: None
+Possible values:
+
+Required: False
 Position: named
 Default value: None
 Accept pipeline input: False

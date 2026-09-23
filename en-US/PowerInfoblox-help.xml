@@ -1200,6 +1200,18 @@ the nameserver does not require glue.</maml:para>
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>View</maml:name>
+          <maml:description>
+            <maml:para>The DNS view in which to create a typed record. When omitted, WAPI uses its default view.</maml:para>
+          </maml:description>
+          <command:parameterValue required="false" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem parameterSetName="Properties">
         <maml:name>Add-InfoBloxDNSRecord</maml:name>
@@ -1363,6 +1375,18 @@ the nameserver does not require glue.</maml:para>
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
+      <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>View</maml:name>
+        <maml:description>
+          <maml:para>The DNS view in which to create a typed record. When omitted, WAPI uses its default view.</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
     </command:parameters>
     <command:inputTypes />
     <command:returnValues />
@@ -1397,13 +1421,23 @@ the nameserver does not require glue.</maml:para>
         <maml:introduction>
           <maml:para>PS &gt; </maml:para>
         </maml:introduction>
-        <dev:code>Add-InfoBloxDNSRecord -Name 'example.com' -MailExchanger 'mail.example.com' -Preference 10 -Type MX</dev:code>
+        <dev:code>Add-InfoBloxDNSRecord -Name '5.10.2.10.in-addr.arpa' -PtrName 'host.example.com' -Type PTR -View Internal</dev:code>
         <dev:remarks>
           <maml:para></maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
+        <maml:introduction>
+          <maml:para>PS &gt; </maml:para>
+        </maml:introduction>
+        <dev:code>Add-InfoBloxDNSRecord -Name 'example.com' -MailExchanger 'mail.example.com' -Preference 10 -Type MX</dev:code>
+        <dev:remarks>
+          <maml:para></maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 5 --------------------------</maml:title>
         <maml:introduction>
           <maml:para>PS &gt; </maml:para>
         </maml:introduction>
@@ -7575,8 +7609,9 @@ the object reference placed last.</maml:para>
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>Removes one DNS record selected by ReferenceID or records found by Name and Type. Name-based&#xD;
-removal stops when a lookup is ambiguous unless RemoveAllMatching is explicitly supplied.&#xD;
+      <maml:para>Removes one DNS record selected by ReferenceID or records found by Name and Type. Value can&#xD;
+select a specific A, AAAA, CNAME, MX, NS, PTR, or TXT record with that name. Name-based&#xD;
+removal stops when the selected records are ambiguous unless RemoveAllMatching is supplied.&#xD;
 Associated PTR cleanup for A and AAAA records is limited to the same view and matching ptrdname.</maml:para>
     </maml:description>
     <command:syntax>
@@ -7638,6 +7673,21 @@ Without this switch, an ambiguous lookup is skipped.</maml:para>
             <maml:para>The WAPI record type. It is required with Name and optional as a safety check with ReferenceID.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Value</maml:name>
+          <maml:description>
+            <maml:para>The existing record value to match when removing by Name: address for A/AAAA, canonical&#xD;
+target for CNAME, mail exchanger for MX, nameserver for NS, target FQDN for PTR, or text&#xD;
+for TXT. With ReferenceID, Value guards against deleting an object whose value has changed.&#xD;
+DNS names are compared without regard to case or a final dot; TXT is exact.</maml:para>
+          </maml:description>
+          <command:parameterValue required="false" variableLength="false">String</command:parameterValue>
           <dev:type>
             <maml:name>String</maml:name>
             <maml:uri />
@@ -7713,6 +7763,21 @@ Without this switch, an ambiguous lookup is skipped.</maml:para>
           <maml:name>Type</maml:name>
           <maml:description>
             <maml:para>The WAPI record type. It is required with Name and optional as a safety check with ReferenceID.</maml:para>
+          </maml:description>
+          <command:parameterValue required="false" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Value</maml:name>
+          <maml:description>
+            <maml:para>The existing record value to match when removing by Name: address for A/AAAA, canonical&#xD;
+target for CNAME, mail exchanger for MX, nameserver for NS, target FQDN for PTR, or text&#xD;
+for TXT. With ReferenceID, Value guards against deleting an object whose value has changed.&#xD;
+DNS names are compared without regard to case or a final dot; TXT is exact.</maml:para>
           </maml:description>
           <command:parameterValue required="false" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -7799,6 +7864,21 @@ Without this switch, an ambiguous lookup is skipped.</maml:para>
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
       <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>Value</maml:name>
+        <maml:description>
+          <maml:para>The existing record value to match when removing by Name: address for A/AAAA, canonical&#xD;
+target for CNAME, mail exchanger for MX, nameserver for NS, target FQDN for PTR, or text&#xD;
+for TXT. With ReferenceID, Value guards against deleting an object whose value has changed.&#xD;
+DNS names are compared without regard to case or a final dot; TXT is exact.</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>View</maml:name>
         <maml:description>
           <maml:para>Limits a name-based lookup to one DNS view.</maml:para>
@@ -7841,6 +7921,16 @@ Without this switch, an ambiguous lookup is skipped.</maml:para>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
+        <maml:introduction>
+          <maml:para>PS &gt; </maml:para>
+        </maml:introduction>
+        <dev:code>Remove-InfobloxDnsRecord -Name '5.10.2.10.in-addr.arpa' -Type PTR -Value 'host.example.com' -View Internal -WhatIf</dev:code>
+        <dev:remarks>
+          <maml:para></maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
         <maml:introduction>
           <maml:para>PS &gt; </maml:para>
         </maml:introduction>
@@ -9252,13 +9342,15 @@ Restores the inherited DDNS enablement setting for the range.</dev:code>
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>Updates an existing DNS record by using its Infoblox WAPI object reference. Value maps to the&#xD;
+      <maml:para>Updates an existing DNS record by exact WAPI reference or by an unambiguous record name,&#xD;
+type, view, and optional current value. An ambiguous or mismatched name lookup lists candidates&#xD;
+and skips the update. Value maps to the&#xD;
 primary data field for A, AAAA, CNAME, HOST, MX, NS, PTR, and TXT records. Properties supports&#xD;
 structured HOST changes and other record types or multi-field updates without guessing at nested WAPI fields.&#xD;
 Type is optional and, when supplied, must match the type encoded in ReferenceID.</maml:para>
     </maml:description>
     <command:syntax>
-      <command:syntaxItem parameterSetName="Value">
+      <command:syntaxItem parameterSetName="ByReferenceValue">
         <maml:name>Set-InfobloxDNSRecord</maml:name>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="Addresses">
           <maml:name>Address</maml:name>
@@ -9269,6 +9361,19 @@ to clear existing glue addresses.</maml:para>
           <command:parameterValue required="false" variableLength="false">String[]</command:parameterValue>
           <dev:type>
             <maml:name>String[]</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>CurrentValue</maml:name>
+          <maml:description>
+            <maml:para>The expected existing value for an A, AAAA, CNAME, MX, NS, PTR, or TXT record. With&#xD;
+RecordName it selects the existing record; with ReferenceID it guards the update.</maml:para>
+          </maml:description>
+          <command:parameterValue required="false" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
             <maml:uri />
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
@@ -9300,7 +9405,7 @@ to clear existing glue addresses.</maml:para>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Type</maml:name>
           <maml:description>
-            <maml:para>The optional expected record type. When supplied, it must match the type encoded in ReferenceID.</maml:para>
+            <maml:para>Required with RecordName. With ReferenceID, optionally checks the type encoded in the reference.</maml:para>
           </maml:description>
           <command:parameterValue required="false" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -9324,8 +9429,21 @@ and text for TXT.</maml:para>
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
       </command:syntaxItem>
-      <command:syntaxItem parameterSetName="Properties">
+      <command:syntaxItem parameterSetName="ByReferenceProperties">
         <maml:name>Set-InfobloxDNSRecord</maml:name>
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>CurrentValue</maml:name>
+          <maml:description>
+            <maml:para>The expected existing value for an A, AAAA, CNAME, MX, NS, PTR, or TXT record. With&#xD;
+RecordName it selects the existing record; with ReferenceID it guards the update.</maml:para>
+          </maml:description>
+          <command:parameterValue required="false" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Properties</maml:name>
           <maml:description>
@@ -9353,7 +9471,164 @@ and text for TXT.</maml:para>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Type</maml:name>
           <maml:description>
-            <maml:para>The optional expected record type. When supplied, it must match the type encoded in ReferenceID.</maml:para>
+            <maml:para>Required with RecordName. With ReferenceID, optionally checks the type encoded in the reference.</maml:para>
+          </maml:description>
+          <command:parameterValue required="false" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+      <command:syntaxItem parameterSetName="ByNameProperties">
+        <maml:name>Set-InfobloxDNSRecord</maml:name>
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>CurrentValue</maml:name>
+          <maml:description>
+            <maml:para>The expected existing value for an A, AAAA, CNAME, MX, NS, PTR, or TXT record. With&#xD;
+RecordName it selects the existing record; with ReferenceID it guards the update.</maml:para>
+          </maml:description>
+          <command:parameterValue required="false" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Properties</maml:name>
+          <maml:description>
+            <maml:para>A field dictionary for HOST records, complex record types, or updates that affect multiple fields.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">IDictionary</command:parameterValue>
+          <dev:type>
+            <maml:name>IDictionary</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>RecordName</maml:name>
+          <maml:description>
+            <maml:para>The existing DNS record name to update. Type is required. Use CurrentValue when the name&#xD;
+identifies several records in a view. The -Name alias of Value remains the new value.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Type</maml:name>
+          <maml:description>
+            <maml:para>Required with RecordName. With ReferenceID, optionally checks the type encoded in the reference.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>View</maml:name>
+          <maml:description>
+            <maml:para>Limits a RecordName lookup to one DNS view.</maml:para>
+          </maml:description>
+          <command:parameterValue required="false" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+      <command:syntaxItem parameterSetName="ByNameValue">
+        <maml:name>Set-InfobloxDNSRecord</maml:name>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="Addresses">
+          <maml:name>Address</maml:name>
+          <maml:description>
+            <maml:para>Optional NS glue addresses, updated together with Value. Supply an empty array&#xD;
+to clear existing glue addresses.</maml:para>
+          </maml:description>
+          <command:parameterValue required="false" variableLength="false">String[]</command:parameterValue>
+          <dev:type>
+            <maml:name>String[]</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>CurrentValue</maml:name>
+          <maml:description>
+            <maml:para>The expected existing value for an A, AAAA, CNAME, MX, NS, PTR, or TXT record. With&#xD;
+RecordName it selects the existing record; with ReferenceID it guards the update.</maml:para>
+          </maml:description>
+          <command:parameterValue required="false" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Preference</maml:name>
+          <maml:description>
+            <maml:para>An optional MX preference from 0 through 65535, updated together with Value.</maml:para>
+          </maml:description>
+          <command:parameterValue required="false" variableLength="false">Int32</command:parameterValue>
+          <dev:type>
+            <maml:name>Int32</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>0</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>RecordName</maml:name>
+          <maml:description>
+            <maml:para>The existing DNS record name to update. Type is required. Use CurrentValue when the name&#xD;
+identifies several records in a view. The -Name alias of Value remains the new value.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Type</maml:name>
+          <maml:description>
+            <maml:para>Required with RecordName. With ReferenceID, optionally checks the type encoded in the reference.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="False" position="named" aliases="Object,Name,PtrName,PTR,NameServer,Text,CanonicalName,IPAddress,MailExchanger">
+          <maml:name>Value</maml:name>
+          <maml:description>
+            <maml:para>The new record value. The WAPI field depends on the record type: ipv4addr for A, ipv6addr for AAAA,&#xD;
+canonical for CNAME, name for HOST, ptrdname for PTR, mail_exchanger for MX, nameserver for NS,&#xD;
+and text for TXT.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>View</maml:name>
+          <maml:description>
+            <maml:para>Limits a RecordName lookup to one DNS view.</maml:para>
           </maml:description>
           <command:parameterValue required="false" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -9374,6 +9649,19 @@ to clear existing glue addresses.</maml:para>
         <command:parameterValue required="false" variableLength="false">String[]</command:parameterValue>
         <dev:type>
           <maml:name>String[]</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>CurrentValue</maml:name>
+        <maml:description>
+          <maml:para>The expected existing value for an A, AAAA, CNAME, MX, NS, PTR, or TXT record. With&#xD;
+RecordName it selects the existing record; with ReferenceID it guards the update.</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
           <maml:uri />
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
@@ -9403,6 +9691,19 @@ to clear existing glue addresses.</maml:para>
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
       <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>RecordName</maml:name>
+        <maml:description>
+          <maml:para>The existing DNS record name to update. Type is required. Use CurrentValue when the name&#xD;
+identifies several records in a view. The -Name alias of Value remains the new value.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>ReferenceID</maml:name>
         <maml:description>
           <maml:para>The WAPI object reference of the DNS record to update, for example record:cname/... or record:a/....</maml:para>
@@ -9417,7 +9718,7 @@ to clear existing glue addresses.</maml:para>
       <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>Type</maml:name>
         <maml:description>
-          <maml:para>The optional expected record type. When supplied, it must match the type encoded in ReferenceID.</maml:para>
+          <maml:para>Required with RecordName. With ReferenceID, optionally checks the type encoded in the reference.</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -9434,6 +9735,18 @@ canonical for CNAME, name for HOST, ptrdname for PTR, mail_exchanger for MX, nam
 and text for TXT.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>View</maml:name>
+        <maml:description>
+          <maml:para>Limits a RecordName lookup to one DNS view.</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">String</command:parameterValue>
         <dev:type>
           <maml:name>String</maml:name>
           <maml:uri />
@@ -9487,6 +9800,16 @@ and text for TXT.</maml:para>
         <dev:code>Set-InfobloxDNSRecord -ReferenceID 'record:host/example-reference:host.example.com/default' -Properties @{ ipv4addrs = @(@{ ipv4addr = '192.0.2.20' }) }</dev:code>
         <dev:remarks>
           <maml:para>Replaces the IPv4 address collection of a HOST record with an explicitly structured WAPI value.</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 5 --------------------------</maml:title>
+        <maml:introduction>
+          <maml:para>PS &gt; </maml:para>
+        </maml:introduction>
+        <dev:code>Set-InfobloxDNSRecord -RecordName '10.2.0.192.in-addr.arpa' -Type PTR -View Internal -CurrentValue 'old.example.com' -Value 'new.example.com' -WhatIf</dev:code>
+        <dev:remarks>
+          <maml:para>Previews changing only the PTR record whose current target matches old.example.com.</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>

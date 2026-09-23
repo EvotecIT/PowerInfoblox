@@ -193,7 +193,8 @@ Get-InfobloxDNSRecord -Type Host -Name 'server01.example.com'
 Add-InfoBloxDNSRecord `
     -Type A `
     -Name 'server01.example.com' `
-    -IPAddress '10.20.30.25'
+    -IPAddress '10.20.30.25' `
+    -View 'Internal'
 
 Add-InfoBloxDNSRecord `
     -Type CNAME `
@@ -201,17 +202,27 @@ Add-InfoBloxDNSRecord `
     -CanonicalName 'server01.example.com'
 
 # Update a record by its exact WAPI reference
-$cname = Get-InfobloxDNSRecord -Type CNAME -Name 'app.example.com' -View 'default' | Select-Object -First 1
+$cname = @(Get-InfobloxDNSRecord -Type CNAME -Name 'app.example.com' -View 'default')
+if ($cname.Count -ne 1) { throw "Expected one CNAME record; found $($cname.Count)." }
 
 Set-InfobloxDNSRecord `
-    -ReferenceID $cname._ref `
+    -ReferenceID $cname[0]._ref `
     -Value 'server02.example.com'
 
 # Preview removing that exact record
-Remove-InfobloxDnsRecord -ReferenceID $cname._ref -WhatIf
+Remove-InfobloxDnsRecord -ReferenceID $cname[0]._ref -WhatIf
+
+# Preview removing one PTR target when the address has several PTR records
+$ptrName = '5.10.2.10.in-addr.arpa'
+Get-InfobloxDNSRecord -Type PTR -Name $ptrName -View 'Internal' |
+    Select-Object name, ptrdname, view, _ref
+Set-InfobloxDNSRecord -RecordName $ptrName -Type PTR -View 'Internal' -CurrentValue 'server01.example.com' -Value 'server02.example.com' -WhatIf
+Remove-InfobloxDnsRecord -Type PTR -Name $ptrName -Value 'server01.example.com' -View 'Internal' -WhatIf
 ```
 
 `Set-InfobloxDNSRecord -Value` maps the value to the correct WAPI field for A, AAAA, CNAME, HOST, PTR, MX, NS, and TXT records. Use `-Properties` for structured or future record types and multi-field updates.
+`Remove-InfobloxDnsRecord -Value` selects one matching A, AAAA, CNAME, MX, NS, PTR, or TXT record. If the selection is still ambiguous, the command lists candidate references and skips deletion; use `-ReferenceID` to select one exactly.
+`Set-InfobloxDNSRecord -RecordName` also requires one matching record. Supply `-CurrentValue` to select or guard a record before updating it. With `-ReferenceID`, `-CurrentValue` and `Remove-InfobloxDnsRecord -Value` guard against a changed value.
 
 ### DNS zones and views
 
