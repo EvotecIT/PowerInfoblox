@@ -213,6 +213,28 @@ Remove-InfobloxDnsRecord -ReferenceID $cname._ref -WhatIf
 
 `Set-InfobloxDNSRecord -Value` maps the value to the correct WAPI field for A, AAAA, CNAME, HOST, PTR, MX, NS, and TXT records. Use `-Properties` for structured or future record types and multi-field updates.
 
+### DNS zones and views
+
+```powershell
+# Inspect existing views and zones, including their WAPI references
+Get-InfobloxDNSView -Name Internal
+Get-InfobloxDNSAuthZone -FQDN example.com -View Internal
+
+# Create a view and an authoritative zone in it
+Add-InfobloxDNSView -Name Internal -NetworkView default
+Add-InfobloxDNSZone -Type Authoritative -Name example.com -View Internal
+
+# Change one selected zone or view
+Set-InfobloxDNSZone -Type Authoritative -Name example.com -View Internal -Properties @{ comment = 'Managed zone' }
+Set-InfobloxDNSView -Name Internal -Properties @{ comment = 'Internal clients' }
+
+# Preview removing exact objects
+Remove-InfobloxDNSZone -ReferenceID 'zone_auth/opaque:example.com/Internal' -WhatIf
+Remove-InfobloxDNSView -ReferenceID 'view/opaque:Internal/false' -WhatIf
+```
+
+`Add-InfobloxDNSZone` supports authoritative, forward, and delegated zones. Use `-Properties` for WAPI fields required by your Grid configuration, such as forwarders or delegated nameservers. Set and Remove first resolve one object; ambiguous or mismatched names show the available references and skip the change. Supply `-ReferenceID` when a name alone does not identify one object. The default DNS view cannot be removed.
+
 ## Discover commands
 
 List the commands exported by the installed version:

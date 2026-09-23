@@ -4,46 +4,38 @@ Module Name: PowerInfoblox
 online version: https://github.com/EvotecIT/PowerInfoblox
 schema: 2.0.0
 ---
-# Get-InfobloxDNSView
+# Set-InfobloxDNSView
 ## SYNOPSIS
-Retrieves DNS views from an Infoblox server.
+Updates one DNS view.
 
 ## SYNTAX
 ### ByName (Default)
 ```powershell
-Get-InfobloxDNSView [-Name <string>] [<CommonParameters>]
+Set-InfobloxDNSView -Name <string> -Properties <IDictionary> [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### ByReference
 ```powershell
-Get-InfobloxDNSView -ReferenceID <string> [<CommonParameters>]
+Set-InfobloxDNSView -ReferenceID <string> -Properties <IDictionary> [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Queries Infoblox WAPI view objects and returns the DNS views available to the
-current connection. Use Name or ReferenceID to inspect one view before
-changing or removing it.
+Selects one view by Name or exact WAPI ReferenceID. Ambiguous or mismatched
+lookups list available references and skip the update.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```powershell
-PS > Get-InfobloxDNSView
+PS > Set-InfobloxDNSView -Name Internal -Properties @{ comment = 'Internal clients' } -WhatIf
 ```
 
-Returns all DNS views available to the connected account.
-
-### EXAMPLE 2
-```powershell
-PS > Get-InfobloxDNSView -Name Internal
-```
-
-Lists the Internal view and its WAPI reference.
+Previews changing the view comment.
 
 ## PARAMETERS
 
 ### -Name
-Filters views by exact name.
+The existing DNS view name.
 
 ```yaml
 Type: String
@@ -51,7 +43,23 @@ Parameter Sets: ByName
 Aliases: None
 Possible values:
 
-Required: False
+Required: True
+Position: named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Properties
+Nonempty WAPI field dictionary to update.
+
+```yaml
+Type: IDictionary
+Parameter Sets: ByName, ByReference
+Aliases: None
+Possible values:
+
+Required: True
 Position: named
 Default value: None
 Accept pipeline input: False
@@ -59,7 +67,7 @@ Accept wildcard characters: False
 ```
 
 ### -ReferenceID
-Retrieves a view by its exact WAPI reference.
+The exact WAPI view reference.
 
 ```yaml
 Type: String

@@ -22,6 +22,12 @@ Add a DHCP reservation to an Infoblox server
 ### [Add-InfoBloxDNSRecord](Add-InfoBloxDNSRecord.md)
 Creates an Infoblox DNS record.
 
+### [Add-InfobloxDNSView](Add-InfobloxDNSView.md)
+Creates a DNS view.
+
+### [Add-InfobloxDNSZone](Add-InfobloxDNSZone.md)
+Creates an authoritative, forward, or delegated DNS zone.
+
 ### [Add-InfobloxFixedAddress](Add-InfobloxFixedAddress.md)
 Add a fixed mac address to an IP address on an Infoblox server
 
@@ -121,6 +127,12 @@ Removes DHCP range options from an Infoblox server.
 ### [Remove-InfobloxDnsRecord](Remove-InfobloxDnsRecord.md)
 Removes Infoblox DNS records.
 
+### [Remove-InfobloxDNSView](Remove-InfobloxDNSView.md)
+Removes one DNS view.
+
+### [Remove-InfobloxDNSZone](Remove-InfobloxDNSZone.md)
+Removes one authoritative, forward, or delegated DNS zone.
+
 ### [Remove-InfobloxFixedAddress](Remove-InfobloxFixedAddress.md)
 Removes fixed IPv4 address assignments by MAC address.
 
@@ -141,6 +153,12 @@ Sets DHCP range options on an Infoblox server.
 
 ### [Set-InfobloxDNSRecord](Set-InfobloxDNSRecord.md)
 Updates the value of an existing Infoblox DNS record.
+
+### [Set-InfobloxDNSView](Set-InfobloxDNSView.md)
+Updates one DNS view.
+
+### [Set-InfobloxDNSZone](Set-InfobloxDNSZone.md)
+Updates an authoritative, forward, or delegated DNS zone.
 
 ### [Set-InfobloxNetworkMembers](Set-InfobloxNetworkMembers.md)
 Sets or modifies members for an Infoblox object.
