@@ -47,14 +47,18 @@ function Add-InfobloxDNSZone {
         return
     }
     $ObjectType = Resolve-InfobloxDNSZoneType -Type $Type
-    $Body = [ordered]@{ fqdn = $Name }
+    $NormalizedName = Normalize-InfobloxDNSZoneName -Name $Name
+    $Body = [ordered]@{ fqdn = $NormalizedName }
     if ($PSBoundParameters.ContainsKey('View')) {
         $Body.view = $View
     }
     if ($Properties) {
         foreach ($Entry in $Properties.GetEnumerator()) {
-            if ($Entry.Key -ieq 'fqdn' -and (Normalize-InfobloxDNSZoneName -Name ([string] $Entry.Value)) -ine (Normalize-InfobloxDNSZoneName -Name $Name)) {
-                throw "Add-InfobloxDNSZone - Properties.fqdn does not match Name '$Name'."
+            if ($Entry.Key -ieq 'fqdn') {
+                if ((Normalize-InfobloxDNSZoneName -Name ([string] $Entry.Value)) -ine $NormalizedName) {
+                    throw "Add-InfobloxDNSZone - Properties.fqdn does not match Name '$Name'."
+                }
+                continue
             }
             if ($Entry.Key -ieq 'view' -and $PSBoundParameters.ContainsKey('View') -and ([string] $Entry.Value) -ine $View) {
                 throw "Add-InfobloxDNSZone - Properties.view does not match View '$View'."

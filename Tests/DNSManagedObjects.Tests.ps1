@@ -44,6 +44,13 @@ Describe 'DNS zone and view management' {
             $script:Calls.Count | Should -Be 0
         }
 
+        It 'creates a canonical zone FQDN even when Name and Properties use different case' {
+            Add-InfobloxDNSZone -Type Authoritative -Name 'ExAmPlE.TEST.' -Properties @{ fqdn = 'EXAMPLE.TEST'; comment = 'managed' } -Confirm:$false
+            $script:Calls.Count | Should -Be 1
+            $script:Calls[0].Body.fqdn | Should -BeExactly 'example.test'
+            $script:Calls[0].Body.comment | Should -Be 'managed'
+        }
+
         It 'creates a view with its network view' {
             Add-InfobloxDNSView -Name Internal -NetworkView default -Confirm:$false
             $script:Calls.Count | Should -Be 1
@@ -76,6 +83,31 @@ Describe 'DNS zone and view management' {
             $script:Calls.Count | Should -Be 2
             $script:Calls[0].Query.fqdn | Should -BeExactly '.'
             $script:Calls[1].Uri | Should -Be 'zone_forward/root:./default'
+        }
+
+        It 'finds a canonical zone from a mixed-case name before updating' {
+            $script:Objects = @([pscustomobject]@{ _ref = 'zone_forward/one:example.test/default'; fqdn = 'example.test'; view = 'default' })
+            Set-InfobloxDNSZone -Type Forward -Name 'ExAmPlE.TEST.' -Properties @{ comment = 'changed' } -Confirm:$false
+            $script:Calls.Count | Should -Be 2
+            $script:Calls[0].Query.fqdn | Should -BeExactly 'example.test'
+            $script:Calls[1].Method | Should -Be 'PUT'
+        }
+
+        It 'rejects an invalid double-dot zone name before any WAPI call in <Command>' -TestCases @(
+            @{ Command = 'Add' }
+            @{ Command = 'Set' }
+            @{ Command = 'Remove' }
+            @{ Command = 'Get' }
+        ) {
+            param($Command)
+            $Action = switch ($Command) {
+                'Add' { { Add-InfobloxDNSZone -Type Authoritative -Name 'example.test..' -Confirm:$false } }
+                'Set' { { Set-InfobloxDNSZone -Type Authoritative -Name 'example.test..' -Properties @{ comment = 'changed' } -Confirm:$false } }
+                'Remove' { { Remove-InfobloxDNSZone -Type Authoritative -Name 'example.test..' -Confirm:$false } }
+                'Get' { { Get-InfobloxDNSAuthZone -FQDN 'example.test..' } }
+            }
+            $Action | Should -Throw '*more than one trailing dot*'
+            $script:Calls.Count | Should -Be 0
         }
 
         It 'refuses ambiguous zones and lists both references' {
@@ -119,6 +151,21 @@ Describe 'DNS zone and view management' {
             $script:Calls[0].Uri | Should -Be 'zone_stub'
             $script:Calls[0].Query.fqdn | Should -Be 'example.test'
             $script:Calls[0].Query.view | Should -Be 'Internal'
+        }
+
+        It 'canonicalizes mixed-case FQDN in <Command> lookup' -TestCases @(
+            @{ Command = 'Get-InfobloxDNSAuthZone'; Endpoint = 'zone_auth'; NameParameter = 'FQDN' }
+            @{ Command = 'Get-InfobloxDNSForwardZone'; Endpoint = 'zone_forward'; NameParameter = 'Name' }
+            @{ Command = 'Get-InfobloxDNSDelegatedZone'; Endpoint = 'zone_delegated'; NameParameter = 'Name' }
+            @{ Command = 'Get-InfobloxDNSStubZone'; Endpoint = 'zone_stub'; NameParameter = 'FQDN' }
+            @{ Command = 'Get-InfobloxResponsePolicyZones'; Endpoint = 'zone_rp'; NameParameter = 'FQDN' }
+        ) {
+            param($Command, $Endpoint, $NameParameter)
+            $Arguments = @{ $NameParameter = 'ExAmPlE.TEST.' }
+            & $Command @Arguments | Out-Null
+            $script:Calls.Count | Should -Be 1
+            $script:Calls[0].Uri | Should -Be $Endpoint
+            $script:Calls[0].Query.fqdn | Should -BeExactly 'example.test'
         }
 
         It 'preserves root zone FQDN in the stub-zone reader' {

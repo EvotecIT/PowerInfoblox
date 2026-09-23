@@ -7,5 +7,8 @@ function Normalize-InfobloxDNSZoneName {
     )
 
     if ($Name -eq '.') { return '.' }
-    $Name.TrimEnd('.')
+    if ($Name.EndsWith('..', [System.StringComparison]::Ordinal)) {
+        throw "DNS zone name '$Name' cannot have more than one trailing dot."
+    }
+    $Name.TrimEnd('.').ToLowerInvariant()
 }
