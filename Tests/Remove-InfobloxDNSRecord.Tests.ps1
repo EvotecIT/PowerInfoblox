@@ -111,6 +111,20 @@ Describe 'DNS record removal' {
             ($warnings -join ' ') | Should -Match 'record:ptr/first.*ptrdname=first.example.test'
         }
 
+        It 'shows PTRs in other views when the requested view has no match' {
+            Mock Get-InfobloxDNSRecord -MockWith {
+                if ($View) { return @() }
+                [pscustomobject]@{ name = $Name; ptrdname = 'target.example.test'; view = 'Internal'; _ref = 'record:ptr/internal' }
+            }
+
+            $warnings = @()
+            Remove-InfobloxDnsRecord -Name '10.2.0.192.in-addr.arpa' -Type PTR -View External -Value 'target.example.test' -WarningVariable warnings
+
+            Should -Invoke Remove-InfobloxObject -Times 0 -Exactly
+            ($warnings -join ' ') | Should -Match "View 'External'"
+            ($warnings -join ' ') | Should -Match 'record:ptr/internal.*view=Internal'
+        }
+
         It 'lists matching references and skips when Value still leaves an ambiguous PTR' {
             Mock Get-InfobloxDNSRecord -MockWith {
                 @(
@@ -231,6 +245,28 @@ Describe 'DNS record removal' {
             $script:removedReferences | Should -Be @($referenceID)
             $warnings | Should -BeNullOrEmpty
             Should -Invoke Get-InfobloxDNSRecord -ParameterFilter { $ReferenceID -eq 'record:mx/opaque:example.test/Internal' } -Times 1 -Exactly
+        }
+
+        It 'keeps a referenced PTR when its value differs from the expected value' {
+            Mock Get-InfobloxDNSRecord -MockWith {
+                [pscustomobject]@{ name = '10.2.0.192.in-addr.arpa'; ptrdname = 'actual.example.test'; view = 'Internal'; _ref = $ReferenceID }
+            }
+
+            $warnings = @()
+            Remove-InfobloxDnsRecord -ReferenceID 'record:ptr/actual' -Value 'stale.example.test' -WarningVariable warnings
+
+            Should -Invoke Remove-InfobloxObject -Times 0 -Exactly
+            ($warnings -join ' ') | Should -Match 'ptrdname=.actual.example.test.'
+        }
+
+        It 'warns when an exact reference no longer exists' {
+            Mock Get-InfobloxDNSRecord -MockWith { @() }
+
+            $warnings = @()
+            Remove-InfobloxDnsRecord -ReferenceID 'record:ptr/missing' -WarningVariable warnings
+
+            Should -Invoke Remove-InfobloxObject -Times 0 -Exactly
+            ($warnings -join ' ') | Should -Match "ReferenceID 'record:ptr/missing' was not found"
         }
 
         It 'does not report a missing reference after directly removing a PTR record' {

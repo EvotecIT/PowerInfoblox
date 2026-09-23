@@ -16,7 +16,7 @@ Remove-InfobloxDnsRecord -Name <string[]> -Type <string> [-View <string>] [-Valu
 
 ### ByReference
 ```powershell
-Remove-InfobloxDnsRecord -ReferenceID <string> [-Type <string>] [-RemoveAllMatching] [-SkipPTR] [-LogPath <string>] [-WhatIf] [-Confirm] [<CommonParameters>]
+Remove-InfobloxDnsRecord -ReferenceID <string> [-Type <string>] [-Value <string>] [-RemoveAllMatching] [-SkipPTR] [-LogPath <string>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -154,11 +154,12 @@ Accept wildcard characters: False
 ### -Value
 The existing record value to match when removing by Name: address for A/AAAA, canonical
 target for CNAME, mail exchanger for MX, nameserver for NS, target FQDN for PTR, or text
-for TXT. DNS names are compared without regard to case or a final dot; TXT is exact.
+for TXT. With ReferenceID, Value guards against deleting an object whose value has changed.
+DNS names are compared without regard to case or a final dot; TXT is exact.
 
 ```yaml
 Type: String
-Parameter Sets: ByName
+Parameter Sets: ByName, ByReference
 Aliases: None
 Possible values:
 

@@ -48,6 +48,86 @@ Describe 'Set-InfobloxDNSRecord' {
             Should -Invoke -CommandName Invoke-InfobloxQuery -Times 1 -Exactly
         }
 
+        It 'updates only the PTR with the requested current target' {
+            Mock Get-InfobloxDNSRecord -MockWith {
+                @(
+                    [pscustomobject]@{ name = $Name; ptrdname = 'old.example.test'; view = 'Internal'; _ref = 'record:ptr/old' }
+                    [pscustomobject]@{ name = $Name; ptrdname = 'other.example.test'; view = 'Internal'; _ref = 'record:ptr/other' }
+                )
+            }
+
+            Set-InfobloxDNSRecord -RecordName '10.2.0.192.in-addr.arpa' -Type PTR -View Internal -CurrentValue 'OLD.EXAMPLE.TEST.' -Value 'new.example.test'
+
+            $script:requestUri | Should -Be 'record:ptr/old'
+            $script:requestBody.ptrdname | Should -Be 'new.example.test'
+        }
+
+        It 'shows candidate references and skips an ambiguous name-based update' {
+            Mock Get-InfobloxDNSRecord -MockWith {
+                @(
+                    [pscustomobject]@{ name = $Name; ptrdname = 'one.example.test'; view = 'Internal'; _ref = 'record:ptr/one' }
+                    [pscustomobject]@{ name = $Name; ptrdname = 'two.example.test'; view = 'Internal'; _ref = 'record:ptr/two' }
+                )
+            }
+
+            $warnings = @()
+            Set-InfobloxDNSRecord -RecordName '10.2.0.192.in-addr.arpa' -Type PTR -View Internal -Value 'new.example.test' -WarningVariable warnings
+
+            Should -Invoke Invoke-InfobloxQuery -Times 0 -Exactly
+            ($warnings -join ' ') | Should -Match 'record:ptr/one'
+            ($warnings -join ' ') | Should -Match 'record:ptr/two'
+        }
+
+        It 'shows actual values and skips when CurrentValue does not match' {
+            Mock Get-InfobloxDNSRecord -MockWith {
+                [pscustomobject]@{ name = $Name; ptrdname = 'actual.example.test'; view = 'Internal'; _ref = 'record:ptr/actual' }
+            }
+
+            $warnings = @()
+            Set-InfobloxDNSRecord -RecordName '10.2.0.192.in-addr.arpa' -Type PTR -CurrentValue 'stale.example.test' -Value 'new.example.test' -WarningVariable warnings
+
+            Should -Invoke Invoke-InfobloxQuery -Times 0 -Exactly
+            ($warnings -join ' ') | Should -Match 'ptrdname=actual.example.test'
+            ($warnings -join ' ') | Should -Match 'record:ptr/actual'
+        }
+
+        It 'guards an exact reference against a stale current value' {
+            Mock Get-InfobloxDNSRecord -MockWith {
+                [pscustomobject]@{ name = '10.2.0.192.in-addr.arpa'; ptrdname = 'actual.example.test'; view = 'Internal'; _ref = $ReferenceID }
+            }
+
+            $warnings = @()
+            Set-InfobloxDNSRecord -ReferenceID 'record:ptr/actual' -CurrentValue 'stale.example.test' -Value 'new.example.test' -WarningVariable warnings
+
+            Should -Invoke Invoke-InfobloxQuery -Times 0 -Exactly
+            ($warnings -join ' ') | Should -Match 'ptrdname=.actual.example.test.'
+        }
+
+        It 'updates a structured record by a unique name and view' {
+            Mock Get-InfobloxDNSRecord -MockWith {
+                [pscustomobject]@{ name = $Name; view = $View; _ref = 'record:srv/service' }
+            }
+
+            Set-InfobloxDNSRecord -RecordName '_service._tcp.example.test' -Type SRV -View Internal -Properties @{ target = 'host.example.test'; port = 443 }
+
+            $script:requestUri | Should -Be 'record:srv/service'
+            $script:requestBody.target | Should -Be 'host.example.test'
+        }
+
+        It 'shows records in other views and does not update when the requested view is empty' {
+            Mock Get-InfobloxDNSRecord -MockWith {
+                if ($View) { return @() }
+                [pscustomobject]@{ name = $Name; ptrdname = 'target.example.test'; view = 'Internal'; _ref = 'record:ptr/internal' }
+            }
+
+            $warnings = @()
+            Set-InfobloxDNSRecord -RecordName '10.2.0.192.in-addr.arpa' -Type PTR -View External -Value 'new.example.test' -WarningVariable warnings
+
+            Should -Invoke Invoke-InfobloxQuery -Times 0 -Exactly
+            ($warnings -join ' ') | Should -Match "View 'External'"
+            ($warnings -join ' ') | Should -Match 'record:ptr/internal.*view=Internal'
+        }
+
         It 'supports the legacy Object alias together with ReferenceID' {
             Set-InfobloxDNSRecord -ReferenceID 'record:cname/opaque:alias.example.test/default' -Object 'target.example.test'
 

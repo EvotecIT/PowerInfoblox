@@ -9,18 +9,30 @@ schema: 2.0.0
 Updates the value of an existing Infoblox DNS record.
 
 ## SYNTAX
-### Value (Default)
+### ByReferenceValue (Default)
 ```powershell
-Set-InfobloxDNSRecord -ReferenceID <string> -Value <string> [-Type <string>] [-Preference <int>] [-Address <string[]>] [-WhatIf] [-Confirm] [<CommonParameters>]
+Set-InfobloxDNSRecord -ReferenceID <string> -Value <string> [-Type <string>] [-CurrentValue <string>] [-Preference <int>] [-Address <string[]>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
-### Properties
+### ByReferenceProperties
 ```powershell
-Set-InfobloxDNSRecord -ReferenceID <string> -Properties <IDictionary> [-Type <string>] [-WhatIf] [-Confirm] [<CommonParameters>]
+Set-InfobloxDNSRecord -ReferenceID <string> -Properties <IDictionary> [-Type <string>] [-CurrentValue <string>] [-WhatIf] [-Confirm] [<CommonParameters>]
+```
+
+### ByNameProperties
+```powershell
+Set-InfobloxDNSRecord -RecordName <string> -Properties <IDictionary> -Type <string> [-View <string>] [-CurrentValue <string>] [-WhatIf] [-Confirm] [<CommonParameters>]
+```
+
+### ByNameValue
+```powershell
+Set-InfobloxDNSRecord -RecordName <string> -Value <string> -Type <string> [-View <string>] [-CurrentValue <string>] [-Preference <int>] [-Address <string[]>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Updates an existing DNS record by using its Infoblox WAPI object reference. Value maps to the
+Updates an existing DNS record by exact WAPI reference or by an unambiguous record name,
+type, view, and optional current value. An ambiguous or mismatched name lookup lists candidates
+and skips the update. Value maps to the
 primary data field for A, AAAA, CNAME, HOST, MX, NS, PTR, and TXT records. Properties supports
 structured HOST changes and other record types or multi-field updates without guessing at nested WAPI fields.
 Type is optional and, when supplied, must match the type encoded in ReferenceID.
@@ -55,6 +67,13 @@ PS > Set-InfobloxDNSRecord -ReferenceID 'record:host/example-reference:host.exam
 
 Replaces the IPv4 address collection of a HOST record with an explicitly structured WAPI value.
 
+### EXAMPLE 5
+```powershell
+PS > Set-InfobloxDNSRecord -RecordName '10.2.0.192.in-addr.arpa' -Type PTR -View Internal -CurrentValue 'old.example.com' -Value 'new.example.com' -WhatIf
+```
+
+Previews changing only the PTR record whose current target matches old.example.com.
+
 ## PARAMETERS
 
 ### -Address
@@ -63,8 +82,25 @@ to clear existing glue addresses.
 
 ```yaml
 Type: String[]
-Parameter Sets: Value
+Parameter Sets: ByReferenceValue, ByNameValue
 Aliases: Addresses
+Possible values:
+
+Required: False
+Position: named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -CurrentValue
+The expected existing value for an A, AAAA, CNAME, MX, NS, PTR, or TXT record. With
+RecordName it selects the existing record; with ReferenceID it guards the update.
+
+```yaml
+Type: String
+Parameter Sets: ByReferenceValue, ByReferenceProperties, ByNameProperties, ByNameValue
+Aliases: None
 Possible values:
 
 Required: False
@@ -79,7 +115,7 @@ An optional MX preference from 0 through 65535, updated together with Value.
 
 ```yaml
 Type: Int32
-Parameter Sets: Value
+Parameter Sets: ByReferenceValue, ByNameValue
 Aliases: None
 Possible values:
 
@@ -95,7 +131,24 @@ A field dictionary for HOST records, complex record types, or updates that affec
 
 ```yaml
 Type: IDictionary
-Parameter Sets: Properties
+Parameter Sets: ByReferenceProperties, ByNameProperties
+Aliases: None
+Possible values:
+
+Required: True
+Position: named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -RecordName
+The existing DNS record name to update. Type is required. Use CurrentValue when the name
+identifies several records in a view. The -Name alias of Value remains the new value.
+
+```yaml
+Type: String
+Parameter Sets: ByNameProperties, ByNameValue
 Aliases: None
 Possible values:
 
@@ -111,7 +164,7 @@ The WAPI object reference of the DNS record to update, for example record:cname/
 
 ```yaml
 Type: String
-Parameter Sets: Value, Properties
+Parameter Sets: ByReferenceValue, ByReferenceProperties
 Aliases: None
 Possible values:
 
@@ -123,11 +176,11 @@ Accept wildcard characters: False
 ```
 
 ### -Type
-The optional expected record type. When supplied, it must match the type encoded in ReferenceID.
+Required with RecordName. With ReferenceID, optionally checks the type encoded in the reference.
 
 ```yaml
 Type: String
-Parameter Sets: Value, Properties
+Parameter Sets: ByReferenceValue, ByReferenceProperties, ByNameProperties, ByNameValue
 Aliases: None
 Possible values:
 
@@ -145,11 +198,27 @@ and text for TXT.
 
 ```yaml
 Type: String
-Parameter Sets: Value
+Parameter Sets: ByReferenceValue, ByNameValue
 Aliases: Object, Name, PtrName, PTR, NameServer, Text, CanonicalName, IPAddress, MailExchanger
 Possible values:
 
 Required: True
+Position: named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -View
+Limits a RecordName lookup to one DNS view.
+
+```yaml
+Type: String
+Parameter Sets: ByNameProperties, ByNameValue
+Aliases: None
+Possible values:
+
+Required: False
 Position: named
 Default value: None
 Accept pipeline input: False

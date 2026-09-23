@@ -216,11 +216,13 @@ Remove-InfobloxDnsRecord -ReferenceID $cname[0]._ref -WhatIf
 $ptrName = '5.10.2.10.in-addr.arpa'
 Get-InfobloxDNSRecord -Type PTR -Name $ptrName -View 'Internal' |
     Select-Object name, ptrdname, view, _ref
+Set-InfobloxDNSRecord -RecordName $ptrName -Type PTR -View 'Internal' -CurrentValue 'server01.example.com' -Value 'server02.example.com' -WhatIf
 Remove-InfobloxDnsRecord -Type PTR -Name $ptrName -Value 'server01.example.com' -View 'Internal' -WhatIf
 ```
 
 `Set-InfobloxDNSRecord -Value` maps the value to the correct WAPI field for A, AAAA, CNAME, HOST, PTR, MX, NS, and TXT records. Use `-Properties` for structured or future record types and multi-field updates.
 `Remove-InfobloxDnsRecord -Value` selects one matching A, AAAA, CNAME, MX, NS, PTR, or TXT record. If the selection is still ambiguous, the command lists candidate references and skips deletion; use `-ReferenceID` to select one exactly.
+`Set-InfobloxDNSRecord -RecordName` also requires one matching record. Supply `-CurrentValue` to select or guard a record before updating it. With `-ReferenceID`, `-CurrentValue` and `Remove-InfobloxDnsRecord -Value` guard against a changed value.
 
 ## Discover commands
 
