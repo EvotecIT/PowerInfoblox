@@ -60,6 +60,19 @@ Describe 'Add-InfoBloxDNSRecord' {
             $script:requestBody[$Field] | Should -Be $Expected
         }
 
+        It 'creates a typed PTR record in the requested DNS view' {
+            Add-InfoBloxDNSRecord -Type PTR -Name '10.2.0.192.in-addr.arpa' -PtrName 'host.example.test' -View Internal
+
+            $script:requestBody.view | Should -Be 'Internal'
+            $script:requestBody.ptrdname | Should -Be 'host.example.test'
+        }
+
+        It 'lets WAPI choose the default view when a typed record omits View' {
+            Add-InfoBloxDNSRecord -Type A -Name 'host.example.test' -IPAddress '192.0.2.10'
+
+            $script:requestBody.Contains('view') | Should -BeFalse
+        }
+
         It 'creates MX records with preference' {
             Add-InfoBloxDNSRecord -Type MX -Name 'example.test' -MailExchanger 'mail.example.test' -Preference 10
 

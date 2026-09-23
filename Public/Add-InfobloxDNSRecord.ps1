@@ -41,11 +41,17 @@ function Add-InfoBloxDNSRecord {
     .PARAMETER Type
     The WAPI DNS record type. The legacy LBDN name is normalized to DTCLBDN.
 
+    .PARAMETER View
+    The DNS view in which to create a typed record. When omitted, WAPI uses its default view.
+
     .EXAMPLE
     Add-InfoBloxDNSRecord -Name 'host.example.com' -IPv4Address '192.0.2.10' -Type A
 
     .EXAMPLE
     Add-InfoBloxDNSRecord -Name 'alias.example.com' -CanonicalName 'host.example.com' -Type CNAME
+
+    .EXAMPLE
+    Add-InfoBloxDNSRecord -Name '5.10.2.10.in-addr.arpa' -PtrName 'host.example.com' -Type PTR -View Internal
 
     .EXAMPLE
     Add-InfoBloxDNSRecord -Name 'example.com' -MailExchanger 'mail.example.com' -Preference 10 -Type MX
@@ -91,7 +97,11 @@ function Add-InfoBloxDNSRecord {
 
         [Parameter(Mandatory)]
         [ValidateNotNullOrEmpty()]
-        [string] $Type
+        [string] $Type,
+
+        [Parameter(ParameterSetName = 'Typed')]
+        [ValidateNotNullOrEmpty()]
+        [string] $View
     )
 
     if (-not $Script:InfobloxConfiguration) {
@@ -127,6 +137,10 @@ function Add-InfoBloxDNSRecord {
         }
         Write-Warning -Message $_.Exception.Message
         return
+    }
+
+    if ($PSBoundParameters.ContainsKey('View')) {
+        $Body.view = $View
     }
 
     $TargetName = if ($Name) { $Name } elseif ($Properties -and $Properties.Contains('name')) { $Properties['name'] } else { "record:$NormalizedType" }
