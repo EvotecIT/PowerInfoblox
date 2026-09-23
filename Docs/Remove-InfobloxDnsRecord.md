@@ -11,7 +11,7 @@ Removes Infoblox DNS records.
 ## SYNTAX
 ### ByName (Default)
 ```powershell
-Remove-InfobloxDnsRecord -Name <string[]> -Type <string> [-View <string>] [-RemoveAllMatching] [-SkipPTR] [-LogPath <string>] [-WhatIf] [-Confirm] [<CommonParameters>]
+Remove-InfobloxDnsRecord -Name <string[]> -Type <string> [-View <string>] [-Value <string>] [-RemoveAllMatching] [-SkipPTR] [-LogPath <string>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### ByReference
@@ -20,8 +20,9 @@ Remove-InfobloxDnsRecord -ReferenceID <string> [-Type <string>] [-RemoveAllMatch
 ```
 
 ## DESCRIPTION
-Removes one DNS record selected by ReferenceID or records found by Name and Type. Name-based
-removal stops when a lookup is ambiguous unless RemoveAllMatching is explicitly supplied.
+Removes one DNS record selected by ReferenceID or records found by Name and Type. Value can
+select a specific A, AAAA, CNAME, MX, NS, PTR, or TXT record with that name. Name-based
+removal stops when the selected records are ambiguous unless RemoveAllMatching is supplied.
 Associated PTR cleanup for A and AAAA records is limited to the same view and matching ptrdname.
 
 ## EXAMPLES
@@ -39,6 +40,12 @@ PS > Remove-InfobloxDnsRecord -Name 'host.example.com' -Type A -View Internal -W
 
 
 ### EXAMPLE 3
+```powershell
+PS > Remove-InfobloxDnsRecord -Name '5.10.2.10.in-addr.arpa' -Type PTR -Value 'host.example.com' -View Internal -WhatIf
+```
+
+
+### EXAMPLE 4
 ```powershell
 PS > Remove-InfobloxDnsRecord -Name 'example.com' -Type MX -View default -RemoveAllMatching -WhatIf
 ```
@@ -134,6 +141,24 @@ The WAPI record type. It is required with Name and optional as a safety check wi
 ```yaml
 Type: String
 Parameter Sets: ByName, ByReference
+Aliases: None
+Possible values:
+
+Required: False
+Position: named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Value
+The existing record value to match when removing by Name: address for A/AAAA, canonical
+target for CNAME, mail exchanger for MX, nameserver for NS, target FQDN for PTR, or text
+for TXT. DNS names are compared without regard to case or a final dot; TXT is exact.
+
+```yaml
+Type: String
+Parameter Sets: ByName
 Aliases: None
 Possible values:
 

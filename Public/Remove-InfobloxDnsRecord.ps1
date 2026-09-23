@@ -4,8 +4,9 @@ function Remove-InfobloxDnsRecord {
     Removes Infoblox DNS records.
 
     .DESCRIPTION
-    Removes one DNS record selected by ReferenceID or records found by Name and Type. Name-based
-    removal stops when a lookup is ambiguous unless RemoveAllMatching is explicitly supplied.
+    Removes one DNS record selected by ReferenceID or records found by Name and Type. Value can
+    select a specific A, AAAA, CNAME, MX, NS, PTR, or TXT record with that name. Name-based
+    removal stops when the selected records are ambiguous unless RemoveAllMatching is supplied.
     Associated PTR cleanup for A and AAAA records is limited to the same view and matching ptrdname.
 
     .PARAMETER Name
@@ -16,6 +17,11 @@ function Remove-InfobloxDnsRecord {
 
     .PARAMETER Type
     The WAPI record type. It is required with Name and optional as a safety check with ReferenceID.
+
+    .PARAMETER Value
+    The existing record value to match when removing by Name: address for A/AAAA, canonical
+    target for CNAME, mail exchanger for MX, nameserver for NS, target FQDN for PTR, or text
+    for TXT. DNS names are compared without regard to case or a final dot; TXT is exact.
 
     .PARAMETER View
     Limits a name-based lookup to one DNS view.
@@ -38,6 +44,9 @@ function Remove-InfobloxDnsRecord {
     Remove-InfobloxDnsRecord -Name 'host.example.com' -Type A -View Internal -WhatIf
 
     .EXAMPLE
+    Remove-InfobloxDnsRecord -Name '5.10.2.10.in-addr.arpa' -Type PTR -Value 'host.example.com' -View Internal -WhatIf
+
+    .EXAMPLE
     Remove-InfobloxDnsRecord -Name 'example.com' -Type MX -View default -RemoveAllMatching -WhatIf
     #>
     [CmdletBinding(SupportsShouldProcess, DefaultParameterSetName = 'ByName')]
@@ -57,6 +66,10 @@ function Remove-InfobloxDnsRecord {
 
         [Parameter(ParameterSetName = 'ByName')]
         [string] $View,
+
+        [Parameter(ParameterSetName = 'ByName')]
+        [ValidateNotNullOrEmpty()]
+        [string] $Value,
 
         [switch] $RemoveAllMatching,
         [switch] $SkipPTR,
@@ -82,6 +95,19 @@ function Remove-InfobloxDnsRecord {
         throw "Remove-InfobloxDnsRecord - Record type '$NormalizedType' cannot be deleted directly. Remove or update its parent HOST record."
     }
     $DisplayType = $NormalizedType.ToUpperInvariant()
+
+    $ValueField = switch ($NormalizedType) {
+        'a' { 'ipv4addr' }
+        'aaaa' { 'ipv6addr' }
+        'cname' { 'canonical' }
+        'mx' { 'mail_exchanger' }
+        'ns' { 'nameserver' }
+        'ptr' { 'ptrdname' }
+        'txt' { 'text' }
+    }
+    if ($PSBoundParameters.ContainsKey('Value') -and -not $ValueField) {
+        throw "Remove-InfobloxDnsRecord - Value selection is not supported for record type '$DisplayType'. Use ReferenceID."
+    }
 
     [Array] $ToBeDeleted = @(
         if ($PSCmdlet.ParameterSetName -eq 'ByReference') {
@@ -109,16 +135,50 @@ function Remove-InfobloxDnsRecord {
                 if ($View) {
                     $getRecordSplat.View = $View
                 }
-                [Array] $MatchesForName = @(Get-InfobloxDNSRecord @getRecordSplat)
-                if ($MatchesForName.Count -gt 1 -and -not $RemoveAllMatching) {
-                    Write-Warning -Message "Remove-InfobloxDnsRecord - Found $($MatchesForName.Count) $DisplayType records for '$RecordName'. Specify View, use ReferenceID, or explicitly use RemoveAllMatching. Skipping."
-                    continue
+                if ($PSBoundParameters.ContainsKey('Value')) {
+                    $getRecordSplat.ReturnFields = @('name', 'view', $ValueField)
                 }
+                [Array] $MatchesForName = @(Get-InfobloxDNSRecord @getRecordSplat)
                 if ($MatchesForName.Count -eq 0) {
                     Write-Verbose -Message "Remove-InfobloxDnsRecord - No $DisplayType record for '$RecordName' was found. Skipping."
                     continue
                 }
-                $MatchesForName
+                if ($PSBoundParameters.ContainsKey('Value')) {
+                    [Array] $SelectedRecords = @($MatchesForName | Where-Object {
+                            $CandidateValue = $_.$ValueField
+                            if ($null -eq $CandidateValue) { return $false }
+                            if ($NormalizedType -eq 'txt') { return ([string] $CandidateValue) -ceq $Value }
+                            if ($NormalizedType -in @('a', 'aaaa')) {
+                                $CandidateAddress = $null
+                                $RequestedAddress = $null
+                                return [System.Net.IPAddress]::TryParse([string] $CandidateValue, [ref] $CandidateAddress) -and
+                                    [System.Net.IPAddress]::TryParse($Value, [ref] $RequestedAddress) -and
+                                    $CandidateAddress.Equals($RequestedAddress)
+                            }
+                            return ([string] $CandidateValue).TrimEnd('.') -ieq $Value.TrimEnd('.')
+                        })
+                } else {
+                    $SelectedRecords = $MatchesForName
+                }
+                if ($SelectedRecords.Count -eq 0 -or ($SelectedRecords.Count -gt 1 -and -not $RemoveAllMatching)) {
+                    $WarningRecords = if ($SelectedRecords.Count -eq 0) { $MatchesForName } else { $SelectedRecords }
+                    $Candidates = @($WarningRecords | Select-Object -First 10 | ForEach-Object {
+                            $CandidateValue = if ($ValueField -and $null -ne $_.$ValueField) { "$ValueField=$($_.$ValueField)" } else { 'value unavailable' }
+                            $CandidateView = if ($_.view) { "view=$($_.view)" } else { 'view unavailable' }
+                            "  $($_._ref) ($CandidateView; $CandidateValue)"
+                        })
+                    $More = if ($WarningRecords.Count -gt 10) {
+                        "`n  ... and $($WarningRecords.Count - 10) more. Run Get-InfobloxDNSRecord -Type $DisplayType -Name '$RecordName' to inspect every reference."
+                    } else { '' }
+                    if ($SelectedRecords.Count -eq 0) {
+                        Write-Warning -Message "Remove-InfobloxDnsRecord - No $DisplayType record for '$RecordName' matches Value '$Value'. Available records:`n$($Candidates -join "`n")$More`nSkipping."
+                    } else {
+                        $SelectionHint = if ($ValueField) { 'View or Value' } else { 'View' }
+                        Write-Warning -Message "Remove-InfobloxDnsRecord - Found $($SelectedRecords.Count) $DisplayType records for '$RecordName'. Specify $SelectionHint, use ReferenceID, or explicitly use RemoveAllMatching. Matching records:`n$($Candidates -join "`n")$More`nSkipping."
+                    }
+                    continue
+                }
+                $SelectedRecords
             }
         }
     )

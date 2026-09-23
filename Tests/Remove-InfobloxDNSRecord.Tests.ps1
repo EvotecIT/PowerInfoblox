@@ -79,6 +79,98 @@ Describe 'DNS record removal' {
             Should -Invoke Remove-InfobloxObject -Times 0 -Exactly
         }
 
+        It 'removes only the PTR with the requested target when a name has multiple PTR records' {
+            Mock Get-InfobloxDNSRecord -MockWith {
+                @(
+                    [pscustomobject]@{ name = $Name; ptrdname = 'first.example.test.'; view = 'Internal'; _ref = 'record:ptr/first' }
+                    [pscustomobject]@{ name = $Name; ptrdname = 'second.example.test'; view = 'Internal'; _ref = 'record:ptr/second' }
+                )
+            }
+
+            Remove-InfobloxDnsRecord -Name '10.2.0.192.in-addr.arpa' -Type PTR -Value 'SECOND.EXAMPLE.TEST.' -View Internal
+
+            $script:removedReferences | Should -Be @('record:ptr/second')
+            Should -Invoke Get-InfobloxDNSRecord -ParameterFilter {
+                $Type -eq 'ptr' -and $View -eq 'Internal' -and $ReturnFields -contains 'ptrdname'
+            } -Times 1 -Exactly
+        }
+
+        It 'does not remove a PTR when the requested target is absent' {
+            Mock Get-InfobloxDNSRecord -MockWith {
+                @(
+                    [pscustomobject]@{ name = $Name; ptrdname = 'first.example.test'; view = 'Internal'; _ref = 'record:ptr/first' }
+                    [pscustomobject]@{ name = $Name; ptrdname = 'second.example.test'; view = 'Internal'; _ref = 'record:ptr/second' }
+                )
+            }
+
+            $warnings = @()
+            Remove-InfobloxDnsRecord -Name '10.2.0.192.in-addr.arpa' -Type PTR -Value 'missing.example.test' -WarningVariable warnings
+
+            Should -Invoke Remove-InfobloxObject -Times 0 -Exactly
+            ($warnings -join ' ') | Should -Match 'No PTR record.*matches Value'
+            ($warnings -join ' ') | Should -Match 'record:ptr/first.*ptrdname=first.example.test'
+        }
+
+        It 'lists matching references and skips when Value still leaves an ambiguous PTR' {
+            Mock Get-InfobloxDNSRecord -MockWith {
+                @(
+                    [pscustomobject]@{ name = $Name; ptrdname = 'same.example.test'; view = 'Internal'; _ref = 'record:ptr/internal' }
+                    [pscustomobject]@{ name = $Name; ptrdname = 'same.example.test'; view = 'External'; _ref = 'record:ptr/external' }
+                )
+            }
+
+            $warnings = @()
+            Remove-InfobloxDnsRecord -Name '10.2.0.192.in-addr.arpa' -Type PTR -Value 'same.example.test' -WarningVariable warnings
+
+            Should -Invoke Remove-InfobloxObject -Times 0 -Exactly
+            ($warnings -join ' ') | Should -Match 'record:ptr/internal'
+            ($warnings -join ' ') | Should -Match 'record:ptr/external'
+        }
+
+        It 'lists the selected references even when they follow ten unrelated PTR records' {
+            Mock Get-InfobloxDNSRecord -MockWith {
+                $records = @(1..10 | ForEach-Object {
+                        [pscustomobject]@{ name = $Name; ptrdname = "other$_.example.test"; view = 'Internal'; _ref = "record:ptr/other$_" }
+                    })
+                $records += [pscustomobject]@{ name = $Name; ptrdname = 'selected.example.test'; view = 'Internal'; _ref = 'record:ptr/selected-one' }
+                $records += [pscustomobject]@{ name = $Name; ptrdname = 'selected.example.test'; view = 'Internal'; _ref = 'record:ptr/selected-two' }
+                $records
+            }
+
+            $warnings = @()
+            Remove-InfobloxDnsRecord -Name '10.2.0.192.in-addr.arpa' -Type PTR -Value 'selected.example.test' -WarningVariable warnings
+
+            Should -Invoke Remove-InfobloxObject -Times 0 -Exactly
+            ($warnings -join ' ') | Should -Match 'record:ptr/selected-one'
+            ($warnings -join ' ') | Should -Match 'record:ptr/selected-two'
+        }
+
+        It 'selects one MX record by mail exchanger without removing another MX record' {
+            Mock Get-InfobloxDNSRecord -MockWith {
+                @(
+                    [pscustomobject]@{ name = $Name; mail_exchanger = 'mail1.example.test'; _ref = 'record:mx/one' }
+                    [pscustomobject]@{ name = $Name; mail_exchanger = 'mail2.example.test'; _ref = 'record:mx/two' }
+                )
+            }
+
+            Remove-InfobloxDnsRecord -Name 'example.test' -Type MX -Value 'MAIL2.EXAMPLE.TEST.'
+
+            $script:removedReferences | Should -Be @('record:mx/two')
+        }
+
+        It 'compares TXT values exactly when choosing a record to remove' {
+            Mock Get-InfobloxDNSRecord -MockWith {
+                @(
+                    [pscustomobject]@{ name = $Name; text = 'Verification=AbC123'; _ref = 'record:txt/one' }
+                    [pscustomobject]@{ name = $Name; text = 'Verification=abc123'; _ref = 'record:txt/two' }
+                )
+            }
+
+            Remove-InfobloxDnsRecord -Name 'example.test' -Type TXT -Value 'Verification=AbC123'
+
+            $script:removedReferences | Should -Be @('record:txt/one')
+        }
+
         It 'removes an ambiguous record set only with explicit opt-in' {
             Mock Get-InfobloxDNSRecord -MockWith {
                 @(
