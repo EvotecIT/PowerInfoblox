@@ -5,7 +5,7 @@ function Format-InfobloxDNSManagedObjectCandidate {
         [array] $Records,
 
         [Parameter(Mandatory)]
-        [ValidateSet('view', 'zone_auth', 'zone_forward', 'zone_delegated')]
+        [ValidateSet('view', 'zone_auth', 'zone_forward', 'zone_delegated', 'zone_rp', 'zone_stub')]
         [string] $ObjectType
     )
 

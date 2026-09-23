@@ -1,20 +1,20 @@
 function Remove-InfobloxDNSZone {
     <#
     .SYNOPSIS
-    Removes one authoritative, forward, or delegated DNS zone.
+    Removes one authoritative, forward, delegated, response policy, or stub DNS zone.
 
     .DESCRIPTION
     Selects one zone by exact WAPI ReferenceID or by Type, Name, and optional View.
     Ambiguous or mismatched lookups list available references and skip removal.
 
     .PARAMETER Type
-    Authoritative, Forward, or Delegated. Required when selecting by Name.
+    Authoritative, Forward, Delegated, ResponsePolicy, or Stub. Required when selecting by Name.
     .PARAMETER Name
     The existing zone FQDN.
     .PARAMETER View
     The existing DNS view used with Name.
     .PARAMETER ReferenceID
-    The exact zone_auth, zone_forward, or zone_delegated WAPI reference.
+    The exact WAPI zone reference.
     .EXAMPLE
     Remove-InfobloxDNSZone -Type Forward -Name example.com -View Internal -WhatIf
 
@@ -24,7 +24,7 @@ function Remove-InfobloxDNSZone {
     param(
         [Parameter(Mandatory, ParameterSetName = 'ByName')]
         [Parameter(ParameterSetName = 'ByReference')]
-        [ValidateSet('Authoritative', 'Forward', 'Delegated')]
+        [ValidateSet('Authoritative', 'Forward', 'Delegated', 'ResponsePolicy', 'Stub')]
         [string] $Type,
 
         [Parameter(Mandatory, ParameterSetName = 'ByName')]
@@ -45,7 +45,7 @@ function Remove-InfobloxDNSZone {
         return
     }
     $ObjectType = if ($PSCmdlet.ParameterSetName -eq 'ByReference') {
-        if ($ReferenceID -notmatch '^(zone_auth|zone_forward|zone_delegated)/') {
+        if ($ReferenceID -notmatch '^(zone_auth|zone_forward|zone_delegated|zone_rp|zone_stub)/') {
             throw "Remove-InfobloxDNSZone - ReferenceID '$ReferenceID' is not a DNS zone reference."
         }
         $Matches[1]

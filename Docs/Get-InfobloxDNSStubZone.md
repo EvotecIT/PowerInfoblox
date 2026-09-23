@@ -4,40 +4,33 @@ Module Name: PowerInfoblox
 online version: https://github.com/EvotecIT/PowerInfoblox
 schema: 2.0.0
 ---
-# Get-InfobloxResponsePolicyZones
+# Get-InfobloxDNSStubZone
 ## SYNOPSIS
-Retrieves response policy zones from an Infoblox server.
+Retrieves DNS stub zones.
 
 ## SYNTAX
 ### __AllParameterSets
 ```powershell
-Get-InfobloxResponsePolicyZones [[-FQDN] <string>] [[-View] <string>] [-FetchFromSchema] [<CommonParameters>]
+Get-InfobloxDNSStubZone [[-FQDN] <string>] [[-View] <string>] [-FetchFromSchema] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Queries Infoblox WAPI zone_rp objects available to the connected account.
-Results can be filtered by zone FQDN and DNS view.
+Queries Infoblox WAPI zone_stub objects. Results can be filtered by zone
+FQDN and DNS view.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```powershell
-PS > Get-InfobloxResponsePolicyZones
+PS > Get-InfobloxDNSStubZone -FQDN example.com -View Internal
 ```
 
-Returns response policy zones using the default WAPI fields.
-
-### EXAMPLE 2
-```powershell
-PS > Get-InfobloxResponsePolicyZones -FQDN example.com -View Internal -FetchFromSchema
-```
-
-Returns the matching response policy zone with all readable fields advertised by the connected WAPI schema.
+Returns the stub zone and its WAPI reference.
 
 ## PARAMETERS
 
 ### -FetchFromSchema
-Requests every field advertised for the zone_rp object by the connected WAPI schema.
+Requests every readable zone_stub field advertised by the connected WAPI schema.
 
 ```yaml
 Type: SwitchParameter
@@ -53,7 +46,7 @@ Accept wildcard characters: False
 ```
 
 ### -FQDN
-Filters response policy zones by fully qualified domain name.
+Filters stub zones by fully qualified domain name.
 
 ```yaml
 Type: String
@@ -69,7 +62,7 @@ Accept wildcard characters: False
 ```
 
 ### -View
-Filters response policy zones by DNS view name.
+Filters stub zones by DNS view name.
 
 ```yaml
 Type: String

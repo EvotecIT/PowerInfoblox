@@ -6,7 +6,7 @@ schema: 2.0.0
 ---
 # Set-InfobloxDNSZone
 ## SYNOPSIS
-Updates an authoritative, forward, or delegated DNS zone.
+Updates an authoritative, forward, delegated, response policy, or stub DNS zone.
 
 ## SYNTAX
 ### ByName (Default)
@@ -68,7 +68,7 @@ Accept wildcard characters: False
 ```
 
 ### -ReferenceID
-The exact zone_auth, zone_forward, or zone_delegated WAPI reference.
+The exact WAPI zone reference.
 
 ```yaml
 Type: String
@@ -84,13 +84,13 @@ Accept wildcard characters: False
 ```
 
 ### -Type
-Authoritative, Forward, or Delegated. Required when selecting by Name.
+Authoritative, Forward, Delegated, ResponsePolicy, or Stub. Required when selecting by Name.
 
 ```yaml
 Type: String
 Parameter Sets: ByName, ByReference
 Aliases: None
-Possible values: Authoritative, Forward, Delegated
+Possible values: Authoritative, Forward, Delegated, ResponsePolicy, Stub
 
 Required: False
 Position: named

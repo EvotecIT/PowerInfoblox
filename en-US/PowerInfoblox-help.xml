@@ -1534,13 +1534,13 @@ fields through Properties.</maml:para>
       <command:verb>Add</command:verb>
       <command:noun>InfobloxDNSZone</command:noun>
       <maml:description>
-        <maml:para>Creates an authoritative, forward, or delegated DNS zone.</maml:para>
+        <maml:para>Creates an authoritative, forward, delegated, response policy, or stub DNS zone.</maml:para>
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>Creates a zone_auth, zone_forward, or zone_delegated WAPI object. Name becomes the&#xD;
+      <maml:para>Creates a zone_auth, zone_forward, zone_delegated, zone_rp, or zone_stub WAPI object. Name becomes the&#xD;
 fqdn field. Supply the remaining WAPI fields in Properties, such as grid_primary,&#xD;
-forward_to, or delegate_to, according to the connected Grid's schema.</maml:para>
+forward_to, delegate_to, substitute_name, or stub_from, according to the connected Grid's schema.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem parameterSetName="__AllParameterSets">
@@ -1572,13 +1572,15 @@ forward_to, or delegate_to, according to the connected Grid's schema.</maml:para
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="False" position="0" aliases="none">
           <maml:name>Type</maml:name>
           <maml:description>
-            <maml:para>The zone kind: Authoritative, Forward, or Delegated.</maml:para>
+            <maml:para>The zone kind: Authoritative, Forward, Delegated, ResponsePolicy, or Stub.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <command:parameterValueGroup>
             <command:parameterValue required="false" variableLength="false">Authoritative</command:parameterValue>
             <command:parameterValue required="false" variableLength="false">Forward</command:parameterValue>
             <command:parameterValue required="false" variableLength="false">Delegated</command:parameterValue>
+            <command:parameterValue required="false" variableLength="false">ResponsePolicy</command:parameterValue>
+            <command:parameterValue required="false" variableLength="false">Stub</command:parameterValue>
           </command:parameterValueGroup>
           <dev:type>
             <maml:name>String</maml:name>
@@ -1628,13 +1630,15 @@ forward_to, or delegate_to, according to the connected Grid's schema.</maml:para
       <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="False" position="0" aliases="none">
         <maml:name>Type</maml:name>
         <maml:description>
-          <maml:para>The zone kind: Authoritative, Forward, or Delegated.</maml:para>
+          <maml:para>The zone kind: Authoritative, Forward, Delegated, ResponsePolicy, or Stub.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <command:parameterValueGroup>
           <command:parameterValue required="false" variableLength="false">Authoritative</command:parameterValue>
           <command:parameterValue required="false" variableLength="false">Forward</command:parameterValue>
           <command:parameterValue required="false" variableLength="false">Delegated</command:parameterValue>
+          <command:parameterValue required="false" variableLength="false">ResponsePolicy</command:parameterValue>
+          <command:parameterValue required="false" variableLength="false">Stub</command:parameterValue>
         </command:parameterValueGroup>
         <dev:type>
           <maml:name>String</maml:name>
@@ -4229,6 +4233,119 @@ Other current or future record types can be queried by name without waiting for 
   </command:command>
   <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10">
     <command:details>
+      <command:name>Get-InfobloxDNSStubZone</command:name>
+      <command:verb>Get</command:verb>
+      <command:noun>InfobloxDNSStubZone</command:noun>
+      <maml:description>
+        <maml:para>Retrieves DNS stub zones.</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>Queries Infoblox WAPI zone_stub objects. Results can be filtered by zone&#xD;
+FQDN and DNS view.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem parameterSetName="__AllParameterSets">
+        <maml:name>Get-InfobloxDNSStubZone</maml:name>
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>FetchFromSchema</maml:name>
+          <maml:description>
+            <maml:para>Requests every readable zone_stub field advertised by the connected WAPI schema.</maml:para>
+          </maml:description>
+          <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="False" position="0" aliases="none">
+          <maml:name>FQDN</maml:name>
+          <maml:description>
+            <maml:para>Filters stub zones by fully qualified domain name.</maml:para>
+          </maml:description>
+          <command:parameterValue required="false" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="False" position="1" aliases="none">
+          <maml:name>View</maml:name>
+          <maml:description>
+            <maml:para>Filters stub zones by DNS view name.</maml:para>
+          </maml:description>
+          <command:parameterValue required="false" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>FetchFromSchema</maml:name>
+        <maml:description>
+          <maml:para>Requests every readable zone_stub field advertised by the connected WAPI schema.</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="False" position="0" aliases="none">
+        <maml:name>FQDN</maml:name>
+        <maml:description>
+          <maml:para>Filters stub zones by fully qualified domain name.</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="False" position="1" aliases="none">
+        <maml:name>View</maml:name>
+        <maml:description>
+          <maml:para>Filters stub zones by DNS view name.</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes />
+    <command:returnValues />
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para></maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
+        <maml:introduction>
+          <maml:para>PS &gt; </maml:para>
+        </maml:introduction>
+        <dev:code>Get-InfobloxDNSStubZone -FQDN example.com -View Internal</dev:code>
+        <dev:remarks>
+          <maml:para>Returns the stub zone and its WAPI reference.</maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks />
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10">
+    <command:details>
       <command:name>Get-InfobloxDNSView</command:name>
       <command:verb>Get</command:verb>
       <command:noun>InfobloxDNSView</command:noun>
@@ -6446,7 +6563,8 @@ For ReferenceID queries, the object type is taken from each reference.</maml:par
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>Queries Infoblox WAPI zone_rp objects available to the connected account.</maml:para>
+      <maml:para>Queries Infoblox WAPI zone_rp objects available to the connected account.&#xD;
+Results can be filtered by zone FQDN and DNS view.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem parameterSetName="__AllParameterSets">
@@ -6463,6 +6581,30 @@ For ReferenceID queries, the object type is taken from each reference.</maml:par
           </dev:type>
           <dev:defaultValue>False</dev:defaultValue>
         </command:parameter>
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="False" position="0" aliases="none">
+          <maml:name>FQDN</maml:name>
+          <maml:description>
+            <maml:para>Filters response policy zones by fully qualified domain name.</maml:para>
+          </maml:description>
+          <command:parameterValue required="false" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="False" position="1" aliases="none">
+          <maml:name>View</maml:name>
+          <maml:description>
+            <maml:para>Filters response policy zones by DNS view name.</maml:para>
+          </maml:description>
+          <command:parameterValue required="false" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
@@ -6477,6 +6619,30 @@ For ReferenceID queries, the object type is taken from each reference.</maml:par
           <maml:uri />
         </dev:type>
         <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="False" position="0" aliases="none">
+        <maml:name>FQDN</maml:name>
+        <maml:description>
+          <maml:para>Filters response policy zones by fully qualified domain name.</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="False" position="1" aliases="none">
+        <maml:name>View</maml:name>
+        <maml:description>
+          <maml:para>Filters response policy zones by DNS view name.</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
     </command:parameters>
     <command:inputTypes />
@@ -6502,9 +6668,9 @@ For ReferenceID queries, the object type is taken from each reference.</maml:par
         <maml:introduction>
           <maml:para>PS &gt; </maml:para>
         </maml:introduction>
-        <dev:code>Get-InfobloxResponsePolicyZones -FetchFromSchema</dev:code>
+        <dev:code>Get-InfobloxResponsePolicyZones -FQDN example.com -View Internal -FetchFromSchema</dev:code>
         <dev:remarks>
-          <maml:para>Returns response policy zones with all fields advertised by the connected WAPI schema.</maml:para>
+          <maml:para>Returns the matching response policy zone with all readable fields advertised by the connected WAPI schema.</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
@@ -7785,7 +7951,7 @@ be removed.</maml:para>
       <command:verb>Remove</command:verb>
       <command:noun>InfobloxDNSZone</command:noun>
       <maml:description>
-        <maml:para>Removes one authoritative, forward, or delegated DNS zone.</maml:para>
+        <maml:para>Removes one authoritative, forward, delegated, response policy, or stub DNS zone.</maml:para>
       </maml:description>
     </command:details>
     <maml:description>
@@ -7810,13 +7976,15 @@ Ambiguous or mismatched lookups list available references and skip removal.</mam
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Type</maml:name>
           <maml:description>
-            <maml:para>Authoritative, Forward, or Delegated. Required when selecting by Name.</maml:para>
+            <maml:para>Authoritative, Forward, Delegated, ResponsePolicy, or Stub. Required when selecting by Name.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <command:parameterValueGroup>
             <command:parameterValue required="false" variableLength="false">Authoritative</command:parameterValue>
             <command:parameterValue required="false" variableLength="false">Forward</command:parameterValue>
             <command:parameterValue required="false" variableLength="false">Delegated</command:parameterValue>
+            <command:parameterValue required="false" variableLength="false">ResponsePolicy</command:parameterValue>
+            <command:parameterValue required="false" variableLength="false">Stub</command:parameterValue>
           </command:parameterValueGroup>
           <dev:type>
             <maml:name>String</maml:name>
@@ -7842,7 +8010,7 @@ Ambiguous or mismatched lookups list available references and skip removal.</mam
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>ReferenceID</maml:name>
           <maml:description>
-            <maml:para>The exact zone_auth, zone_forward, or zone_delegated WAPI reference.</maml:para>
+            <maml:para>The exact WAPI zone reference.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -7854,13 +8022,15 @@ Ambiguous or mismatched lookups list available references and skip removal.</mam
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Type</maml:name>
           <maml:description>
-            <maml:para>Authoritative, Forward, or Delegated. Required when selecting by Name.</maml:para>
+            <maml:para>Authoritative, Forward, Delegated, ResponsePolicy, or Stub. Required when selecting by Name.</maml:para>
           </maml:description>
           <command:parameterValue required="false" variableLength="false">String</command:parameterValue>
           <command:parameterValueGroup>
             <command:parameterValue required="false" variableLength="false">Authoritative</command:parameterValue>
             <command:parameterValue required="false" variableLength="false">Forward</command:parameterValue>
             <command:parameterValue required="false" variableLength="false">Delegated</command:parameterValue>
+            <command:parameterValue required="false" variableLength="false">ResponsePolicy</command:parameterValue>
+            <command:parameterValue required="false" variableLength="false">Stub</command:parameterValue>
           </command:parameterValueGroup>
           <dev:type>
             <maml:name>String</maml:name>
@@ -7886,7 +8056,7 @@ Ambiguous or mismatched lookups list available references and skip removal.</mam
       <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>ReferenceID</maml:name>
         <maml:description>
-          <maml:para>The exact zone_auth, zone_forward, or zone_delegated WAPI reference.</maml:para>
+          <maml:para>The exact WAPI zone reference.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -7898,13 +8068,15 @@ Ambiguous or mismatched lookups list available references and skip removal.</mam
       <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>Type</maml:name>
         <maml:description>
-          <maml:para>Authoritative, Forward, or Delegated. Required when selecting by Name.</maml:para>
+          <maml:para>Authoritative, Forward, Delegated, ResponsePolicy, or Stub. Required when selecting by Name.</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">String</command:parameterValue>
         <command:parameterValueGroup>
           <command:parameterValue required="false" variableLength="false">Authoritative</command:parameterValue>
           <command:parameterValue required="false" variableLength="false">Forward</command:parameterValue>
           <command:parameterValue required="false" variableLength="false">Delegated</command:parameterValue>
+          <command:parameterValue required="false" variableLength="false">ResponsePolicy</command:parameterValue>
+          <command:parameterValue required="false" variableLength="false">Stub</command:parameterValue>
         </command:parameterValueGroup>
         <dev:type>
           <maml:name>String</maml:name>
@@ -9454,7 +9626,7 @@ lookups list available references and skip the update.</maml:para>
       <command:verb>Set</command:verb>
       <command:noun>InfobloxDNSZone</command:noun>
       <maml:description>
-        <maml:para>Updates an authoritative, forward, or delegated DNS zone.</maml:para>
+        <maml:para>Updates an authoritative, forward, delegated, response policy, or stub DNS zone.</maml:para>
       </maml:description>
     </command:details>
     <maml:description>
@@ -9492,13 +9664,15 @@ Supply the WAPI fields to change in Properties.</maml:para>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Type</maml:name>
           <maml:description>
-            <maml:para>Authoritative, Forward, or Delegated. Required when selecting by Name.</maml:para>
+            <maml:para>Authoritative, Forward, Delegated, ResponsePolicy, or Stub. Required when selecting by Name.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <command:parameterValueGroup>
             <command:parameterValue required="false" variableLength="false">Authoritative</command:parameterValue>
             <command:parameterValue required="false" variableLength="false">Forward</command:parameterValue>
             <command:parameterValue required="false" variableLength="false">Delegated</command:parameterValue>
+            <command:parameterValue required="false" variableLength="false">ResponsePolicy</command:parameterValue>
+            <command:parameterValue required="false" variableLength="false">Stub</command:parameterValue>
           </command:parameterValueGroup>
           <dev:type>
             <maml:name>String</maml:name>
@@ -9536,7 +9710,7 @@ Supply the WAPI fields to change in Properties.</maml:para>
         <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>ReferenceID</maml:name>
           <maml:description>
-            <maml:para>The exact zone_auth, zone_forward, or zone_delegated WAPI reference.</maml:para>
+            <maml:para>The exact WAPI zone reference.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -9548,13 +9722,15 @@ Supply the WAPI fields to change in Properties.</maml:para>
         <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Type</maml:name>
           <maml:description>
-            <maml:para>Authoritative, Forward, or Delegated. Required when selecting by Name.</maml:para>
+            <maml:para>Authoritative, Forward, Delegated, ResponsePolicy, or Stub. Required when selecting by Name.</maml:para>
           </maml:description>
           <command:parameterValue required="false" variableLength="false">String</command:parameterValue>
           <command:parameterValueGroup>
             <command:parameterValue required="false" variableLength="false">Authoritative</command:parameterValue>
             <command:parameterValue required="false" variableLength="false">Forward</command:parameterValue>
             <command:parameterValue required="false" variableLength="false">Delegated</command:parameterValue>
+            <command:parameterValue required="false" variableLength="false">ResponsePolicy</command:parameterValue>
+            <command:parameterValue required="false" variableLength="false">Stub</command:parameterValue>
           </command:parameterValueGroup>
           <dev:type>
             <maml:name>String</maml:name>
@@ -9592,7 +9768,7 @@ Supply the WAPI fields to change in Properties.</maml:para>
       <command:parameter required="true" variableLength="false" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>ReferenceID</maml:name>
         <maml:description>
-          <maml:para>The exact zone_auth, zone_forward, or zone_delegated WAPI reference.</maml:para>
+          <maml:para>The exact WAPI zone reference.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -9604,13 +9780,15 @@ Supply the WAPI fields to change in Properties.</maml:para>
       <command:parameter required="false" variableLength="false" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>Type</maml:name>
         <maml:description>
-          <maml:para>Authoritative, Forward, or Delegated. Required when selecting by Name.</maml:para>
+          <maml:para>Authoritative, Forward, Delegated, ResponsePolicy, or Stub. Required when selecting by Name.</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">String</command:parameterValue>
         <command:parameterValueGroup>
           <command:parameterValue required="false" variableLength="false">Authoritative</command:parameterValue>
           <command:parameterValue required="false" variableLength="false">Forward</command:parameterValue>
           <command:parameterValue required="false" variableLength="false">Delegated</command:parameterValue>
+          <command:parameterValue required="false" variableLength="false">ResponsePolicy</command:parameterValue>
+          <command:parameterValue required="false" variableLength="false">Stub</command:parameterValue>
         </command:parameterValueGroup>
         <dev:type>
           <maml:name>String</maml:name>

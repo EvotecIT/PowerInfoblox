@@ -26,7 +26,7 @@ Creates an Infoblox DNS record.
 Creates a DNS view.
 
 ### [Add-InfobloxDNSZone](Add-InfobloxDNSZone.md)
-Creates an authoritative, forward, or delegated DNS zone.
+Creates an authoritative, forward, delegated, response policy, or stub DNS zone.
 
 ### [Add-InfobloxFixedAddress](Add-InfobloxFixedAddress.md)
 Add a fixed mac address to an IP address on an Infoblox server
@@ -66,6 +66,9 @@ Gets Infoblox DNS records of one WAPI record type.
 
 ### [Get-InfobloxDNSRecordAll](Get-InfobloxDNSRecordAll.md)
 Gets DNS records across all record types.
+
+### [Get-InfobloxDNSStubZone](Get-InfobloxDNSStubZone.md)
+Retrieves DNS stub zones.
 
 ### [Get-InfobloxDNSView](Get-InfobloxDNSView.md)
 Retrieves DNS views from an Infoblox server.
@@ -131,7 +134,7 @@ Removes Infoblox DNS records.
 Removes one DNS view.
 
 ### [Remove-InfobloxDNSZone](Remove-InfobloxDNSZone.md)
-Removes one authoritative, forward, or delegated DNS zone.
+Removes one authoritative, forward, delegated, response policy, or stub DNS zone.
 
 ### [Remove-InfobloxFixedAddress](Remove-InfobloxFixedAddress.md)
 Removes fixed IPv4 address assignments by MAC address.
@@ -158,7 +161,7 @@ Updates the value of an existing Infoblox DNS record.
 Updates one DNS view.
 
 ### [Set-InfobloxDNSZone](Set-InfobloxDNSZone.md)
-Updates an authoritative, forward, or delegated DNS zone.
+Updates an authoritative, forward, delegated, response policy, or stub DNS zone.
 
 ### [Set-InfobloxNetworkMembers](Set-InfobloxNetworkMembers.md)
 Sets or modifies members for an Infoblox object.

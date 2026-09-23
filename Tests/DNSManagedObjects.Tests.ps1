@@ -27,6 +27,17 @@ Describe 'DNS zone and view management' {
             $script:Calls[0].Body.forward_to[0].address | Should -Be '192.0.2.53'
         }
 
+        It 'creates <Type> using the <Endpoint> WAPI object' -TestCases @(
+            @{ Type = 'ResponsePolicy'; Endpoint = 'zone_rp'; Field = 'substitute_name'; Value = 'blocked.example.test' }
+            @{ Type = 'Stub'; Endpoint = 'zone_stub'; Field = 'stub_from'; Value = @(@{ address = '192.0.2.53' }) }
+        ) {
+            param($Type, $Endpoint, $Field, $Value)
+            Add-InfobloxDNSZone -Type $Type -Name example.test -Properties @{ $Field = $Value } -Confirm:$false
+            $script:Calls.Count | Should -Be 1
+            $script:Calls[0].Uri | Should -Be $Endpoint
+            $script:Calls[0].Body[$Field] | Should -Be $Value
+        }
+
         It 'rejects conflicting zone identity before POST' {
             { Add-InfobloxDNSZone -Type Authoritative -Name example.test -View Internal -Properties @{ view = 'External' } -Confirm:$false } |
                 Should -Throw '*does not match View*'
@@ -68,6 +79,29 @@ Describe 'DNS zone and view management' {
             $script:Calls.Count | Should -Be 2
             $script:Calls[1].Method | Should -Be 'PUT'
             $script:Calls[1].Uri | Should -Be $Reference
+        }
+
+        It 'uses an exact response policy zone reference for removal' {
+            $Reference = 'zone_rp/one:example.test/Internal'
+            $script:Objects = @([pscustomobject]@{ _ref = $Reference; fqdn = 'example.test'; view = 'Internal' })
+            Remove-InfobloxDNSZone -ReferenceID $Reference -Type ResponsePolicy -Confirm:$false
+            $script:Calls.Count | Should -Be 2
+            $script:Calls[1].Method | Should -Be 'DELETE'
+            $script:Calls[1].Uri | Should -Be $Reference
+        }
+
+        It 'filters response policy zones by FQDN and view' {
+            Get-InfobloxResponsePolicyZones -FQDN example.test -View Internal | Out-Null
+            $script:Calls[0].Uri | Should -Be 'zone_rp'
+            $script:Calls[0].Query.fqdn | Should -Be 'example.test'
+            $script:Calls[0].Query.view | Should -Be 'Internal'
+        }
+
+        It 'filters stub zones by FQDN and view' {
+            Get-InfobloxDNSStubZone -FQDN example.test -View Internal | Out-Null
+            $script:Calls[0].Uri | Should -Be 'zone_stub'
+            $script:Calls[0].Query.fqdn | Should -Be 'example.test'
+            $script:Calls[0].Query.view | Should -Be 'Internal'
         }
 
         It 'refuses to remove a default DNS view' {

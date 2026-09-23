@@ -6,7 +6,7 @@ schema: 2.0.0
 ---
 # Add-InfobloxDNSZone
 ## SYNOPSIS
-Creates an authoritative, forward, or delegated DNS zone.
+Creates an authoritative, forward, delegated, response policy, or stub DNS zone.
 
 ## SYNTAX
 ### __AllParameterSets
@@ -15,9 +15,9 @@ Add-InfobloxDNSZone [-Type] <string> [-Name] <string> [[-View] <string>] [[-Prop
 ```
 
 ## DESCRIPTION
-Creates a zone_auth, zone_forward, or zone_delegated WAPI object. Name becomes the
+Creates a zone_auth, zone_forward, zone_delegated, zone_rp, or zone_stub WAPI object. Name becomes the
 fqdn field. Supply the remaining WAPI fields in Properties, such as grid_primary,
-forward_to, or delegate_to, according to the connected Grid's schema.
+forward_to, delegate_to, substitute_name, or stub_from, according to the connected Grid's schema.
 
 ## EXAMPLES
 
@@ -63,13 +63,13 @@ Accept wildcard characters: False
 ```
 
 ### -Type
-The zone kind: Authoritative, Forward, or Delegated.
+The zone kind: Authoritative, Forward, Delegated, ResponsePolicy, or Stub.
 
 ```yaml
 Type: String
 Parameter Sets: __AllParameterSets
 Aliases: None
-Possible values: Authoritative, Forward, Delegated
+Possible values: Authoritative, Forward, Delegated, ResponsePolicy, Stub
 
 Required: True
 Position: 0

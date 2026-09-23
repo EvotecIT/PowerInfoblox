@@ -1,15 +1,15 @@
 function Add-InfobloxDNSZone {
     <#
     .SYNOPSIS
-    Creates an authoritative, forward, or delegated DNS zone.
+    Creates an authoritative, forward, delegated, response policy, or stub DNS zone.
 
     .DESCRIPTION
-    Creates a zone_auth, zone_forward, or zone_delegated WAPI object. Name becomes the
+    Creates a zone_auth, zone_forward, zone_delegated, zone_rp, or zone_stub WAPI object. Name becomes the
     fqdn field. Supply the remaining WAPI fields in Properties, such as grid_primary,
-    forward_to, or delegate_to, according to the connected Grid's schema.
+    forward_to, delegate_to, substitute_name, or stub_from, according to the connected Grid's schema.
 
     .PARAMETER Type
-    The zone kind: Authoritative, Forward, or Delegated.
+    The zone kind: Authoritative, Forward, Delegated, ResponsePolicy, or Stub.
 
     .PARAMETER Name
     The zone's fully qualified domain name.
@@ -28,7 +28,7 @@ function Add-InfobloxDNSZone {
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory)]
-        [ValidateSet('Authoritative', 'Forward', 'Delegated')]
+        [ValidateSet('Authoritative', 'Forward', 'Delegated', 'ResponsePolicy', 'Stub')]
         [string] $Type,
 
         [Parameter(Mandatory)]

@@ -1,7 +1,7 @@
 function Set-InfobloxDNSZone {
     <#
     .SYNOPSIS
-    Updates an authoritative, forward, or delegated DNS zone.
+    Updates an authoritative, forward, delegated, response policy, or stub DNS zone.
 
     .DESCRIPTION
     Updates one zone selected by its WAPI ReferenceID or by Type, Name, and optional
@@ -9,13 +9,13 @@ function Set-InfobloxDNSZone {
     Supply the WAPI fields to change in Properties.
 
     .PARAMETER Type
-    Authoritative, Forward, or Delegated. Required when selecting by Name.
+    Authoritative, Forward, Delegated, ResponsePolicy, or Stub. Required when selecting by Name.
     .PARAMETER Name
     The existing zone FQDN.
     .PARAMETER View
     The existing DNS view used with Name.
     .PARAMETER ReferenceID
-    The exact zone_auth, zone_forward, or zone_delegated WAPI reference.
+    The exact WAPI zone reference.
     .PARAMETER Properties
     Nonempty WAPI field dictionary to update.
     .EXAMPLE
@@ -27,7 +27,7 @@ function Set-InfobloxDNSZone {
     param(
         [Parameter(Mandatory, ParameterSetName = 'ByName')]
         [Parameter(ParameterSetName = 'ByReference')]
-        [ValidateSet('Authoritative', 'Forward', 'Delegated')]
+        [ValidateSet('Authoritative', 'Forward', 'Delegated', 'ResponsePolicy', 'Stub')]
         [string] $Type,
 
         [Parameter(Mandatory, ParameterSetName = 'ByName')]
@@ -53,7 +53,7 @@ function Set-InfobloxDNSZone {
     }
     if ($Properties.Count -eq 0) { throw 'Set-InfobloxDNSZone - Properties cannot be empty.' }
     $ObjectType = if ($PSCmdlet.ParameterSetName -eq 'ByReference') {
-        if ($ReferenceID -notmatch '^(zone_auth|zone_forward|zone_delegated)/') {
+        if ($ReferenceID -notmatch '^(zone_auth|zone_forward|zone_delegated|zone_rp|zone_stub)/') {
             throw "Set-InfobloxDNSZone - ReferenceID '$ReferenceID' is not a DNS zone reference."
         }
         $Matches[1]
